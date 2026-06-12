@@ -14,7 +14,6 @@ class GuideQuestion(models.Model):
     id = models.BigAutoField(primary_key=True)	#AutoIncrementID
     scenario_id = models.ForeignKey(GuideScenario, on_delete=models.DO_NOTHING)
     question = models.CharField(max_length=200)
-    answer = models.CharField(max_length=10)
     is_active = models.BooleanField(default=True)
     creation_date = models.DateTimeField(auto_now_add=True)
 
