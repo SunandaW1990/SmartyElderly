@@ -7,8 +7,9 @@ class Manual(models.Model):
     description = models.CharField(max_length=100)
     img_url = models.CharField(max_length=100)
     detail_title = models.CharField(max_length=100)
+    detail_title2 = models.CharField(max_length=100)
     detail_desc = models.CharField(max_length=200)
-    explanation = models.CharField(max_length=200)
+    explanation = models.CharField(max_length=500)
     important1 = models.CharField(max_length=100)
     important2 = models.CharField(max_length=100)
     important3 = models.CharField(max_length=100)
@@ -24,13 +25,14 @@ class LifeFilm(models.Model):
     seq = models.IntegerField()
     img_url = models.CharField(max_length=100)
     name = models.CharField(max_length=20)
-    description = models.CharField(max_length=50)
+    description = models.CharField(max_length=200)
     is_active = models.BooleanField(default=True)
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
+#Not Use
 class ManualDetail(models.Model):
     id = models.BigAutoField(primary_key=True)	# AutoIncrementID
     lifefilm_id = models.ForeignKey(LifeFilm, on_delete=models.DO_NOTHING)

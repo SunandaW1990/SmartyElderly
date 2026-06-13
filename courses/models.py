@@ -6,11 +6,11 @@ from .choices import district_choices
 class Course(models.Model):
     id = models.BigAutoField(primary_key=True)	# AutoIncrementID
     title = models.CharField(max_length=50)
-    description = models.CharField(max_length=200)
+    description = models.CharField(max_length=500)
     comm_date = models.DateTimeField(auto_now_add=True)
     district = models.CharField(max_length=50, choices=district_choices.items(),default="")
     fee = models.IntegerField()
-    topic = models.CharField(max_length=50)
+    category = models.CharField(max_length=50)
     course_url = models.CharField(max_length=100)
     contact = models.CharField(max_length=50)
     poster_url = models.CharField(max_length=100)

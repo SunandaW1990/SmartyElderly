@@ -1,0 +1,60 @@
+    <header class="mac-topbar">
+        <div class="topbar-container">
+            <div class="topbar-left" id="homeLogoBtn">
+                <i data-lucide="home" class="home-icon"></i>
+                <div class="brand-text">
+                    <span class="brand-logo">耆醒老友記</span>
+                    <span class="brand-en">Smarty Elderly</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="theme-slider-widget">
+                    <span class="slider-label">主題</span>
+                    <input type="range" id="themeSlider" class="theme-slider" min="0" max="7" step="1" value="3">
+                    <span class="slider-hint">護眼</span>
+                </div>
+                <div class="font-switch-group" id="fontSwitchGroup">
+                    <button data-font="small" class="font-switch-btn">小字</button>
+                    <button data-font="standard" class="font-switch-btn">標準</button>
+                    <button data-font="xlarge" class="font-switch-btn">特大</button>
+                </div>
+                <button class="icon-btn" id="controlCenterBtn" aria-label="控制中心">
+                    <i data-lucide="sliders"></i>
+                </button>
+                <button class="login-btn" id="loginBtn" aria-label="登入">
+                    <i data-lucide="log-in"></i> 登入
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="top-nav-bar" id="topNavBar">
+        <div class="top-nav-container">
+            <button class="top-nav-item" data-page="learns"><i data-lucide="book-open"></i><span>數位說明書</span></button>
+            <button class="top-nav-item" data-page="tools"><i data-lucide="star"></i><span>防騙工具箱</span></button>
+            <button class="top-nav-item" data-page="emgs"><i data-lucide="life-buoy"></i><span>應急指南</span></button>
+            <button class="top-nav-item" data-page="stories"><i data-lucide="heart"></i><span>故事角</span></button>
+            <button class="top-nav-item" data-page="courses"><i data-lucide="compass"></i><span>教育課程</span></button>
+            <button class="top-nav-item" data-page="news"><i data-lucide="newspaper"></i><span>最新資訊</span></button>
+            <button class="top-nav-item" data-page="subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="top-nav-item" data-page="abouts"><i data-lucide="users"></i><span>關於我們</span></button>
+        </div>
+    </div>
+
+        <!-- 控制中心面板 -->
+    <div id="controlCenterPanel">
+        <h4><i data-lucide="palette"></i> 完整主題切換 (8種)</h4>
+        <div class="theme-group-8">
+            <button data-theme-index="0" class="theme-option-btn">Piña Colada</button>
+            <button data-theme-index="1" class="theme-option-btn">Dark 'n' Stormy</button>
+            <button data-theme-index="2" class="theme-option-btn">Glass Window</button>
+            <button data-theme-index="3" class="theme-option-btn">Forest Bath</button>
+            <button data-theme-index="4" class="theme-option-btn">Mint Garden</button>
+            <button data-theme-index="5" class="theme-option-btn">Apple Cider</button>
+            <button data-theme-index="6" class="theme-option-btn">Nightcap</button>
+            <button data-theme-index="7" class="theme-option-btn">Sunrise</button>
+        </div>
+        <button id="hideToolsBtn" class="hide-tools-btn">🔧 隱藏字體與主題工具</button>
+        <button id="closeControlPanel" class="close-panel-btn">關閉</button>
+    </div>
+
