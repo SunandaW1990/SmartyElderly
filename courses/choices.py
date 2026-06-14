@@ -1,20 +1,46 @@
 district_choices = {
-    "Islands" : "Islands", 
-    "Kwai Tsing" : "Kwai Tsing", 
-    "North" : "North", 
-    "Sai Kung" : "Sai Kung", 
-    "Sha Tin" : "Sha Tin", 
-    "Tai Po" : "Tai Po", 
-    "Tsuen Wan" : "Tsuen Wan", 
-    "Tuen Mun" : "Tuen Mun", 
-    "Yuen Long" : "Yuen Long", 
-    "Kowloon City" : "Kowloon City", 
-    "Kwun Tong" : "Kwun Tong", 
-    "Sham Shui Po" : "Sham Shui Po", 
-    "Wong Tai Sin" : "Wong Tai Sin", 
-    "Yau Tsim Mong" : "Yau Tsim Mong", 
-    "Central & Western" : "Central & Western", 
-    "Eastern" : "Eastern", 
-    "Southern" : "Southern", 
-    "Wan Chai" : "Wan Chai" 
+    "中西區" : "中西區", 
+    "東區" : "東區", 
+    "南區" : "南區", 
+    "灣仔區" : "灣仔區", 
+    "九龍城區" : "九龍城區", 
+    "觀塘區" : "觀塘區", 
+    "深水埗區" : "深水埗區", 
+    "黃大仙區" : "黃大仙區", 
+    "油尖旺區" : "油尖旺區", 
+    "離島區" : "離島區", 
+    "葵青區" : "葵青區", 
+    "北區" : "北區", 
+    "西貢區" : "西貢區", 
+    "沙田區" : "沙田區", 
+    "大埔區" : "大埔區", 
+    "荃灣區" : "荃灣區", 
+    "屯門區" : "屯門區", 
+    "元朗區" : "元朗區" 
+}
+
+category_choices = {
+    "手機班" : "手機班",
+    "防騙講座" : "防騙講座",
+    "數位基礎" : "數位基礎"
+}
+
+fee_choices = {
+    "免費" : "免費",
+    "收費" : "收費"
+}
+
+mth_choices = {
+    "01" : "01",
+    "02" : "02",
+    "03" : "03",
+    "04" : "04",
+    "05" : "05",
+    "06" : "06",
+    "07" : "07",
+    "08" : "08",
+    "09" : "09",
+    "10" : "10",
+    "11" : "11",
+    "12" : "12"
 }

@@ -307,10 +307,9 @@
         <!-- 靜態的三個情境卡片（內容已寫入 HTML） -->
         <div id="scenariosContainer">
         {% for scenario in scenarios %}
-            {% if forloop.counter0|divisibleby:2 %}
-            <div class="scenario-card" data-id="fake_official">
+            <div class="scenario-card" data-id={% cycle "fake_official" "investment" "fake_friend" %}>
                 <div class="scenario-header">
-                    <h3><i data-lucide="badge-alert" style="width:28px;height:28px;"></i>{{ scenario.name }}<span style="font-size:0.7rem; background:rgba(0,0,0,0.1); padding:4px 10px; border-radius:40px;">按我展開</span><span class="ms-auto small">▼</span></h3>
+                    <h3><i data-lucide={% cycle "badge-alert" "trending-up" "users" %} style="width:28px;height:28px;"></i>{{ scenario.name }}<span style="font-size:0.7rem; background:rgba(0,0,0,0.1); padding:4px 10px; border-radius:40px;">按我展開</span><span class="ms-auto small">▼</span></h3>
                 </div>
                 <div class="scenario-body">
                     {% for question in scenario.guidequestion_set.all %}
@@ -320,20 +319,6 @@
                     <div class="result-area" id="result-fake_official"></div>
                 </div>
             </div>
-            {% elif not forloop.counter0|divisibleby:2 %}
-            <div class="scenario-card" data-id="investment">
-                <div class="scenario-header">
-                    <h3><i data-lucide="trending-up" style="width:28px;height:28px;"></i>{{ scenario.name }}<span style="font-size:0.7rem; background:rgba(0,0,0,0.1); padding:4px 10px; border-radius:40px;">按我展開</span><span class="ms-auto small">▼</span></h3>
-                </div>
-                <div class="scenario-body">
-                    {% for question in scenario.guidequestion_set.all %}
-                      <div class="question-item" data-qidx="{{ forloop.counter0 }}"><span class="question-text">"{{ question.question }}"</span><div class="choice-group"><button type="button" class="choice-btn yes-btn">✔️ 係</button><button type="button" class="choice-btn no-btn">❌ 唔係</button></div></div>
-                    {% endfor %}
-                    <button class="submit-scenario">🔍 提交比對 · 查看結果</button>
-                    <div class="result-area" id="result-investment"></div>
-                </div>
-            </div>
-            {% endif %}
         {% endfor %}
 
         </div>
