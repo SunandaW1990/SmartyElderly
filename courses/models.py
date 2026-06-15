@@ -18,7 +18,7 @@ class Course(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.title
 
 class Enrollment(models.Model):
     id = models.BigAutoField(primary_key=True)	# AutoIncrementID
@@ -27,5 +27,5 @@ class Enrollment(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return str(self.id)
 

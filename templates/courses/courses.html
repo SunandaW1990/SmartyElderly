@@ -740,21 +740,16 @@
     </script>
 
     <script>
-        {% with course_id.0 as c_id %}
-        alert("{{c_id}}")
-        {% endwith %}
-        {#{% with result.0 as res %}#}
-        {%for res in result%}
-        alert("{{res}}")
+        {% with result.0 as res %}
+        {#{%for res in result%}#}
             {% with enrollment.0 as enroll %}
-            alert("{{enroll.id}}{{enroll.title}}")
                 {% if res == 'Fail' %}
                     showToast("您已報名過「{{enroll.title}}」，無需重複報名。");
                 {% else %}
                     showToast("✅ 報名成功！「{{enroll.title}}」已加入您的課程清單。");
                 {% endif %}
             {% endwith %}
-        {% endfor %}
-        {#{% endwith %}#}
+        {#{% endfor %}#}
+        {% endwith %}
     </script>
 {% endblock %}

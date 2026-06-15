@@ -20,15 +20,24 @@ from django.urls import path, include
 from debug_toolbar.toolbar import debug_toolbar_urls
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
+from index_photo import views as index_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', index_views.index, name='index'), 
+    path('index.html', index_views.index, name='index'), 
     path('manuals/', include('manuals.urls', namespace='manuals')),
     path('stories/', include('stories.urls', namespace='stories')),
     path('courses/', include('courses.urls', namespace='courses')),
     path('antiscamtools/', include('antiscamtools.urls', namespace='antiscamtools')),
     path('guides/', include('guides.urls', namespace='guides')),
     path('subscribes/', include('subscribes.urls', namespace='subscribes')),
+    # 純靜態頁面（無需資料庫）
+    path('abouts/', TemplateView.as_view(template_name='abouts.html'), name='abouts'),
+    path('games/', TemplateView.as_view(template_name='games.html'), name='games'),
+    path('helps/', TemplateView.as_view(template_name='helps.html'), name='helps'),
+    path('news/', TemplateView.as_view(template_name='news.html'), name='news'),    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + debug_toolbar_urls()
 
 admin.site.site_header = 'SmartyElderly Administration'

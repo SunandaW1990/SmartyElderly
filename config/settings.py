@@ -53,6 +53,7 @@ APPLICATION_APPS = [
     'antiscamtools.apps.AntiscamtoolsConfig',
     'guides.apps.GuidesConfig',
     'subscribes.apps.SubscribesConfig',
+    'index_photo.apps.IndexPhotoConfig',
 ]
 
 THIRD_PARTY_APPS = [

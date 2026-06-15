@@ -3,6 +3,9 @@ from .models import Course, Enrollment
 from django.contrib import messages
 from .choices import district_choices, category_choices, fee_choices, mth_choices
 from django.utils import timezone
+from django.views.generic import ListView
+from django.db.models import Prefetch
+
 
 # Create your views here.
 def courses(request):
@@ -13,6 +16,9 @@ def courses(request):
     context["fees"] = fee_choices
     context["mths"] = mth_choices
     return render(request, "courses/courses.html", context)
+
+
+
 
 def enroll(request):
     if request.method == "POST":

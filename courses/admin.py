@@ -1,4 +1,3 @@
-'''
 from django.contrib import admin
 from django import forms
 from .models import Course, Enrollment
@@ -18,11 +17,11 @@ class CourseAdminForm(forms.ModelForm):
         }
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'description', 'comm_date', 'district', 'fee', 'topic', 'course_url', 'contact', 'poster_url', 'is_active', 'creation_date')
-    list_display_links = ('id', 'title', 'district', 'topic')
+    list_display = ('id', 'title', 'description', 'comm_date', 'district', 'fee', 'course_url', 'contact', 'poster_url', 'is_active', 'creation_date')
+    list_display_links = ('id', 'title', 'district')
     #list_filter = ('doctor', 'services')
     list_editable = ('is_active', )
-    search_fields = ('title', 'district', 'topic', 'topic',)
+    search_fields = ('title', 'district',)
     list_per_age = 25                
     #formfield_overrides = {
     #    models.IntegerField: {
@@ -51,11 +50,11 @@ class EnrollmentAdminForm(forms.ModelForm):
         #}
 
 class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'subscriber_id', 'course_id', 'creation_date')
-    list_display_links = ('id', 'subscriber_id', 'course_id')
+    list_display = ('id', 'subscriber_id_id', 'course_id_id', 'creation_date')
+    list_display_links = ('id', 'subscriber_id_id', 'course_id_id')
     #list_filter = ('doctor', 'services')
     #list_editable = ('is_published', )
-    search_fields = ('subscriber_id', 'course_id',)
+    search_fields = ('subscriber_id_id', 'course_id_id',)
     list_per_age = 25                
     #formfield_overrides = {
     #    models.IntegerField: {
@@ -75,4 +74,3 @@ class EnrollmentAdmin(admin.ModelAdmin):
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Enrollment, EnrollmentAdmin)
-'''

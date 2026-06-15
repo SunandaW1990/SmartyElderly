@@ -1,0 +1,1081 @@
+{% extends "base.html" %}
+{% block title %} 耆醒老友記 Smarty Elderly · 長者數位守護平台 {% endblock %}
+{% block stylesheet %}
+    <style>
+        /* ========== 全域動畫 ========== */
+        @keyframes floatOrb1 {
+            0% { transform: translate(0%, 0%) scale(1); }
+            25% { transform: translate(15%, 20%) scale(1.2); }
+            50% { transform: translate(25%, -5%) scale(1.3); }
+            75% { transform: translate(-10%, 15%) scale(1.15); }
+            100% { transform: translate(0%, 0%) scale(1); }
+        }
+        @keyframes floatOrb2 {
+            0% { transform: translate(0%, 0%) scale(1); }
+            30% { transform: translate(-20%, 15%) scale(1.25); }
+            60% { transform: translate(-30%, -10%) scale(1.35); }
+            85% { transform: translate(10%, 20%) scale(1.2); }
+            100% { transform: translate(0%, 0%) scale(1); }
+        }
+        @keyframes floatOrb3 {
+            0% { transform: translate(0%, 0%) scale(1); }
+            20% { transform: translate(18%, -15%) scale(1.22); }
+            50% { transform: translate(5%, 25%) scale(1.35); }
+            80% { transform: translate(-15%, -5%) scale(1.18); }
+            100% { transform: translate(0%, 0%) scale(1); }
+        }
+        @keyframes breathe {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(55, 107, 126, 0.5); }
+            50% { box-shadow: 0 0 0 20px rgba(55, 107, 126, 0); }
+        }
+
+        /* ========== 字體 rem 基礎 ========== */
+        html { font-size: 18px; }
+        html.font-small { font-size: 16px; }
+        html.font-standard { font-size: 18px; }
+        html.font-xlarge { font-size: 24px; }
+
+        /* ========== 8個主題 ========== */
+        body.theme-pina-colada {
+            --bg-body: #FFF9F5; --text-main: #1A1A2E; --text-secondary: rgba(26,26,46,0.7);
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(255,94,77,0.35); --topbar-bg: rgba(255,249,245,0.95);
+            --primary: #FF5E4D; --primary-light: #FF7B6E; --accent: #4D9DE0;
+            --orb-1-gradient: radial-gradient(circle, #FF5E4D, #FF7B6E);
+            --orb-2-gradient: radial-gradient(circle, #4D9DE0, #72B0E8);
+            --orb-3-gradient: radial-gradient(circle, #FFD166, #FFE0A3);
+            --orb-opacity: 0.5;
+        }
+        body.theme-dark-stormy {
+            --bg-body: #FDF8F0; --text-main: #1E293B; --text-secondary: #475569;
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(55,107,126,0.25); --topbar-bg: rgba(253,248,240,0.95);
+            --primary: #376B7E; --primary-light: #5B8A9B; --accent: #C87A65;
+            --orb-1-gradient: radial-gradient(circle, #376B7E, #5B8A9B);
+            --orb-2-gradient: radial-gradient(circle, #C87A65, #D99E7C);
+            --orb-3-gradient: radial-gradient(circle, #F3EFE6, #E8DBC8);
+            --orb-opacity: 0.7;
+        }
+        body.theme-glass-window {
+            --bg-body: #F2F2F6; --text-main: #1C1C1E; --text-secondary: #6C6C70;
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(0,0,0,0.1); --topbar-bg: rgba(242,242,246,0.95);
+            --primary: #53248d; --primary-light: #5E5CE6; --accent: #FF9F0A;
+            --orb-1-gradient: radial-gradient(circle, #5E5CE6, #007AFF);
+            --orb-2-gradient: radial-gradient(circle, #FF9F0A, #FFCC00);
+            --orb-3-gradient: radial-gradient(circle, #AF52DE, #007AFF);
+            --orb-opacity: 0.45;
+        }
+        body.theme-forest-bath {
+            --bg-body: #FDF8F0; --text-main: #2C2C2C; --text-secondary: rgba(44,44,44,0.7);
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(200,122,101,0.35); --topbar-bg: rgba(253,248,240,0.95);
+            --primary: #C87A65; --primary-light: #D99E7C; --accent: #E8A735;
+            --orb-1-gradient: radial-gradient(circle, #C87A65, #D99E7C);
+            --orb-2-gradient: radial-gradient(circle, #E8A735, #F5C88F);
+            --orb-3-gradient: radial-gradient(circle, #FDF8F0, #F0E2D0);
+            --orb-opacity: 0.42;
+        }
+        body.theme-mint-garden {
+            --bg-body: #E9F2EC; --text-main: #222522; --text-secondary: rgba(34,37,34,0.7);
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(46,77,49,0.3); --topbar-bg: rgba(233,242,236,0.95);
+            --primary: #2E4D31; --primary-light: #4A6B4E; --accent: #E5AD53;
+            --orb-1-gradient: radial-gradient(circle, #2E4D31, #4A6B4E);
+            --orb-2-gradient: radial-gradient(circle, #E5AD53, #F0C67A);
+            --orb-3-gradient: radial-gradient(circle, #E9F2EC, #D0E0D6);
+            --orb-opacity: 0.5;
+        }
+        body.theme-apple-cider {
+            --bg-body: #F5F5F7; --text-main: #1C1C1E; --text-secondary: #6C6C70;
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(0,0,0,0.08); --topbar-bg: rgba(245,245,247,0.95);
+            --primary: #007AFF; --primary-light: #5E5CE6; --accent: #FF9F0A;
+            --orb-1-gradient: radial-gradient(circle, #007AFF, #5E5CE6);
+            --orb-2-gradient: radial-gradient(circle, #FF9F0A, #FFCC00);
+            --orb-3-gradient: radial-gradient(circle, #AF52DE, #007AFF);
+            --orb-opacity: 0.08;
+        }
+        body.theme-nightcap {
+            --bg-body: #121212; --text-main: #FFD60A; --text-secondary: #CCCCCC;
+            --card-bg: #2C2C2E; --card-bg-hover: #3A3A3C;
+            --card-border: rgba(255,255,255,0.2); --topbar-bg: rgba(18,18,18,0.96);
+            --primary: #FFD60A; --primary-light: #FFE55C; --accent: #FF9F0A;
+            --orb-1-gradient: radial-gradient(circle, #3a3a3a, #2a2a2a);
+            --orb-2-gradient: radial-gradient(circle, #3a3a3a, #2a2a2a);
+            --orb-3-gradient: radial-gradient(circle, #2a2a2a, #1a1a1a);
+            --orb-opacity: 0.08;
+        }
+        body.theme-sunrise {
+            --bg-body: #FFFFFF; --text-main: #000000; --text-secondary: #333333;
+            --card-bg: #FFFFFF; --card-bg-hover: #F8F8F8;
+            --card-border: #000000; --topbar-bg: #FFFFFF;
+            --primary: #0000FF; --primary-light: #3333FF;
+            --accent: #FF0000; --orb-1-gradient: radial-gradient(circle, #eee, #ddd);
+            --orb-2-gradient: radial-gradient(circle, #eee, #ddd);
+            --orb-3-gradient: radial-gradient(circle, #ddd, #ccc);
+            --orb-opacity: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.02);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.1);
+            --shadow-lg: 0 16px 32px rgba(0,0,0,0.12);
+            --radius-lg: 2rem;
+            --radius-md: 1.5rem;
+            --blur-amount: blur(24px) saturate(180%);
+            background: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            transition: background 0.3s ease, color 0.2s ease;
+            min-height: 100vh;
+            font-weight: 450;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body, button, input, .app-name, .app-sub, .about-title, .about-text, .footer, .brand-logo, .brand-en, .login-btn, .quick-btn {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", system-ui, sans-serif;
+        }
+
+        .dynamic-orbs {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; overflow: hidden; pointer-events: none;
+        }
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(110px);
+            opacity: var(--orb-opacity); will-change: transform;
+        }
+        .orb-1 { width: 70vw; height: 70vw; top: -30%; left: -30%; background: var(--orb-1-gradient); animation: floatOrb1 16s ease-in-out infinite; }
+        .orb-2 { width: 60vw; height: 60vw; bottom: -25%; right: -25%; background: var(--orb-2-gradient); animation: floatOrb2 18s ease-in-out infinite; }
+        .orb-3 { width: 55vw; height: 55vw; top: 30%; left: 70%; background: var(--orb-3-gradient); animation: floatOrb3 14s ease-in-out infinite; }
+        .noise-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background-image: radial-gradient(circle at 20% 30%, rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 32px 32px; pointer-events: none;
+        }
+
+        /* ========== 頂部欄 ========== */
+        .mac-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(24px);
+            background: var(--topbar-bg);
+            border-bottom: none;
+            padding: 0.5rem 0;
+            margin-bottom: 0;
+            line-height: 0;
+        }
+        .topbar-container {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            line-height: normal;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
+        .home-icon { width: 2rem; height: 2rem; stroke: var(--primary); stroke-width: 1.7; fill: none; transition: transform 0.2s; }
+        .home-icon:hover { transform: scale(1.05); }
+        .brand-text { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+        .brand-logo { font-weight: 700; font-size: 1.6rem; letter-spacing: -0.02em; color: var(--text-main); }
+        .brand-en { font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); }
+        
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .login-btn {
+            background: rgba(55, 107, 126, 0.12);
+            border: none;
+            cursor: pointer;
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 980px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0 1rem;
+            font-weight: 520;
+            font-size: 0.9rem;
+            color: var(--primary);
+            order: 4;
+            transition: all 0.2s;
+        }
+        .login-btn svg { width: 1.2rem; height: 1.2rem; stroke: var(--primary); stroke-width: 1.7; fill: none; }
+        .login-btn:hover { background: rgba(55, 107, 126, 0.22); transform: scale(1.02); }
+        
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 980px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-btn svg { width: 1.4rem; height: 1.4rem; stroke: var(--text-main); stroke-width: 1.7; fill: none; }
+        .icon-btn:hover { background: rgba(55, 107, 126, 0.15); transform: scale(1.02); }
+        
+        #controlCenterBtn { order: 3; }
+        .font-switch-group {
+            display: inline-flex;
+            background: rgba(55,107,126,0.08);
+            border-radius: 60px;
+            padding: 0.2rem;
+            gap: 0.2rem;
+            order: 2;
+        }
+        .font-switch-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.3rem 0.7rem;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .font-switch-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .font-switch-btn:hover:not(.active) {
+            background: rgba(55,107,126,0.15);
+        }
+        .theme-slider-widget {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 0.2rem 0.6rem;
+            border-radius: 60px;
+            border: 0.5px solid rgba(255, 255, 255, 0.3);
+            order: 1;
+        }
+        .theme-slider-widget .slider-label { font-size: 0.7rem; font-weight: 500; color: var(--text-secondary); }
+        .theme-slider-widget .theme-slider { -webkit-appearance: none; width: 80px; height: 4px; border-radius: 4px; background: var(--primary); outline: none; cursor: pointer; }
+        .theme-slider-widget .theme-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--primary); border: 2px solid white; cursor: pointer; }
+        .theme-slider-widget .slider-hint { font-size: 0.6rem; color: var(--text-secondary); padding: 0.1rem 0.3rem; background: rgba(0, 0, 0, 0.05); border-radius: 30px; }
+
+        /* ========== 頂部導航欄 ========== */
+        .top-nav-bar {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--card-border);
+            border-top: none;
+            padding: 0.6rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            margin-top: 0;
+            line-height: 0;
+        }
+        .top-nav-bar.hide {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .top-nav-container {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.25rem;
+            line-height: normal;
+        }
+        .top-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+            padding: 0.4rem 0.6rem;
+            border-radius: 1.5rem;
+            transition: all 0.2s;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            flex: 1 0 auto;
+            min-width: 70px;
+        }
+        .top-nav-item svg { width: 1.5rem; height: 1.5rem; stroke: currentColor; stroke-width: 1.7; }
+        .top-nav-item span { font-size: 0.8rem; font-weight: 500; }
+        .top-nav-item:hover { background: rgba(55,107,126,0.12); color: var(--primary); transform: translateY(-2px); }
+
+        /* 控制中心面板 */
+        #controlCenterPanel {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            z-index: 200;
+            background: var(--card-bg-hover);
+            backdrop-filter: var(--blur-amount);
+            border-radius: 28px;
+            padding: 1.2rem;
+            width: 300px;
+            border: 0.5px solid var(--card-border);
+            box-shadow: var(--shadow-lg);
+            display: none;
+        }
+        #controlCenterPanel h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.8rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+        .theme-group-8 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+        .theme-option-btn {
+            padding: 0.35rem 0.5rem;
+            border-radius: 40px;
+            background: rgba(55,107,126,0.08);
+            border: 0.5px solid var(--card-border);
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 470;
+            color: var(--text-main);
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .theme-option-btn:hover { background: rgba(55,107,126,0.2); }
+        .hide-tools-btn {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 40px;
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+        }
+        .close-panel-btn {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 40px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* 主內容區 */
+        .main-container {
+            max-width: 1300px;
+            margin: 1.5rem auto 0;
+            padding: 0 1.5rem;
+        }
+
+        /* 標語輪播 */
+        .slogan-carousel-container { margin: 1rem 0 2.5rem 0; position: relative; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .slogan-carousel { position: relative; min-height: 140px; }
+        .slogan-card { text-align: center; padding: 0.5rem 2rem; transition: all 0.3s; opacity: 0; position: absolute; top: 0; left: 0; right: 0; visibility: hidden; }
+        .slogan-card.active { opacity: 1; position: relative; visibility: visible; animation: sloganFadeIn 0.9s forwards; }
+        @keyframes sloganFadeIn { 0% { opacity: 0; transform: translateY(14px); } 100% { opacity: 1; transform: translateY(0); } }
+        .slogan-card p { font-size: 1rem; line-height: 1.5; color: var(--text-secondary); max-width: 90%; margin: 0 auto; font-weight: 430; }
+        .slogan-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 2.2rem; height: 2.2rem; background: rgba(255, 255, 245, 0.6); backdrop-filter: blur(12px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s; opacity: 0; border: 0.5px solid rgba(255, 255, 255, 0.5); z-index: 10; }
+        .slogan-carousel-container:hover .slogan-arrow { opacity: 0.7; }
+        .slogan-arrow:hover { opacity: 1 !important; background: rgba(55, 107, 126, 0.25); transform: translateY(-50%) scale(1.08); }
+        .arrow-left { left: -1rem; }
+        .arrow-right { right: -1rem; }
+
+        /* 兩欄布局（桌面） */
+        .two-columns {
+            display: flex;
+            gap: 3rem;
+            align-items: flex-start;
+        }
+        .col-left { flex: 1.2; }
+        .col-right { flex: 1.8; }
+
+        /* 六大卡片 (靜態) */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .app-square {
+            border-radius: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            padding: 1.5rem 1rem;
+            min-height: 200px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.05);
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        /* 卡片背景色 */
+        .app-square[data-color="lightbulb"] { background: linear-gradient(145deg, #FFE4B5, #FFD699); }
+        .app-square[data-color="sword"] { background: linear-gradient(145deg, #FFCDB2, #FFB48A); }
+        .app-square[data-color="shield-check"] { background: linear-gradient(145deg, #FFB3B3, #FF9999); }
+        .app-square[data-color="heart"] { background: linear-gradient(145deg, #FFC0CB, #FFA6B9); }
+        .app-square[data-color="graduation-cap"] { background: linear-gradient(145deg, #C8E6C9, #B2D8B2); }
+        .app-square[data-color="bell-ring"] { background: linear-gradient(145deg, #FFE0A3, #FFD57E); }
+        
+        .app-square:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: var(--shadow-md);
+            filter: brightness(1.02);
+        }
+        .glass-icon-wrapper {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 50%;
+            width: 5rem;
+            height: 5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .glass-icon-wrapper svg { width: 2.8rem; height: 2.8rem; stroke: #4A4A4A; stroke-width: 1.7; fill: none; }
+        .app-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; letter-spacing: -0.3px; color: #2C2C2C; }
+        .app-sub { font-size: 0.8rem; color: #4A4A4A; line-height: 1.35; font-weight: 500; margin-bottom: 0.75rem; }
+        .click-hint {
+            display: inline-block;
+            background: rgba(0,0,0,0.15);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #2C2C2C;
+            margin-top: 0.5rem;
+            transition: all 0.2s;
+            border: 0.5px solid rgba(255,255,255,0.3);
+        }
+        .app-square:hover .click-hint {
+            background: rgba(0,0,0,0.25);
+            transform: scale(1.02);
+        }
+
+        /* 關於卡片翻轉 */
+        .about-card-container { perspective: 1200px; margin-bottom: 2rem; }
+        .about-card-flip { position: relative; width: 100%; min-height: 280px; transition: transform 0.7s; transform-style: preserve-3d; cursor: pointer; }
+        .about-card-flip:hover { transform: rotateY(180deg); }
+        .about-card-front, .about-card-back {
+            position: absolute;
+            width: 100%;
+            min-height: 280px;
+            backface-visibility: hidden;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 0.5px solid var(--card-border);
+            box-shadow: var(--shadow-md);
+            background: var(--card-bg);
+        }
+        .about-card-front { transform: rotateY(0deg); }
+        .about-card-back { transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: center; }
+        .about-title { font-size: 1.4rem; font-weight: 650; margin-bottom: 0.8rem; }
+        .about-text { font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); }
+        .about-back-title { font-size: 1.2rem; font-weight: 620; margin-bottom: 1rem; color: var(--primary); }
+        .about-back-list { list-style: none; padding: 0; }
+        .about-back-list li { padding: 0.5rem 0; font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.6rem; border-bottom: 0.5px solid var(--card-border); }
+        .about-back-list li svg { width: 1rem; height: 1rem; stroke: var(--primary); }
+
+        /* 圖片輪播 (靜態結構) */
+        .media-card { background: var(--card-bg); backdrop-filter: var(--blur-amount); border-radius: var(--radius-lg); overflow: hidden; border: 0.5px solid var(--card-border); margin-bottom: 2.5rem; }
+        .media-container { position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
+        .media-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.5s ease; object-fit: cover; }
+        .media-slide.active { opacity: 1; }
+        .dot-indicators { position: absolute; bottom: 0.8rem; left: 0; right: 0; display: flex; justify-content: center; gap: 0.6rem; }
+        .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: rgba(0, 0, 0, 0.4); cursor: pointer; }
+        .dot.active { width: 1.5rem; border-radius: 0.3rem; background: var(--primary); }
+
+        /* 求助 FAB */
+        .help-fab {
+            position: fixed;
+            bottom: 130px;
+            right: 20px;
+            backdrop-filter: blur(20px);
+            background: var(--card-bg);
+            border: 0.5px solid var(--card-border);
+            border-radius: 50%;
+            width: 3.5rem;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 90;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
+            animation: breathe 2.2s ease-in-out infinite;
+        }
+        .help-fab svg { width: 1.8rem; height: 1.8rem; stroke: var(--primary); stroke-width: 1.7; }
+        .help-fab:hover { transform: scale(1.08); background: var(--primary); animation: none; }
+        .help-fab:hover svg { stroke: white; }
+
+        /* 頁尾 */
+        .footer {
+            max-width: 1300px;
+            margin: 2rem auto 1rem;
+            padding: 1rem 1.5rem;
+            border-top: 0.5px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .glass-button {
+            backdrop-filter: blur(12px);
+            background: rgba(55, 107, 126, 0.1);
+            border: 0.5px solid var(--card-border);
+            border-radius: 980px;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .glass-button svg { width: 0.9rem; height: 0.9rem; stroke: var(--primary); }
+
+        /* 底部導航欄 */
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255,255,245,0.94);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+            padding: 0.4rem 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(0);
+        }
+        .bottom-nav-bar.hide {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .bottom-nav-container {
+            width: 100%;
+            max-width: 1300px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0.2rem 1rem 0.4rem;
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            flex: 1;
+            padding: 0.2rem 0;
+            border-radius: 1.5rem;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+        .bottom-nav-item svg { width: 1.4rem; height: 1.4rem; stroke: currentColor; stroke-width: 1.7; }
+        .bottom-nav-item span { font-size: 0.7rem; font-weight: 500; }
+        .bottom-nav-item:hover { color: var(--primary); background: rgba(55,107,126,0.1); transform: translateY(-2px); }
+
+        /* 手機版調整 */
+        @media (max-width: 780px) {
+            .topbar-container { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+            .topbar-left { justify-content: center; }
+            .topbar-right { justify-content: center; flex-wrap: wrap; }
+            .brand-logo { font-size: 1.3rem; }
+            .brand-en { font-size: 0.7rem; }
+            .main-container { padding: 0 1rem; }
+            .two-columns { flex-direction: column; gap: 1.5rem; }
+            .apps-grid { gap: 0.8rem; margin-bottom: 1.5rem; }
+            .app-square { padding: 1rem 0.5rem; min-height: 150px; }
+            .glass-icon-wrapper { width: 3.5rem; height: 3.5rem; }
+            .glass-icon-wrapper svg { width: 2rem; height: 2rem; }
+            .app-name { font-size: 0.9rem; }
+            .app-sub { font-size: 0.7rem; }
+            .click-hint { font-size: 0.6rem; padding: 0.2rem 0.6rem; }
+            .footer { flex-direction: column; gap: 0.8rem; text-align: center; margin: 1.5rem 1rem 0.5rem; padding: 0.8rem; }
+            .slogan-card p { font-size: 0.85rem; }
+            .arrow-left { left: -0.5rem; }
+            .arrow-right { right: -0.5rem; }
+            .slogan-carousel { min-height: 110px; }
+            .top-nav-container {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0.2rem;
+                padding: 0 0.3rem;
+            }
+            .top-nav-item { min-width: auto; padding: 0.3rem 0.2rem; }
+            .top-nav-item svg { width: 1.2rem; height: 1.2rem; }
+            .top-nav-item span { font-size: 0.65rem; }
+            .theme-slider-widget .theme-slider { width: 60px; }
+            .font-switch-btn { padding: 0.2rem 0.5rem; font-size: 0.65rem; }
+            .login-btn { padding: 0 0.7rem; font-size: 0.8rem; }
+            .bottom-nav-item svg { width: 1.2rem; height: 1.2rem; }
+            .bottom-nav-item span { font-size: 0.6rem; }
+            .help-fab { width: 3rem; height: 3rem; bottom: 100px; right: 15px; }
+            .help-fab svg { width: 1.5rem; height: 1.5rem; }
+            #controlCenterPanel { width: 280px; right: 10px; bottom: 80px; }
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="main-container">
+        <!-- 標語輪播 -->
+        <div class="slogan-carousel-container">
+            <div class="slogan-carousel" id="sloganCarousel">
+                <div class="slogan-card active" data-index="0"><p>你唔係學唔識，你只係未等到一個願意慢慢講嘅人。<br>世界愈嚟愈快，但你唔使跟佢跑。<br>我哋用你識嘅生活——買餸、寄信、睇醫生——慢慢話你知：你一直以來，都跟得上。</p></div>
+                <div class="slogan-card" data-index="1"><p>你唔可以24小時守住父母，但我哋可以。<br>教父母「禁邊個掣」唔夠——佢哋要明「點解」。<br>明咗原理，就算你唔喺身邊，佢哋都識得拆招。<br>我哋明白，因為我哋都係仔女。</p></div>
+                <div class="slogan-card" data-index="2"><p>你學識咗，就係下一個老友記嘅老師。<br>我哋唔係專家，我哋係一個互相守護嘅社群。<br>你聽過嘅騙局，可以救到你隔離位。<br>你一句說話，就可能係人哋嘅養老金。</p></div>
+                <div class="slogan-card" data-index="3"><p>明咗原理，就唔使驚。<br>唔使死記步驟，明白原理最緊要。<br>我哋用生活比喻，拆解數位世界點樣運作。<br>明咗點運作，你就唔再係騙徒嘅目標，而係識得拆招嘅主角。</p></div>
+            </div>
+            <div class="slogan-arrow arrow-left" id="sloganPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></div>
+            <div class="slogan-arrow arrow-right" id="sloganNext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div>
+        </div>
+
+        <!-- 兩欄布局：左側輪播，右側六大卡片（靜態） -->
+        <div class="two-columns" id="mainTwoColumns">
+            <!-- 左欄：圖片輪播 -->
+            <div class="col-left">
+                <div class="media-card">
+                    {%comment%}
+                    <div class="media-container" id="mediaContainer">
+                        <img class="media-slide active" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 400'%3E%3Crect width='500' height='400' fill='%23E8ECEF'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' fill='%23376B7E' font-size='34' dy='.3em'%3E📚 數位學習%3C/text%3E%3C/svg%3E" alt="數位學習">
+                        <img class="media-slide" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 400'%3E%3Crect width='500' height='400' fill='%23F0EAE5'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' fill='%23C87A65' font-size='34' dy='.3em'%3E🤝 社區連結%3C/text%3E%3C/svg%3E" alt="社區連結">
+                        <img class="media-slide" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 400'%3E%3Crect width='500' height='400' fill='%23DFE9E8'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' fill='%235B8A9B' font-size='34' dy='.3em'%3E👵 長者互助%3C/text%3E%3C/svg%3E" alt="長者互助">
+                        <img class="media-slide" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 400'%3E%3Crect width='500' height='400' fill='%23FFE8E0'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' fill='%23E86A3A' font-size='34' dy='.3em'%3E🛡️ 防騙貼士%3C/text%3E%3C/svg%3E" alt="防騙貼士">
+                    </div>
+                    {%endcomment%}
+
+                    <div class="media-container" id="mediaContainer">
+                        {% for img in carousel_images %}
+                            <img class="media-slide {% if forloop.first %}active{% endif %}" 
+                                src="{{ img.image.url }}" 
+                                alt="{{ img.title|default:'輪播圖片' }}"
+                                {% if img.link_url %}data-link="{{ img.link_url }}"{% endif %}>
+                        {% empty %}
+                            <div class="media-slide active" style="display: flex; align-items: center; justify-content: center; background: #e9ecef; height: 100%;">
+                                <span style="font-size: 1rem; color: #666;">📸 即將推出精彩內容</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="dot-indicators" id="dotIndicators"></div>
+                </div>
+            </div>
+
+            <!-- 右欄：六大卡片入口 -->
+            <div class="col-right">
+                <div class="apps-grid">
+                    <!-- 我想明 -->
+                    <div class="app-square" data-color="lightbulb" data-page="manuals/learns">
+                        <div class="glass-icon-wrapper"><i data-lucide="lightbulb"></i></div>
+                        <div class="app-name">我想明</div>
+                        <div class="app-sub">網絡世界點樣運作？</div>
+                        <div class="click-hint">點擊進入</div>
+                    </div>
+                    <!-- 即時拆招 -->
+                    <div class="app-square" data-color="sword" data-page="antiscamtools/tools">
+                        <div class="glass-icon-wrapper"><i data-lucide="sword"></i></div>
+                        <div class="app-name">即時拆招</div>
+                        <div class="app-sub">最新騙局劇本，三步應對</div>
+                        <div class="click-hint">點擊進入</div>
+                    </div>
+                    <!-- 唔使驚 -->
+                    <div class="app-square" data-color="shield-check" data-page="guides/emgs">
+                        <div class="glass-icon-wrapper"><i data-lucide="shield-check"></i></div>
+                        <div class="app-name">唔使驚</div>
+                        <div class="app-sub">發現中伏，即刻跟住做</div>
+                        <div class="click-hint">點擊進入</div>
+                    </div>
+                    <!-- 我有故事 -->
+                    <div class="app-square" data-color="heart" data-page="stories/stories">
+                        <div class="glass-icon-wrapper"><i data-lucide="heart"></i></div>
+                        <div class="app-name">我有故事</div>
+                        <div class="app-sub">分享經歷，救到街坊</div>
+                        <div class="click-hint">點擊進入</div>
+                    </div>
+                    <!-- 搵課程 -->
+                    <div class="app-square" data-color="graduation-cap" data-page="courses/courses">
+                        <div class="glass-icon-wrapper"><i data-lucide="graduation-cap"></i></div>
+                        <div class="app-name">搵課程</div>
+                        <div class="app-sub">港九新界免費手機班</div>
+                        <div class="click-hint">點擊進入</div>
+                    </div>
+                    <!-- 睇貼士 -->
+                    <div class="app-square" data-color="bell-ring" data-page="subscribe/subcribes">
+                        <div class="glass-icon-wrapper"><i data-lucide="bell-ring"></i></div>
+                        <div class="app-name">睇貼士</div>
+                        <div class="app-sub">每週防騙小知識送到</div>
+                        <div class="click-hint">點擊進入</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 關於我們翻轉卡片 -->
+        <div class="about-card-container">
+            <div class="about-card-flip" id="aboutFlipCard">
+                <div class="about-card-front">
+                    <div class="about-title">關於我哋</div>
+                    <div class="about-text">耆醒老友記 —— 長者數位守護平台 | 全港首份網絡世界說明書 2026 | 全港首個免費、粵語、用生活比喻解釋數位運作原理的長者網站。涵蓋電子貨幣、來電偽造、AI扮聲等底層邏輯，以及應急指南、課程搜尋。子女及社工必備。</div>
+                </div>
+                <div class="about-card-back">
+                    <div class="about-back-title">翻轉卡片</div>
+                    <ul class="about-back-list">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> 您稍後可添加更多內容</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> 團隊介紹將放在這裡</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> 聯絡方式、合作邀請</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 文件與資源下載</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 求助 FAB -->
+    <div class="help-fab" id="helpFabBtn" aria-label="求助">
+        <i data-lucide="alert-triangle"></i>
+    </div>
+
+    <!-- 底部導航欄 -->
+    <div class="bottom-nav-bar" id="bottomNavBar">
+        <div class="bottom-nav-container">
+            <button class="bottom-nav-item" data-page="manuals/learns"><i data-lucide="book-open"></i><span>說明書</span></button>
+            <button class="bottom-nav-item" data-page="antiscamtools/tools"><i data-lucide="star"></i><span>工具箱</span></button>
+            <button class="bottom-nav-item" data-page="guides/emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
+            <button class="bottom-nav-item" data-page="courses/courses"><i data-lucide="compass"></i><span>課程</span></button>
+            <button class="bottom-nav-item" data-page="subscribes/subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="index"><i data-lucide="home"></i><span>主頁</span></button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        (function() {
+            // ========== 登入按鈕動態邏輯 ==========
+            function updateLoginButton() {
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                const loginBtn = document.getElementById('loginBtn');
+                const loginBtnText = document.getElementById('loginBtnText');
+                if (!loginBtn || !loginBtnText) return;
+                if (isLoggedIn) {
+                    loginBtnText.innerText = '我的帳戶';
+                    const icon = loginBtn.querySelector('i[data-lucide]');
+                    if (icon) icon.setAttribute('data-lucide', 'user');
+                } else {
+                    loginBtnText.innerText = '登入';
+                    const icon = loginBtn.querySelector('i[data-lucide]');
+                    if (icon) icon.setAttribute('data-lucide', 'log-in');
+                }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+            
+            function handleLoginClick(e) {
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                if (isLoggedIn) window.location.href = 'dashboard.html';
+                else window.location.href = 'login.html';
+            }
+            
+            // ========== 主題系統 ==========
+            const GLOBAL_THEMES = [
+                'theme-pina-colada', 'theme-dark-stormy', 'theme-glass-window', 'theme-forest-bath',
+                'theme-mint-garden', 'theme-apple-cider', 'theme-nightcap', 'theme-sunrise'
+            ];
+            function setThemeByIndex(index) {
+                GLOBAL_THEMES.forEach(t => document.body.classList.remove(t));
+                document.body.classList.add(GLOBAL_THEMES[index]);
+                const slider = document.getElementById('themeSlider');
+                if (slider) slider.value = index;
+                localStorage.setItem('selected_theme_index', index);
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+            function initTheme() {
+                const saved = localStorage.getItem('selected_theme_index');
+                if (saved !== null) setThemeByIndex(parseInt(saved));
+                else setThemeByIndex(3);
+            }
+
+            // ========== 字體系統 + 頁尾 padding 動態調整 ==========
+            let resizeObserver = null;
+            function updateBodyPaddingForFooter() {
+                const footer = document.getElementById('footer');
+                const bottomNav = document.getElementById('bottomNavBar');
+                if (!footer || !bottomNav) return;
+                const footerHeight = footer.offsetHeight;
+                const bottomNavHeight = bottomNav.offsetHeight;
+                const totalPadding = footerHeight + bottomNavHeight + 30;
+                document.body.style.paddingBottom = totalPadding + 'px';
+            }
+            function observeAboutCardHeight() {
+                const aboutCard = document.querySelector('.about-card-container');
+                if (!aboutCard) return;
+                if (resizeObserver) resizeObserver.disconnect();
+                resizeObserver = new ResizeObserver(() => updateBodyPaddingForFooter());
+                resizeObserver.observe(aboutCard);
+            }
+            function setFontSize(size) {
+                const html = document.documentElement;
+                html.classList.remove('font-small', 'font-standard', 'font-xlarge');
+                if (size === 'small') html.classList.add('font-small');
+                else if (size === 'xlarge') html.classList.add('font-xlarge');
+                else html.classList.add('font-standard');
+                localStorage.setItem('elderly_font', size);
+                document.querySelectorAll('.font-switch-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-font') === size) btn.classList.add('active');
+                });
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                setTimeout(() => updateBodyPaddingForFooter(), 100);
+            }
+            function initFont() {
+                const saved = localStorage.getItem('elderly_font');
+                const defaultSize = (saved === 'small' || saved === 'xlarge') ? saved : 'standard';
+                setFontSize(defaultSize);
+            }
+
+            // ========== 滾動控制頂部/底部導航 ==========
+            let ticking = false;
+            const topNavBar = document.getElementById('topNavBar');
+            const bottomNavBar = document.getElementById('bottomNavBar');
+            const macTopbar = document.querySelector('.mac-topbar');
+            function adjustTopNavPosition() {
+                if (macTopbar && topNavBar) topNavBar.style.top = macTopbar.offsetHeight + 'px';
+            }
+            function handleScroll() {
+                const currentScrollY = window.scrollY;
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+                const isNearBottom = currentScrollY + windowHeight >= documentHeight - 150;
+                if (isNearBottom) {
+                    topNavBar.classList.add('hide');
+                    bottomNavBar.classList.remove('hide');
+                } else {
+                    topNavBar.classList.remove('hide');
+                    bottomNavBar.classList.add('hide');
+                }
+                ticking = false;
+            }
+            function initScrollHandler() {
+                window.addEventListener('scroll', () => {
+                    if (!ticking) requestAnimationFrame(handleScroll);
+                    ticking = true;
+                });
+                bottomNavBar.classList.add('hide');
+            }
+
+            // ========== 圖片輪播 (靜態 DOM 操作) ==========
+            let carouselTimer = null;
+            function initCarousel() {
+                const slides = document.querySelectorAll('.media-slide');
+                const dotsContainer = document.getElementById('dotIndicators');
+                if (!slides.length || !dotsContainer) return;
+                let current = 0;
+                function updateDots() {
+                    const dots = dotsContainer.querySelectorAll('.dot');
+                    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+                }
+                function goTo(index) {
+                    if (index === current) return;
+                    slides[current].classList.remove('active');
+                    current = (index + slides.length) % slides.length;
+                    slides[current].classList.add('active');
+                    updateDots();
+                    resetTimer();
+                }
+                function createDots() {
+                    dotsContainer.innerHTML = '';
+                    for (let i = 0; i < slides.length; i++) {
+                        const dot = document.createElement('div');
+                        dot.className = 'dot' + (i === current ? ' active' : '');
+                        dot.addEventListener('click', () => goTo(i));
+                        dotsContainer.appendChild(dot);
+                    }
+                }
+                function startTimer() {
+                    if (carouselTimer) clearInterval(carouselTimer);
+                    carouselTimer = setInterval(() => goTo(current + 1), 5000);
+                }
+                function resetTimer() {
+                    if (carouselTimer) clearInterval(carouselTimer);
+                    startTimer();
+                }
+                createDots();
+                startTimer();
+                window.addEventListener('beforeunload', () => { if (carouselTimer) clearInterval(carouselTimer); });
+            }
+
+            // ========== 標語輪播 ==========
+            let currentSloganIndex = 0, sloganTimer = null;
+            function nextSlogan() {
+                const cards = document.querySelectorAll('.slogan-card');
+                if (!cards.length) return;
+                cards[currentSloganIndex].classList.remove('active');
+                currentSloganIndex = (currentSloganIndex + 1) % cards.length;
+                cards[currentSloganIndex].classList.add('active');
+            }
+            function prevSlogan() {
+                const cards = document.querySelectorAll('.slogan-card');
+                if (!cards.length) return;
+                cards[currentSloganIndex].classList.remove('active');
+                currentSloganIndex = (currentSloganIndex - 1 + cards.length) % cards.length;
+                cards[currentSloganIndex].classList.add('active');
+            }
+            function startSloganTimer() {
+                if (sloganTimer) clearInterval(sloganTimer);
+                sloganTimer = setInterval(nextSlogan, 7000);
+            }
+
+            // ========== 導航按鈕綁定 (頂部/底部/六大卡片/FAB) ==========
+            function bindNavigation() {
+                // 頂部導航
+                document.querySelectorAll('.top-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 底部導航
+                document.querySelectorAll('.bottom-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page === 'index') window.location.href = 'index.html';
+                        else if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 六大卡片入口 (靜態 .app-square)
+                document.querySelectorAll('.app-square').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const page = card.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 求助 FAB
+                const helpFab = document.getElementById('helpFabBtn');
+                if (helpFab) helpFab.addEventListener('click', () => window.location.href = 'helps.html');
+                // 隱私權按鈕
+                const privacyBtn = document.getElementById('privacyBtn');
+                if (privacyBtn) privacyBtn.addEventListener('click', () => alert('隱私權政策：我們嚴格保護您的個人資料，不會與第三方分享。'));
+                // 主頁 Logo
+                const homeLogo = document.getElementById('homeLogoBtn');
+                if (homeLogo) homeLogo.addEventListener('click', () => window.location.href = 'index.html');
+            }
+
+            // ========== 控制中心邏輯 ==========
+            let toolsHidden = false;
+            const fontGroup = document.querySelector('.font-switch-group');
+            const themeWidget = document.querySelector('.theme-slider-widget');
+            const hideToolsBtn = document.getElementById('hideToolsBtn');
+            function toggleToolsVisibility() {
+                toolsHidden = !toolsHidden;
+                if (fontGroup) fontGroup.style.display = toolsHidden ? 'none' : 'inline-flex';
+                if (themeWidget) themeWidget.style.display = toolsHidden ? 'none' : 'inline-flex';
+                if (hideToolsBtn) hideToolsBtn.textContent = toolsHidden ? '🔧 顯示字體與主題工具' : '🔧 隱藏字體與主題工具';
+                localStorage.setItem('tools_hidden', toolsHidden);
+            }
+            function initToolsVisibility() {
+                const saved = localStorage.getItem('tools_hidden');
+                if (saved === 'true') {
+                    toolsHidden = true;
+                    if (fontGroup) fontGroup.style.display = 'none';
+                    if (themeWidget) themeWidget.style.display = 'none';
+                    if (hideToolsBtn) hideToolsBtn.textContent = '🔧 顯示字體與主題工具';
+                } else {
+                    toolsHidden = false;
+                    if (fontGroup) fontGroup.style.display = 'inline-flex';
+                    if (themeWidget) themeWidget.style.display = 'inline-flex';
+                    if (hideToolsBtn) hideToolsBtn.textContent = '🔧 隱藏字體與主題工具';
+                }
+            }
+            let panelVisible = false;
+            const panel = document.getElementById('controlCenterPanel');
+            const controlBtn = document.getElementById('controlCenterBtn');
+            if (controlBtn) {
+                controlBtn.addEventListener('click', () => {
+                    panelVisible = !panelVisible;
+                    panel.style.display = panelVisible ? 'block' : 'none';
+                    if (panelVisible && typeof lucide !== 'undefined') lucide.createIcons();
+                });
+            }
+            const closePanel = document.getElementById('closeControlPanel');
+            if (closePanel) closePanel.addEventListener('click', () => { panel.style.display = 'none'; panelVisible = false; });
+            if (hideToolsBtn) hideToolsBtn.addEventListener('click', toggleToolsVisibility);
+            document.querySelectorAll('.theme-option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setThemeByIndex(parseInt(btn.getAttribute('data-theme-index')));
+                    panel.style.display = 'none';
+                    panelVisible = false;
+                });
+            });
+            document.querySelectorAll('.font-switch-btn').forEach(btn => {
+                btn.addEventListener('click', () => setFontSize(btn.getAttribute('data-font')));
+            });
+            const themeSlider = document.getElementById('themeSlider');
+            if (themeSlider) themeSlider.addEventListener('input', (e) => setThemeByIndex(parseInt(e.target.value)));
+
+            // ========== 響應式調整: 無需動態重排，但需更新 padding ==========
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                if (resizeTimeout) clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    adjustTopNavPosition();
+                    updateBodyPaddingForFooter();
+                }, 150);
+            });
+
+            // ========== 初始化 ==========
+            window.addEventListener('DOMContentLoaded', () => {
+                initTheme();
+                initFont();
+                initToolsVisibility();
+                adjustTopNavPosition();
+                initCarousel();
+                startSloganTimer();
+                bindNavigation();
+                initScrollHandler();
+                updateBodyPaddingForFooter();
+                observeAboutCardHeight();
+                updateLoginButton();
+                const loginBtn = document.getElementById('loginBtn');
+                if (loginBtn) loginBtn.addEventListener('click', handleLoginClick);
+                const prevBtn = document.getElementById('sloganPrev');
+                const nextBtn = document.getElementById('sloganNext');
+                if (prevBtn) prevBtn.addEventListener('click', () => { prevSlogan(); startSloganTimer(); });
+                if (nextBtn) nextBtn.addEventListener('click', () => { nextSlogan(); startSloganTimer(); });
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            });
+        })();
+    </script>
+{% endblock %}

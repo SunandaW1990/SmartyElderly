@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>求助支援站 · 耆醒老友記</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        /* ========== 全域動畫（與 index 相同） ========== */
+        @keyframes floatOrb1 {
+            0% { transform: translate(0%, 0%) scale(1); }
+            25% { transform: translate(15%, 20%) scale(1.2); }
+            50% { transform: translate(25%, -5%) scale(1.3); }
+            75% { transform: translate(-10%, 15%) scale(1.15); }
+            100% { transform: translate(0%, 0%) scale(1); }
+        }
+        @keyframes floatOrb2 {
+            0% { transform: translate(0%, 0%) scale(1); }
+            30% { transform: translate(-20%, 15%) scale(1.25); }
+            60% { transform: translate(-30%, -10%) scale(1.35); }
+            85% { transform: translate(10%, 20%) scale(1.2); }
+            100% { transform: translate(0%, 0%) scale(1); }
+        }
+        @keyframes floatOrb3 {
+            0% { transform: translate(0%, 0%) scale(1); }
+            20% { transform: translate(18%, -15%) scale(1.22); }
+            50% { transform: translate(5%, 25%) scale(1.35); }
+            80% { transform: translate(-15%, -5%) scale(1.18); }
+            100% { transform: translate(0%, 0%) scale(1); }
+        }
+        @keyframes breathe {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(55, 107, 126, 0.5); }
+            50% { box-shadow: 0 0 0 20px rgba(55, 107, 126, 0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== 8個主題（與 index 完全一致） ========== */
+        body.theme-pina-colada {
+            --bg-body: #FFF9F5; --text-main: #1A1A2E; --text-secondary: rgba(26,26,46,0.7);
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(255,94,77,0.35); --topbar-bg: rgba(255,249,245,0.95);
+            --primary: #FF5E4D; --primary-light: #FF7B6E; --accent: #4D9DE0;
+            --emergency-bg: rgba(232, 64, 64, 0.25);
+            --emergency-border: rgba(232, 64, 64, 0.5);
+            --step-bg: rgba(255,255,255,0.85);
+            --orb-1-gradient: radial-gradient(circle, #FF5E4D, #FF7B6E);
+            --orb-2-gradient: radial-gradient(circle, #4D9DE0, #72B0E8);
+            --orb-3-gradient: radial-gradient(circle, #FFD166, #FFE0A3);
+            --orb-opacity: 0.5;
+        }
+        body.theme-dark-stormy {
+            --bg-body: #FDF8F0; --text-main: #1E293B; --text-secondary: #475569;
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(55,107,126,0.25); --topbar-bg: rgba(253,248,240,0.95);
+            --primary: #376B7E; --primary-light: #5B8A9B; --accent: #C87A65;
+            --emergency-bg: rgba(200, 122, 101, 0.3);
+            --emergency-border: rgba(200, 122, 101, 0.6);
+            --step-bg: rgba(255,255,255,0.9);
+            --orb-1-gradient: radial-gradient(circle, #376B7E, #5B8A9B);
+            --orb-2-gradient: radial-gradient(circle, #C87A65, #D99E7C);
+            --orb-3-gradient: radial-gradient(circle, #F3EFE6, #E8DBC8);
+            --orb-opacity: 0.7;
+        }
+        body.theme-glass-window {
+            --bg-body: #F2F2F6; --text-main: #1C1C1E; --text-secondary: #6C6C70;
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(0,0,0,0.1); --topbar-bg: rgba(242,242,246,0.95);
+            --primary: #53248d; --primary-light: #5E5CE6; --accent: #FF9F0A;
+            --emergency-bg: rgba(232, 64, 64, 0.2);
+            --emergency-border: rgba(232, 64, 64, 0.45);
+            --step-bg: rgba(255,255,255,0.88);
+            --orb-1-gradient: radial-gradient(circle, #5E5CE6, #007AFF);
+            --orb-2-gradient: radial-gradient(circle, #FF9F0A, #FFCC00);
+            --orb-3-gradient: radial-gradient(circle, #AF52DE, #007AFF);
+            --orb-opacity: 0.45;
+        }
+        body.theme-forest-bath {
+            --bg-body: #FDF8F0; --text-main: #2C2C2C; --text-secondary: rgba(44,44,44,0.7);
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(200,122,101,0.35); --topbar-bg: rgba(253,248,240,0.95);
+            --primary: #C87A65; --primary-light: #D99E7C; --accent: #E8A735;
+            --emergency-bg: rgba(200, 122, 101, 0.25);
+            --emergency-border: rgba(200, 122, 101, 0.5);
+            --step-bg: rgba(255,255,255,0.85);
+            --orb-1-gradient: radial-gradient(circle, #C87A65, #D99E7C);
+            --orb-2-gradient: radial-gradient(circle, #E8A735, #F5C88F);
+            --orb-3-gradient: radial-gradient(circle, #FDF8F0, #F0E2D0);
+            --orb-opacity: 0.42;
+        }
+        body.theme-mint-garden {
+            --bg-body: #E9F2EC; --text-main: #222522; --text-secondary: rgba(34,37,34,0.7);
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(46,77,49,0.3); --topbar-bg: rgba(233,242,236,0.95);
+            --primary: #2E4D31; --primary-light: #4A6B4E; --accent: #E5AD53;
+            --emergency-bg: rgba(200, 100, 80, 0.25);
+            --emergency-border: rgba(200, 100, 80, 0.5);
+            --step-bg: rgba(255,255,255,0.85);
+            --orb-1-gradient: radial-gradient(circle, #2E4D31, #4A6B4E);
+            --orb-2-gradient: radial-gradient(circle, #E5AD53, #F0C67A);
+            --orb-3-gradient: radial-gradient(circle, #E9F2EC, #D0E0D6);
+            --orb-opacity: 0.5;
+        }
+        body.theme-apple-cider {
+            --bg-body: #F5F5F7; --text-main: #1C1C1E; --text-secondary: #6C6C70;
+            --card-bg: #FFFFFF; --card-bg-hover: #FFFFFF;
+            --card-border: rgba(0,0,0,0.08); --topbar-bg: rgba(245,245,247,0.95);
+            --primary: #007AFF; --primary-light: #5E5CE6; --accent: #FF9F0A;
+            --emergency-bg: rgba(255, 59, 48, 0.15);
+            --emergency-border: rgba(255, 59, 48, 0.35);
+            --step-bg: rgba(255,255,255,0.9);
+            --orb-1-gradient: radial-gradient(circle, #007AFF, #5E5CE6);
+            --orb-2-gradient: radial-gradient(circle, #FF9F0A, #FFCC00);
+            --orb-3-gradient: radial-gradient(circle, #AF52DE, #007AFF);
+            --orb-opacity: 0.08;
+        }
+        body.theme-nightcap {
+            --bg-body: #121212; --text-main: #FFD60A; --text-secondary: #CCCCCC;
+            --card-bg: #2C2C2E; --card-bg-hover: #3A3A3C;
+            --card-border: rgba(255,255,255,0.2); --topbar-bg: rgba(18,18,18,0.96);
+            --primary: #FFD60A; --primary-light: #FFE55C; --accent: #FF9F0A;
+            --emergency-bg: rgba(255, 69, 58, 0.2);
+            --emergency-border: rgba(255, 69, 58, 0.4);
+            --step-bg: rgba(40,40,45,0.95);
+            --orb-1-gradient: radial-gradient(circle, #3a3a3a, #2a2a2a);
+            --orb-2-gradient: radial-gradient(circle, #3a3a3a, #2a2a2a);
+            --orb-3-gradient: radial-gradient(circle, #2a2a2a, #1a1a1a);
+            --orb-opacity: 0.08;
+        }
+        body.theme-sunrise {
+            --bg-body: #FFFFFF; --text-main: #000000; --text-secondary: #333333;
+            --card-bg: #FFFFFF; --card-bg-hover: #F8F8F8;
+            --card-border: #000000; --topbar-bg: #FFFFFF;
+            --primary: #0000FF; --primary-light: #3333FF;
+            --accent: #FF0000; --emergency-bg: rgba(255, 0, 0, 0.1);
+            --emergency-border: #FF0000;
+            --step-bg: #FFFFFF;
+            --orb-1-gradient: radial-gradient(circle, #eee, #ddd);
+            --orb-2-gradient: radial-gradient(circle, #eee, #ddd);
+            --orb-3-gradient: radial-gradient(circle, #ddd, #ccc);
+            --orb-opacity: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.02);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.1);
+            --shadow-lg: 0 16px 32px rgba(0,0,0,0.12);
+            --radius-lg: 2rem;
+            --radius-md: 1.5rem;
+            --blur-amount: blur(24px) saturate(180%);
+            background: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            transition: background 0.3s ease, color 0.2s ease;
+            min-height: 100vh;
+            font-weight: 450;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body, button, input, .brand-logo, .brand-en {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", system-ui, sans-serif;
+        }
+
+        html { font-size: 18px; }
+        html.font-small { font-size: 16px; }
+        html.font-standard { font-size: 18px; }
+        html.font-xlarge { font-size: 24px; }
+
+        .dynamic-orbs {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; overflow: hidden; pointer-events: none;
+        }
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(110px);
+            opacity: var(--orb-opacity); will-change: transform;
+        }
+        .orb-1 { width: 70vw; height: 70vw; top: -30%; left: -30%; background: var(--orb-1-gradient); animation: floatOrb1 16s ease-in-out infinite; }
+        .orb-2 { width: 60vw; height: 60vw; bottom: -25%; right: -25%; background: var(--orb-2-gradient); animation: floatOrb2 18s ease-in-out infinite; }
+        .orb-3 { width: 55vw; height: 55vw; top: 30%; left: 70%; background: var(--orb-3-gradient); animation: floatOrb3 14s ease-in-out infinite; }
+        .noise-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background-image: radial-gradient(circle at 20% 30%, rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 32px 32px; pointer-events: none;
+        }
+
+        /* 頂部欄（與 index 相同） */
+        .mac-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(24px);
+            background: var(--topbar-bg);
+            border-bottom: none;
+            padding: 0.5rem 0;
+            margin-bottom: 0;
+            line-height: 0;
+        }
+        .topbar-container {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            line-height: normal;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
+        .home-icon { width: 2rem; height: 2rem; stroke: var(--primary); stroke-width: 1.7; fill: none; transition: transform 0.2s; }
+        .home-icon:hover { transform: scale(1.05); }
+        .brand-text { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+        .brand-logo { font-weight: 700; font-size: 1.6rem; letter-spacing: -0.02em; color: var(--text-main); }
+        .brand-en { font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); }
+        
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .login-btn {
+            background: rgba(55, 107, 126, 0.12);
+            border: none;
+            cursor: pointer;
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 980px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0 1rem;
+            font-weight: 520;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+        .login-btn svg { width: 1.2rem; height: 1.2rem; stroke: var(--primary); stroke-width: 1.7; fill: none; }
+        .login-btn:hover { background: rgba(55, 107, 126, 0.22); transform: scale(1.02); }
+        
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 980px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-btn svg { width: 1.4rem; height: 1.4rem; stroke: var(--text-main); stroke-width: 1.7; fill: none; }
+        .icon-btn:hover { background: rgba(55, 107, 126, 0.15); transform: scale(1.02); }
+        
+        .font-switch-group {
+            display: inline-flex;
+            background: rgba(55,107,126,0.08);
+            border-radius: 60px;
+            padding: 0.2rem;
+            gap: 0.2rem;
+        }
+        .font-switch-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.3rem 0.7rem;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .font-switch-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .font-switch-btn:hover:not(.active) {
+            background: rgba(55,107,126,0.15);
+        }
+        .theme-slider-widget {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 0.2rem 0.6rem;
+            border-radius: 60px;
+            border: 0.5px solid rgba(255, 255, 255, 0.3);
+        }
+        .theme-slider-widget .slider-label { font-size: 0.7rem; font-weight: 500; color: var(--text-secondary); }
+        .theme-slider-widget .theme-slider { -webkit-appearance: none; width: 80px; height: 4px; border-radius: 4px; background: var(--primary); outline: none; cursor: pointer; }
+        .theme-slider-widget .theme-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--primary); border: 2px solid white; cursor: pointer; }
+        .theme-slider-widget .slider-hint { font-size: 0.6rem; color: var(--text-secondary); padding: 0.1rem 0.3rem; background: rgba(0, 0, 0, 0.05); border-radius: 30px; }
+
+        /* 頂部導航欄 */
+        .top-nav-bar {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--card-border);
+            border-top: none;
+            padding: 0.6rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            margin-top: 0;
+            line-height: 0;
+        }
+        .top-nav-bar.hide {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .top-nav-container {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.25rem;
+            line-height: normal;
+        }
+        .top-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+            padding: 0.4rem 0.6rem;
+            border-radius: 1.5rem;
+            transition: all 0.2s;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            flex: 1 0 auto;
+            min-width: 70px;
+        }
+        .top-nav-item svg { width: 1.5rem; height: 1.5rem; stroke: currentColor; stroke-width: 1.7; }
+        .top-nav-item span { font-size: 0.8rem; font-weight: 500; }
+        .top-nav-item:hover { background: rgba(55,107,126,0.12); color: var(--primary); transform: translateY(-2px); }
+
+        /* 控制中心面板 */
+        #controlCenterPanel {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            z-index: 200;
+            background: var(--card-bg-hover);
+            backdrop-filter: var(--blur-amount);
+            border-radius: 28px;
+            padding: 1.2rem;
+            width: 300px;
+            border: 0.5px solid var(--card-border);
+            box-shadow: var(--shadow-lg);
+            display: none;
+        }
+        #controlCenterPanel h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.8rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+        .theme-group-8 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+        .theme-option-btn {
+            padding: 0.35rem 0.5rem;
+            border-radius: 40px;
+            background: rgba(55,107,126,0.08);
+            border: 0.5px solid var(--card-border);
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 470;
+            color: var(--text-main);
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .theme-option-btn:hover { background: rgba(55,107,126,0.2); }
+        .hide-tools-btn {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 40px;
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+        }
+        .close-panel-btn {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 40px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* ========== 應急/求助內容樣式 ========== */
+        .emergency-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 32px 24px;
+            animation: fadeIn 0.5s ease;
+        }
+        .emergency-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .emergency-header h1 {
+            font-size: 2rem;
+            font-weight: 620;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .emergency-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+        .action-card {
+            background: var(--emergency-bg);
+            backdrop-filter: var(--blur-amount);
+            border-radius: var(--radius-lg);
+            border: 1.5px solid var(--emergency-border);
+            padding: 32px;
+            margin-bottom: 32px;
+            transition: all 0.3s ease;
+        }
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .action-title {
+            font-size: 1.4rem;
+            font-weight: 620;
+            color: #E84040;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-align: center;
+        }
+        .steps-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .step-card {
+            background: var(--step-bg);
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius-md);
+            padding: 24px 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 0.5px solid var(--card-border);
+            box-shadow: var(--shadow-sm);
+        }
+        .step-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+            border-color: #E84040;
+        }
+        .step-number-circle {
+            width: 56px;
+            height: 56px;
+            background: #E84040;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0 auto 14px;
+            box-shadow: 0 4px 12px rgba(232,64,64,0.3);
+        }
+        .step-card h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; color: var(--text-main); }
+        .step-card p { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4; }
+        .bank-hotline-small {
+            font-size: 0.75rem;
+            color: #E84040;
+            cursor: pointer;
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(232,64,64,0.1);
+            border-radius: 40px;
+            margin: 3px;
+            font-weight: 500;
+        }
+        .bank-hotline-small:hover {
+            background: rgba(232,64,64,0.25);
+            transform: scale(1.02);
+        }
+        .map-prep-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            margin-bottom: 48px;
+        }
+        .map-card, .prep-card {
+            background: var(--card-bg);
+            backdrop-filter: var(--blur-amount);
+            border-radius: var(--radius-md);
+            border: 0.5px solid var(--card-border);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .map-card:hover, .prep-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+        .map-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .district-select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 40px;
+            border: 0.5px solid var(--card-border);
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            font-size: 1rem;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+        #policeMap {
+            height: 280px;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 0.5px solid var(--card-border);
+            background: #f0f0f0;
+        }
+        .police-info {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(232,64,64,0.1);
+            border-radius: 1rem;
+            font-size: 0.85rem;
+        }
+        .copy-btn {
+            background: #E84040;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+        .prep-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+        .prep-list {
+            list-style: none;
+            padding: 0;
+        }
+        .prep-list li {
+            padding: 10px 0;
+            border-bottom: 0.5px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .prep-list li svg { width: 18px; height: 18px; stroke: #E84040; flex-shrink: 0; }
+
+        /* 四個彩色方塊 — 類似 index 六大入口 */
+        .apps-grid-2x2 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        .app-block[data-app="password"] { background: linear-gradient(145deg, #FFE4B5, #FFD699); }
+        .app-block[data-app="identity"] { background: linear-gradient(145deg, #FFCDB2, #FFB48A); }
+        .app-block[data-app="legal"] { background: linear-gradient(145deg, #C8E6C9, #B2D8B2); }
+        .app-block[data-app="emotion"] { background: linear-gradient(145deg, #FFC0CB, #FFA6B9); }
+        
+        .app-block {
+            backdrop-filter: blur(4px);
+            border-radius: 1.5rem;
+            padding: 24px 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .app-block:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+            filter: brightness(1.02);
+        }
+        .app-icon {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(8px);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+        }
+        .app-icon svg { width: 30px; height: 30px; stroke: #4A4A4A; stroke-width: 1.7; fill: none; }
+        .app-block h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #2C2C2C;
+        }
+        .app-block p {
+            font-size: 0.75rem;
+            color: #4A4A4A;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .click-hint {
+            display: inline-block;
+            background: rgba(0,0,0,0.15);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #2C2C2C;
+            margin-top: 0.5rem;
+            transition: all 0.2s;
+            border: 0.5px solid rgba(255,255,255,0.3);
+        }
+        .app-block:hover .click-hint {
+            background: rgba(0,0,0,0.25);
+            transform: scale(1.02);
+        }
+
+        /* 模態框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            backdrop-filter: var(--blur-amount);
+            border-radius: var(--radius-lg);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 28px;
+            border: 0.5px solid var(--card-border);
+            box-shadow: var(--shadow-lg);
+        }
+        .modal-content h3 { font-size: 1.3rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; color: #E84040; }
+        .modal-body ul { padding-left: 20px; margin: 12px 0; }
+        .modal-body li { margin: 8px 0; }
+        .close-modal {
+            margin-top: 20px;
+            padding: 10px 24px;
+            background: #E84040;
+            color: white;
+            border: none;
+            border-radius: 980px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        /* FAQ 透明毛玻璃（圓角方形） */
+        .faq-section {
+            margin-bottom: 40px;
+        }
+        .faq-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .click-hint-faq {
+            font-size: 0.7rem;
+            color: var(--primary);
+            font-weight: normal;
+            background: rgba(0,0,0,0.05);
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+        .faq-item {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            border: 0.5px solid var(--card-border);
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .faq-item:hover {
+            box-shadow: var(--shadow-sm);
+            border-color: var(--primary);
+        }
+        .faq-question {
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        .faq-question:hover {
+            background: rgba(55,107,126,0.08);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+            padding: 0 20px;
+            color: var(--text-secondary);
+        }
+        .faq-item.open .faq-answer {
+            max-height: 200px;
+            padding: 0 20px 16px 20px;
+        }
+
+        .download-card {
+            background: var(--card-bg);
+            backdrop-filter: var(--blur-amount);
+            border-radius: 1.5rem;
+            border: 0.5px solid var(--card-border);
+            padding: 24px;
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            transition: all 0.3s ease;
+        }
+        .download-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .download-card button {
+            background: #E84040;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 980px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+        .download-card button:hover { transform: scale(1.03); background: #c0392b; }
+
+        /* 底部導航欄 */
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255,255,245,0.94);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+            padding: 0.4rem 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(0);
+        }
+        .bottom-nav-bar.hide {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .bottom-nav-container {
+            width: 100%;
+            max-width: 1300px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0.2rem 1rem 0.4rem;
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            flex: 1;
+            padding: 0.2rem 0;
+            border-radius: 1.5rem;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+        .bottom-nav-item svg { width: 1.4rem; height: 1.4rem; stroke: currentColor; stroke-width: 1.7; }
+        .bottom-nav-item span { font-size: 0.7rem; font-weight: 500; }
+        .bottom-nav-item:hover { color: var(--primary); background: rgba(55,107,126,0.1); transform: translateY(-2px); }
+
+        /* 頁尾 - 確保可見 */
+        .footer {
+            max-width: 1300px;
+            margin: 2rem auto 1rem;
+            padding: 1rem 1.5rem;
+            border-top: 0.5px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+        }
+        .glass-button {
+            backdrop-filter: blur(12px);
+            background: rgba(55, 107, 126, 0.1);
+            border: 0.5px solid var(--card-border);
+            border-radius: 980px;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .help-fab {
+            position: fixed;
+            bottom: 130px;
+            right: 20px;
+            backdrop-filter: blur(20px);
+            background: var(--card-bg);
+            border: 0.5px solid var(--card-border);
+            border-radius: 50%;
+            width: 3.5rem;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 90;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
+            animation: breathe 2.2s ease-in-out infinite;
+        }
+        .help-fab svg { width: 1.8rem; height: 1.8rem; stroke: var(--primary); stroke-width: 1.7; }
+        .help-fab:hover { transform: scale(1.08); background: var(--primary); animation: none; }
+        .help-fab:hover svg { stroke: white; }
+
+        @media (max-width: 900px) {
+            .steps-row { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+            .map-prep-row { grid-template-columns: 1fr; }
+            .apps-grid-2x2 { grid-template-columns: repeat(2, 1fr); }
+            .emergency-container { padding: 20px 16px; }
+        }
+        @media (max-width: 600px) {
+            .steps-row { grid-template-columns: 1fr; }
+            .apps-grid-2x2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="theme-forest-bath">
+
+    <div class="dynamic-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="noise-bg"></div>
+
+    <!-- 頂部欄 -->
+    <header class="mac-topbar">
+        <div class="topbar-container">
+            <div class="topbar-left" id="homeLogoBtn">
+                <i data-lucide="home" class="home-icon"></i>
+                <div class="brand-text">
+                    <span class="brand-logo">耆醒老友記</span>
+                    <span class="brand-en">Smarty Elderly</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="theme-slider-widget">
+                    <span class="slider-label">主題</span>
+                    <input type="range" id="themeSlider" class="theme-slider" min="0" max="7" step="1" value="3">
+                    <span class="slider-hint">護眼</span>
+                </div>
+                <div class="font-switch-group" id="fontSwitchGroup">
+                    <button data-font="small" class="font-switch-btn">小字</button>
+                    <button data-font="standard" class="font-switch-btn">標準</button>
+                    <button data-font="xlarge" class="font-switch-btn">特大</button>
+                </div>
+                <button class="icon-btn" id="controlCenterBtn" aria-label="控制中心">
+                    <i data-lucide="sliders"></i>
+                </button>
+                <button class="login-btn" id="loginBtn" aria-label="登入">
+                    <i data-lucide="log-in"></i> 登入
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 頂部導航欄 -->
+    <div class="top-nav-bar" id="topNavBar">
+        <div class="top-nav-container">
+            <button class="top-nav-item" data-page="learns"><i data-lucide="book-open"></i><span>數位說明書</span></button>
+            <button class="top-nav-item" data-page="tools"><i data-lucide="star"></i><span>防騙工具箱</span></button>
+            <button class="top-nav-item" data-page="emgs"><i data-lucide="life-buoy"></i><span>應急指南</span></button>
+            <button class="top-nav-item" data-page="stories"><i data-lucide="heart"></i><span>故事角</span></button>
+            <button class="top-nav-item" data-page="courses"><i data-lucide="compass"></i><span>教育課程</span></button>
+            <button class="top-nav-item" data-page="news"><i data-lucide="newspaper"></i><span>最新資訊</span></button>
+            <button class="top-nav-item" data-page="subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="top-nav-item" data-page="abouts"><i data-lucide="users"></i><span>關於我們</span></button>
+        </div>
+    </div>
+
+    <!-- 控制中心面板 -->
+    <div id="controlCenterPanel">
+        <h4><i data-lucide="palette"></i> 完整主題切換 (8種)</h4>
+        <div class="theme-group-8">
+            <button data-theme-index="0" class="theme-option-btn">Piña Colada</button>
+            <button data-theme-index="1" class="theme-option-btn">Dark 'n' Stormy</button>
+            <button data-theme-index="2" class="theme-option-btn">Glass Window</button>
+            <button data-theme-index="3" class="theme-option-btn">Forest Bath</button>
+            <button data-theme-index="4" class="theme-option-btn">Mint Garden</button>
+            <button data-theme-index="5" class="theme-option-btn">Apple Cider</button>
+            <button data-theme-index="6" class="theme-option-btn">Nightcap</button>
+            <button data-theme-index="7" class="theme-option-btn">Sunrise</button>
+        </div>
+        <button id="hideToolsBtn" class="hide-tools-btn">🔧 隱藏字體與主題工具</button>
+        <button id="closeControlPanel" class="close-panel-btn">關閉</button>
+    </div>
+
+    <!-- 主要內容區 -->
+    <div class="emergency-container">
+        <div class="emergency-header">
+            <h1><i data-lucide="phone"></i>即時求助</h1>
+            <p>有困難？唔使驚 — 我哋喺度陪你</p>
+        </div>
+
+        <!-- 即時行動步驟 -->
+        <div class="action-card">
+            <div class="action-title"><i data-lucide="alert-triangle"></i>即時行動 — 唔使諗，跟住做</div>
+            <div class="steps-row">
+                <div class="step-card"><div class="step-number-circle">1</div><h4>收線 / 停止轉賬</h4><p>即刻收線，暫停任何交易動作</p></div>
+                <div class="step-card"><div class="step-number-circle">2</div><h4>打俾銀行</h4><p>要求「緊急止付」</p><span class="bank-hotline-small" data-phone="22333000">滙豐 2233 3000</span><span class="bank-hotline-small" data-phone="28866868">中銀 2886 8868</span><span class="bank-hotline-small" data-phone="29989898">恒生 2998 9898</span></div>
+                <div class="step-card"><div class="step-number-circle">3</div><h4>打 18222</h4><p>反詐騙協調中心<br>24小時警方熱線</p><span class="bank-hotline-small" data-phone="18222">📞 立即撥打 18222</span></div>
+                <div class="step-card"><div class="step-number-circle">4</div><h4>去就近警署</h4><p>帶同證據報案備案</p></div>
+            </div>
+        </div>
+
+        <!-- 地圖 + 報案前準備 -->
+        <div class="map-prep-row">
+            <div class="map-card">
+                <div class="map-title"><i data-lucide="map-pin"></i> 搵警署</div>
+                <select id="districtSelect" class="district-select">
+                    <option value="">📌 請選擇地區</option>
+                    <option value="中區">中環/金鐘</option><option value="灣仔">灣仔/銅鑼灣</option>
+                    <option value="東區">筲箕灣/柴灣</option><option value="西區">西環/堅尼地城</option>
+                    <option value="旺角">旺角</option><option value="油麻地">油麻地/佐敦</option>
+                    <option value="深水埗">深水埗/長沙灣</option><option value="九龍城">九龍城/土瓜灣</option>
+                    <option value="觀塘">觀塘/牛頭角</option><option value="黃大仙">黃大仙/鑽石山</option>
+                    <option value="荃灣">荃灣</option><option value="屯門">屯門</option>
+                    <option value="元朗">元朗</option><option value="沙田">沙田</option>
+                    <option value="大埔">大埔</option><option value="上水">上水/粉嶺</option>
+                </select>
+                <div id="policeMap" style="height: 280px;"></div>
+                <div id="policeInfo" class="police-info" style="display: none;"></div>
+            </div>
+            <div class="prep-card">
+                <h3><i data-lucide="clipboard-list"></i> 報案前準備</h3>
+                <ul class="prep-list">
+                    <li><i data-lucide="phone"></i> 騙徒電話號碼（來電顯示）</li>
+                    <li><i data-lucide="credit-card"></i> 轉賬時間、金額、戶口號碼</li>
+                    <li><i data-lucide="image"></i> 對話截圖（WhatsApp/微信）</li>
+                    <li><i data-lucide="user"></i> 騙徒自稱姓名/機構</li>
+                    <li><i data-lucide="file-text"></i> 任何收據或交易記錄</li>
+                    <li><i data-lucide="clock"></i> 事件發生的日期和時間</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 4個彩色方塊 -->
+        <div class="apps-grid-2x2">
+            <div class="app-block" data-app="password"><div class="app-icon"><i data-lucide="shield-off"></i></div><h4>已透露密碼 / 卡號</h4><p>即時停卡、更改密碼</p><div class="click-hint">點擊查看詳細</div></div>
+            <div class="app-block" data-app="identity"><div class="app-icon"><i data-lucide="fingerprint"></i></div><h4>身份被盜用</h4><p>信貸報告檢查、報警</p><div class="click-hint">點擊查看詳細</div></div>
+            <div class="app-block" data-app="legal"><div class="app-icon"><i data-lucide="scale"></i></div><h4>法律諮詢</h4><p>當值律師、法援署</p><div class="click-hint">點擊查看詳細</div></div>
+            <div class="app-block" data-app="emotion"><div class="app-icon"><i data-lucide="heart-handshake"></i></div><h4>情緒支援</h4><p>搵人傾吓、心理輔導</p><div class="click-hint">點擊查看詳細</div></div>
+        </div>
+
+        <!-- FAQ 區域（毛玻璃效果） -->
+        <div class="faq-section">
+            <h3><i data-lucide="help-circle"></i> 常見問題 <span class="click-hint-faq">👇 點擊問題展開答案</span></h3>
+            <div class="faq-item"><div class="faq-question">過咗數一日仲報唔報得警？ <i data-lucide="chevron-down"></i></div><div class="faq-answer"><p>報得！越快越好，即使過咗幾日都要報。警方會記錄並調查，有機會追回款項。</p></div></div>
+            <div class="faq-item"><div class="faq-question">騙徒有我地址點算？ <i data-lucide="chevron-down"></i></div><div class="faq-answer"><p>報警備案，留意可疑來電或訪客，唔好開門俾陌生人，通知家人提高警覺。</p></div></div>
+            <div class="faq-item"><div class="faq-question">我應唔應該刪除對話記錄？ <i data-lucide="chevron-down"></i></div><div class="faq-answer"><p>唔好刪！對話記錄係重要證據，先截圖保存，再報警備案。</p></div></div>
+            <div class="faq-item"><div class="faq-question">家人可以點樣幫我？ <i data-lucide="chevron-down"></i></div><div class="faq-answer"><p>協助記錄證據、陪同報案、提供情緒支援，以及協助更改密碼和設定。</p></div></div>
+            <div class="faq-item"><div class="faq-question">點樣查一個電話號碼係咪騙徒？ <i data-lucide="chevron-down"></i></div><div class="faq-answer"><p>用我哋嘅「防騙工具箱」查證機構真偽，或使用警方「防騙視伏器」。</p></div></div>
+            <div class="faq-item"><div class="faq-question">騙徒會唔會再打電話俾我？ <i data-lucide="chevron-down"></i></div><div class="faq-answer"><p>有可能！接到任何自稱「警方/銀行」來電，先收線再主動查證，唔好回撥。</p></div></div>
+        </div>
+
+        <!-- 下載應急卡 -->
+        <div class="download-card">
+            <button id="downloadCardBtn"><i data-lucide="download"></i>下載「應急卡」— 隨身攜帶</button>
+            <p style="color:var(--text-secondary); margin-top:12px;">打印或保存到手機，隨時睇住步驟</p>
+        </div>
+    </div>
+
+    <!-- 右下角求助 FAB -->
+    <div class="help-fab" id="helpFabBtn" aria-label="求助"><i data-lucide="alert-triangle"></i></div>
+
+    <!-- 底部導航欄 -->
+    <div class="bottom-nav-bar" id="bottomNavBar">
+        <div class="bottom-nav-container">
+            <button class="bottom-nav-item" data-page="learns"><i data-lucide="book-open"></i><span>說明書</span></button>
+            <button class="bottom-nav-item" data-page="tools"><i data-lucide="star"></i><span>工具箱</span></button>
+            <button class="bottom-nav-item" data-page="emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
+            <button class="bottom-nav-item" data-page="courses"><i data-lucide="compass"></i><span>課程</span></button>
+            <button class="bottom-nav-item" data-page="subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="index"><i data-lucide="home"></i><span>主頁</span></button>
+        </div>
+    </div>
+
+    <!-- 頁尾 -->
+    <footer class="footer" id="footer">
+        <span>版權所有 © 2026 Smarty Elderly. 保留所有權利</span>
+        <button class="glass-button" id="privacyBtn" aria-label="隱私權政策"><i data-lucide="lock"></i> 隱私權政策</button>
+    </footer>
+
+    <div id="detailModal" class="modal-overlay">
+        <div class="modal-content"><div id="modalContent"></div><button class="close-modal" onclick="closeModal()">關閉</button></div>
+    </div>
+
+    <script>
+        // ========== 主題/字體系統（與 index 相同） ==========
+        const GLOBAL_THEMES = [
+            'theme-pina-colada', 'theme-dark-stormy', 'theme-glass-window', 'theme-forest-bath',
+            'theme-mint-garden', 'theme-apple-cider', 'theme-nightcap', 'theme-sunrise'
+        ];
+        function setThemeByIndex(index) {
+            GLOBAL_THEMES.forEach(t => document.body.classList.remove(t));
+            document.body.classList.add(GLOBAL_THEMES[index]);
+            const slider = document.getElementById('themeSlider');
+            if (slider) slider.value = index;
+            localStorage.setItem('selected_theme_index', index);
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        function initTheme() {
+            const saved = localStorage.getItem('selected_theme_index');
+            if (saved !== null) setThemeByIndex(parseInt(saved));
+            else setThemeByIndex(3);
+        }
+        function setFontSize(size) {
+            const html = document.documentElement;
+            html.classList.remove('font-small', 'font-standard', 'font-xlarge');
+            if (size === 'small') html.classList.add('font-small');
+            else if (size === 'xlarge') html.classList.add('font-xlarge');
+            else html.classList.add('font-standard');
+            localStorage.setItem('elderly_font', size);
+            document.querySelectorAll('.font-switch-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-font') === size) btn.classList.add('active');
+            });
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        function initFont() {
+            const saved = localStorage.getItem('elderly_font');
+            const defaultSize = (saved === 'small' || saved === 'xlarge') ? saved : 'standard';
+            setFontSize(defaultSize);
+        }
+
+        // 滾動控制 + 動態 padding-bottom 確保 footer 顯示
+        let ticking = false;
+        const topNavBar = document.getElementById('topNavBar');
+        const bottomNavBar = document.getElementById('bottomNavBar');
+        const macTopbar = document.querySelector('.mac-topbar');
+        function adjustTopNavPosition() {
+            if (macTopbar && topNavBar) topNavBar.style.top = macTopbar.offsetHeight + 'px';
+        }
+        function handleScroll() {
+            const isNearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 150;
+            if (isNearBottom) { topNavBar.classList.add('hide'); bottomNavBar.classList.remove('hide'); }
+            else { topNavBar.classList.remove('hide'); bottomNavBar.classList.add('hide'); }
+            ticking = false;
+        }
+        function initScrollHandler() {
+            window.addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(handleScroll); ticking = true; } });
+            bottomNavBar.classList.add('hide');
+        }
+        function bindNavs() {
+            document.querySelectorAll('.top-nav-item, .bottom-nav-item').forEach(btn => {
+                btn.onclick = () => {
+                    let page = btn.getAttribute('data-page');
+                    if (page === 'index') window.location.href = 'index.html';
+                    else if (page) window.location.href = page + '.html';
+                };
+            });
+        }
+
+        // 控制中心
+        let toolsHidden = false;
+        const fontGroup = document.querySelector('.font-switch-group');
+        const themeWidget = document.querySelector('.theme-slider-widget');
+        const hideToolsBtn = document.getElementById('hideToolsBtn');
+        function toggleToolsVisibility() {
+            toolsHidden = !toolsHidden;
+            if (fontGroup) fontGroup.style.display = toolsHidden ? 'none' : 'inline-flex';
+            if (themeWidget) themeWidget.style.display = toolsHidden ? 'none' : 'inline-flex';
+            hideToolsBtn.textContent = toolsHidden ? '🔧 顯示字體與主題工具' : '🔧 隱藏字體與主題工具';
+            localStorage.setItem('tools_hidden', toolsHidden);
+        }
+        function initToolsVisibility() {
+            const saved = localStorage.getItem('tools_hidden');
+            if (saved === 'true') {
+                toolsHidden = true;
+                if (fontGroup) fontGroup.style.display = 'none';
+                if (themeWidget) themeWidget.style.display = 'none';
+                hideToolsBtn.textContent = '🔧 顯示字體與主題工具';
+            } else {
+                toolsHidden = false;
+                if (fontGroup) fontGroup.style.display = 'inline-flex';
+                if (themeWidget) themeWidget.style.display = 'inline-flex';
+                hideToolsBtn.textContent = '🔧 隱藏字體與主題工具';
+            }
+        }
+        let panelVisible = false;
+        const panel = document.getElementById('controlCenterPanel');
+        document.getElementById('controlCenterBtn').onclick = () => {
+            panelVisible = !panelVisible;
+            panel.style.display = panelVisible ? 'block' : 'none';
+            if (panelVisible && typeof lucide !== 'undefined') lucide.createIcons();
+        };
+        document.getElementById('closeControlPanel').onclick = () => { panel.style.display = 'none'; panelVisible = false; };
+        hideToolsBtn.onclick = () => toggleToolsVisibility();
+        document.querySelectorAll('.theme-option-btn').forEach(btn => {
+            btn.onclick = () => { setThemeByIndex(parseInt(btn.getAttribute('data-theme-index'))); panel.style.display = 'none'; panelVisible = false; };
+        });
+        document.querySelectorAll('.font-switch-btn').forEach(btn => {
+            btn.onclick = () => setFontSize(btn.getAttribute('data-font'));
+        });
+        const slider = document.getElementById('themeSlider');
+        if (slider) slider.addEventListener('input', (e) => setThemeByIndex(parseInt(e.target.value)));
+
+        // ========== 動態調整 body padding-bottom 讓 footer 可見 ==========
+        function updateBodyPaddingForFooter() {
+            const footer = document.getElementById('footer');
+            const bottomNav = document.getElementById('bottomNavBar');
+            if (!footer || !bottomNav) return;
+            const footerHeight = footer.offsetHeight;
+            const bottomNavHeight = bottomNav.offsetHeight;
+            const totalPadding = footerHeight + bottomNavHeight + 30;
+            document.body.style.paddingBottom = totalPadding + 'px';
+        }
+
+        // ========== 地圖、警署、複製、模態框等原有功能 ==========
+        const policeData = {
+            "中區": { name: "中區警署", lat: 22.2799, lng: 114.1585, address: "中環荷李活道10號", phone: "36601200" },
+            "灣仔": { name: "灣仔警署", lat: 22.2776, lng: 114.1748, address: "灣仔告士打道123號", phone: "36601600" },
+            "東區": { name: "東區警署", lat: 22.2794, lng: 114.2292, address: "筲箕灣道280號", phone: "36601900" },
+            "西區": { name: "西區警署", lat: 22.2859, lng: 114.1355, address: "西營盤德輔道西280號", phone: "36601700" },
+            "旺角": { name: "旺角警署", lat: 22.3196, lng: 114.1696, address: "旺角太子道西142號", phone: "36601800" },
+            "油麻地": { name: "油麻地警署", lat: 22.3125, lng: 114.1699, address: "油麻地廣東道627號", phone: "36609200" },
+            "深水埗": { name: "深水埗警署", lat: 22.3313, lng: 114.1628, address: "深水埗欽州街37號", phone: "36608800" },
+            "九龍城": { name: "九龍城警署", lat: 22.3282, lng: 114.1901, address: "九龍城亞皆老街202號", phone: "36601800" },
+            "觀塘": { name: "觀塘警署", lat: 22.3126, lng: 114.2254, address: "觀塘鯉魚門道10號", phone: "36600500" },
+            "黃大仙": { name: "黃大仙警署", lat: 22.3424, lng: 114.1948, address: "黃大仙龍翔道136號", phone: "36601000" },
+            "荃灣": { name: "荃灣警署", lat: 22.3691, lng: 114.1165, address: "荃灣蕙荃路2-32號", phone: "36601100" },
+            "屯門": { name: "屯門警署", lat: 22.3926, lng: 113.9721, address: "屯門杯渡路100號", phone: "36601500" },
+            "元朗": { name: "元朗警署", lat: 22.4446, lng: 114.0318, address: "元朗青山公路246號", phone: "36601300" },
+            "沙田": { name: "沙田警署", lat: 22.3831, lng: 114.1909, address: "沙田禾輋街1號", phone: "36601200" },
+            "大埔": { name: "大埔警署", lat: 22.4515, lng: 114.1630, address: "大埔安埔里6號", phone: "36601400" },
+            "上水": { name: "上水警署", lat: 22.5025, lng: 114.1283, address: "上水粉錦街1號", phone: "36601600" }
+        };
+        let map;
+        function initMap() {
+            const mapContainer = document.getElementById('policeMap');
+            if (!mapContainer) return;
+            if (map) map.remove();
+            map = L.map('policeMap').setView([22.3193, 114.1694], 11);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+                subdomains: 'abcd', maxZoom: 19
+            }).addTo(map);
+            Object.entries(policeData).forEach(([district, data]) => {
+                const marker = L.marker([data.lat, data.lng]).addTo(map);
+                marker.bindPopup(`
+                    <b>${data.name}</b><br>
+                    ${data.address}<br>
+                    電話: ${data.phone.slice(0,4)} ${data.phone.slice(4)}<br>
+                    <button onclick="copyToClipboard('${data.phone}')" style="margin-top:8px; padding:4px 12px; background:#E84040; color:white; border:none; border-radius:20px; cursor:pointer;">📋 複製電話號碼</button>
+                    <button onclick="window.open('https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}', '_blank')" style="margin-top:8px; margin-left:8px; padding:4px 12px; background:#E84040; color:white; border:none; border-radius:20px; cursor:pointer;">🗺️ 導航</button>
+                `);
+            });
+        }
+        function formatPhone(phone) { return phone.slice(0,4) + ' ' + phone.slice(4); }
+        function showPoliceStation(district) {
+            const data = policeData[district];
+            if (!data) return;
+            map.setView([data.lat, data.lng], 16);
+            const infoDiv = document.getElementById('policeInfo');
+            infoDiv.style.display = 'block';
+            infoDiv.innerHTML = `
+                <span>📍 ${data.name}</span><br>
+                ${data.address}<br>
+                電話: ${formatPhone(data.phone)}<br>
+                <button class="copy-btn" onclick="copyToClipboard('${data.phone}')">📋 複製電話號碼</button>
+                <button class="copy-btn" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}', '_blank')" style="margin-left:8px;">🗺️ 打開地圖導航</button>
+            `;
+        }
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => alert(`📋 已複製號碼：${text}`)).catch(() => alert(`請手動記下號碼：${text}`));
+        };
+        const modalDetails = {
+            password: { title: "已透露密碼 / 卡號", content: `<ul><li><strong>即時停卡熱線：</strong><br>滙豐銀行：2233 3000<br>中銀香港：2886 8868<br>恒生銀行：2998 9898</li><li><strong>更改網上銀行密碼</strong></li><li><strong>取消自動轉賬 / 更改轉賬限額</strong></li></ul>` },
+            identity: { title: "身份被盜用", content: `<ul><li><strong>信貸報告檢查</strong><br>環聯熱線：2577 1816</li><li><strong>報失身份證</strong><br>入境處熱線：2824 6111</li><li><strong>報警備案</strong></li></ul>` },
+            legal: { title: "法律諮詢", content: `<ul><li><strong>當值律師服務</strong><br>2526 3169</li><li><strong>法援署熱線</strong><br>2537 7677</li><li><strong>免費法律諮詢</strong><br>民政事務處</li></ul>` },
+            emotion: { title: "情緒支援", content: `<ul><li><strong>生命熱線</strong><br>2382 0000</li><li><strong>香港心理衛生會</strong><br>2896 0000</li><li><strong>長者安居協會</strong><br>2338 8312</li></ul>` }
+        };
+        function showModal(appType) {
+            const detail = modalDetails[appType];
+            if (!detail) return;
+            const modal = document.getElementById('detailModal');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `<h3><i data-lucide="alert-circle"></i> ${detail.title}</h3><div class="modal-body">${detail.content}</div>`;
+            modal.style.display = 'flex';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        window.closeModal = function() { document.getElementById('detailModal').style.display = 'none'; };
+
+        function setupEventListeners() {
+            document.querySelectorAll('.bank-hotline-small').forEach(btn => {
+                btn.addEventListener('click', (e) => { e.stopPropagation(); copyToClipboard(btn.getAttribute('data-phone')); });
+            });
+            document.getElementById('districtSelect')?.addEventListener('change', (e) => { if(e.target.value) showPoliceStation(e.target.value); });
+            document.getElementById('downloadCardBtn')?.addEventListener('click', () => {
+                const content = `耆醒老友記 應急卡\n\n即時行動：\n1. 收線 / 停止轉賬\n2. 打俾銀行：滙豐22333000 中銀28866868 恒生29989898\n3. 打18222反詐騙協調中心\n4. 去就近警署\n\n報案準備：電話、轉賬記錄、對話截圖、收據\n\n求助熱線：18222 / 999\n心理輔導：2382 0000\n法律諮詢：2526 3169`;
+                const blob = new Blob([content], { type: 'text/plain' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = '應急卡.txt';
+                a.click();
+                URL.revokeObjectURL(a.href);
+                alert('應急卡已下載');
+            });
+            document.querySelectorAll('.app-block').forEach(block => {
+                block.addEventListener('click', () => showModal(block.getAttribute('data-app')));
+            });
+            document.querySelectorAll('.faq-question').forEach(q => {
+                q.addEventListener('click', () => q.closest('.faq-item').classList.toggle('open'));
+            });
+            document.getElementById('homeLogoBtn')?.addEventListener('click', () => window.location.href = 'index.html');
+            document.getElementById('loginBtn')?.addEventListener('click', () => alert('登入功能開發中'));
+            document.getElementById('helpFabBtn')?.addEventListener('click', () => window.location.href = 'emgs.html');
+            document.getElementById('privacyBtn')?.addEventListener('click', () => alert('私隱政策：我們嚴格保護您的個人資料。'));
+        }
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initFont();
+            initToolsVisibility();
+            adjustTopNavPosition();
+            bindNavs();
+            initScrollHandler();
+            initMap();
+            setupEventListeners();
+            updateBodyPaddingForFooter();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            window.addEventListener('resize', () => {
+                adjustTopNavPosition();
+                updateBodyPaddingForFooter();
+            });
+        });
+    </script>
+</body>
+</html>
