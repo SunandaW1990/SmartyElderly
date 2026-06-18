@@ -1,10 +1,7 @@
-from django.shortcuts import render,redirect, get_object_or_404
+from django.shortcuts import render
 from .models import Course, Enrollment
-from django.contrib import messages
 from .choices import district_choices, category_choices, fee_choices, mth_choices
 from django.utils import timezone
-from django.views.generic import ListView
-from django.db.models import Prefetch
 
 
 # Create your views here.
@@ -25,12 +22,12 @@ def enroll(request):
         course_id = request.POST['course_id']
         subscriber_id = request.POST['subscriber_id']
 
-        enroll_exists = Enrollment.objects.filter(course_id=course_id, subscriber_id=subscriber_id).exists()
+        enroll_exists = Enrollment.objects.filter(course_id=course_id, user_id=subscriber_id).exists()
 
         if enroll_exists:
             result = 'Fail'
         else:
-            enrollment = Enrollment(course_id_id=course_id, subscriber_id_id=subscriber_id, creation_date=timezone.now())
+            enrollment = Enrollment(course_id=course_id, user_id=subscriber_id, enrollment_date=timezone.now())
             enrollment.save()
             result = 'Success'
 

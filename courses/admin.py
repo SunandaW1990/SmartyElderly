@@ -50,11 +50,11 @@ class EnrollmentAdminForm(forms.ModelForm):
         #}
 
 class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'subscriber_id_id', 'course_id_id', 'creation_date')
-    list_display_links = ('id', 'subscriber_id_id', 'course_id_id')
-    #list_filter = ('doctor', 'services')
+    list_display = ('id', 'user', 'course', 'enrollment_date', 'status') 
+    list_display_links = ('id', 'user', 'course')
+    list_filter = ('status', 'enrollment_date')
     #list_editable = ('is_published', )
-    search_fields = ('subscriber_id_id', 'course_id_id',)
+    search_fields = ('user__username', 'course__title',)
     list_per_age = 25                
     #formfield_overrides = {
     #    models.IntegerField: {

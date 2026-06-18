@@ -1,0 +1,561 @@
+{% extends "base.html" %}
+{% block title %} 防騙工具箱 · 耆醒老友記 Smarty Elderly {% endblock %}
+{% block stylesheet %}
+{% endblock %}
+{% block content %}
+    <div class="main-container">
+        <!-- 四大工具入口卡片 - 靜態 HTML -->
+        <div class="tools-grid" id="toolsGrid">
+            <div class="tool-card" data-tool="1">
+                <div class="tool-icon-wrapper"><i data-lucide="building-2"></i></div>
+                <div class="tool-name">查證機構真偽</div>
+                <div class="tool-desc">驗證來電真偽・搵官方電話</div>
+            </div>
+            <div class="tool-card" data-tool="2">
+                <div class="tool-icon-wrapper"><i data-lucide="scroll-text"></i></div>
+                <div class="tool-name">騙局劇本庫</div>
+                <div class="tool-desc">4大真實案例，圖解騙徒手法</div>
+            </div>
+            <div class="tool-card" data-tool="3">
+                <div class="tool-icon-wrapper"><i data-lucide="map-pin"></i></div>
+                <div class="tool-name">查找警署地址</div>
+                <div class="tool-desc">18區地圖，一鍵定位</div>
+            </div>
+            <div class="tool-card" data-tool="4">
+                <div class="tool-icon-wrapper"><i data-lucide="smartphone"></i></div>
+                <div class="tool-name">下載防騙 App</div>
+                <div class="tool-desc">官方推薦・一鍵下載</div>
+            </div>
+        </div>
+
+        <!-- 四個工具面板容器 - 靜態 HTML 結構，用 display 切換 -->
+        <div class="tools-panels-container">
+            <!-- 面板1：查證機構真偽 -->
+            <div id="panel-verify" class="tool-panel">
+                <div class="verify-section">
+                    <div class="verify-title"><i data-lucide="trending-up"></i> 最近常見詐騙電話</div>
+                    <ul class="hot-scam-list">
+<!--Start Dynamic Tool01-->
+    	            {% for antiscamtool in antiscamtools %}
+                        <li><span><i data-lucide="phone"></i> <strong>{{antiscamtool.top1_contact}}</strong> — {{antiscamtool.top1_description}}</span><button class="quick-btn scam-alert-btn" data-number="22333000">我收到類似來電</button></li>
+                        <li><span><i data-lucide="phone"></i> <strong>{{antiscamtool.top2_contact}}</strong> — {{antiscamtool.top2_description}}</span><button class="quick-btn scam-alert-btn" data-number="29458888">我收到類似來電</button></li>
+                        <li><span><i data-lucide="phone"></i> <strong>{{antiscamtool.top3_contact}}</strong> — {{antiscamtool.top3_description}}</span><button class="quick-btn scam-alert-btn" data-number="18222">我收到類似來電</button></li>
+                    {% endfor %}
+
+                    {%comment%}
+                        <li><span><i data-lucide="phone"></i> <strong>+852 2233 3000</strong> — 假冒滙豐銀行 / 信用卡自動扣款</span><button class="quick-btn scam-alert-btn" data-number="22333000">我收到類似來電</button></li>
+                        <li><span><i data-lucide="phone"></i> <strong>+852 2945 8888</strong> — 假冒中國移動 / 一卡兩號扣費</span><button class="quick-btn scam-alert-btn" data-number="29458888">我收到類似來電</button></li>
+                        <li><span><i data-lucide="phone"></i> <strong>+852 18222</strong> — 偽造反詐騙中心來電</span><button class="quick-btn scam-alert-btn" data-number="18222">我收到類似來電</button></li>
+                    {%endcomment%}
+<!--End Dynamic Tool01-->
+                    </ul>
+                </div>
+                <div class="verify-section">
+                    <div class="verify-title"><i data-lucide="building-2"></i> 常用官方電話</div>
+                    <div class="agency-grid">
+<!--Start Dynamic Tool01-->
+                        {% for usefulcontact in usefulcontacts %}
+                        <div class="agency-card"><span><strong>{{usefulcontact.institute}}</strong><br>📞 {{usefulcontact.contact}}</span><button class="quick-btn call-btn" data-phone="18222">模擬撥號</button></div>
+                        {%endfor%}
+
+                        {%comment%}
+                        <div class="agency-card"><span><strong>反詐騙協調中心</strong><br>📞 18222</span><button class="quick-btn call-btn" data-phone="18222">模擬撥號</button></div>
+                        <div class="agency-card"><span><strong>香港警務處</strong><br>📞 3660 1200</span><button class="quick-btn call-btn" data-phone="36601200">模擬撥號</button></div>
+                        <div class="agency-card"><span><strong>滙豐銀行</strong><br>📞 2233 3000</span><button class="quick-btn call-btn" data-phone="22333000">模擬撥號</button></div>
+                        <div class="agency-card"><span><strong>中銀香港</strong><br>📞 3988 2388</span><button class="quick-btn call-btn" data-phone="39882388">模擬撥號</button></div>
+                        <div class="agency-card"><span><strong>恒生銀行</strong><br>📞 2822 0228</span><button class="quick-btn call-btn" data-phone="28220228">模擬撥號</button></div>
+                        <div class="agency-card"><span><strong>中國移動香港</strong><br>📞 2945 8888</span><button class="quick-btn call-btn" data-phone="29458888">模擬撥號</button></div>
+                        {%endcomment%}
+<!--End Dynamic Tool01-->
+                    </div>
+                </div>
+                <div class="scameter-link">
+                    <i data-lucide="external-link"></i> 需要查網址、電郵、戶口號碼？<br>
+                    <a href="https://cyberdefender.hk/en-us/scameter/" target="_blank" class="big-link" rel="noopener noreferrer">去警方「防騙視伏器」🔍</a>
+                </div>
+            </div>
+
+            <!-- 面板2：騙局劇本庫（JS 動態填充內容） -->
+            <div id="panel-scam" class="tool-panel">
+                <div id="scamDynamicContainer">載入中...</div>
+            </div>
+
+            <!-- 面板3：查找警署地址（靜態 HTML + JS 初始化地圖） -->
+            <div id="panel-police" class="tool-panel">
+                <div class="map-prep-row">
+                    <div class="map-card">
+                        <div class="card-header"><i data-lucide="map-pin"></i> 搵警署 · 18區即時地圖</div>
+                        <select id="policeDistrictSelect" class="district-select">
+                            <option value="">🔍 選擇地區</option>
+                            <option value="中區">中區</option><option value="灣仔">灣仔</option><option value="東區">東區</option>
+                            <option value="西區">西區</option><option value="旺角">旺角</option><option value="油麻地">油麻地</option>
+                            <option value="深水埗">深水埗</option><option value="九龍城">九龍城</option><option value="觀塘">觀塘</option>
+                            <option value="黃大仙">黃大仙</option><option value="荃灣">荃灣</option><option value="屯門">屯門</option>
+                            <option value="元朗">元朗</option><option value="沙田">沙田</option><option value="大埔">大埔</option>
+                            <option value="上水">上水</option>
+                        </select>
+                        <div id="map" class="leaflet-map"></div>
+                        <div id="stationInfo" class="station-info"><div class="info-placeholder">✨ 點擊地圖圖釘或選擇地區</div></div>
+                        <div class="action-buttons">
+                            <button id="copyPhoneBtn" class="action-btn secondary">📋 複製電話</button>
+                            <button id="openMapBtn" class="action-btn primary">🗺️ 地圖導航</button>
+                        </div>
+                    </div>
+                    <div class="prep-card">
+                        <div class="card-header"><i data-lucide="clipboard-list"></i> 報案前準備 · 帶齊呢啲資料</div>
+                        <ul class="prep-list">
+                            <li><i data-lucide="phone"></i> 騙徒電話號碼（來電顯示）</li>
+                            <li><i data-lucide="credit-card"></i> 轉賬時間、金額、戶口號碼</li>
+                            <li><i data-lucide="image"></i> 對話截圖（WhatsApp/微信）</li>
+                            <li><i data-lucide="user"></i> 騙徒自稱姓名/機構</li>
+                            <li><i data-lucide="file-text"></i> 任何收據或交易記錄</li>
+                            <li><i data-lucide="clock"></i> 事件發生的日期和時間</li>
+                        </ul>
+                        <div class="prep-note"><i data-lucide="alert-circle"></i> 報警前準備越齊全，警方越快幫到你！</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 面板4：下載防騙 App（靜態 HTML） -->
+            <div id="panel-download" class="tool-panel">
+                <div class="verify-title"><i data-lucide="smartphone"></i> 下載官方推薦防騙 App</div>
+                <div class="app-simple-card">
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <i data-lucide="shield"></i>
+                        <strong style="font-size:1.1rem;">防騙視伏App (Scameter+)</strong>
+                        <span style="font-size:0.75rem; color:var(--text-secondary);">警方開發，自動攔截詐騙電話</span>
+                    </div>
+                    <div class="download-row">
+                        <a href="https://apps.apple.com/hk/app/scameter/id6443841234" target="_blank" class="download-link">📱 iOS下載</a>
+                        <a href="https://play.google.com/store/apps/details?id=hk.gov.police.scameter" target="_blank" class="download-link">📱 Android下載</a>
+                        <a href="https://appgallery.huawei.com/app/C107839939" target="_blank" class="download-link">📱 華為下載</a>
+                    </div>
+                    <div class="qr-row">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://cyberdefender.hk/scameter/" alt="QR Code" class="qr-large">
+                    </div>
+                </div>
+                <div class="app-simple-card">
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <i data-lucide="phone"></i>
+                        <strong style="font-size:1.1rem;">Whoscall</strong>
+                        <span style="font-size:0.75rem; color:var(--text-secondary);">來電辨識及騷擾號碼過濾</span>
+                    </div>
+                    <div class="download-row">
+                        <a href="https://apps.apple.com/hk/app/whoscall/id1099738005" target="_blank" class="download-link">📱 iOS下載</a>
+                        <a href="https://play.google.com/store/apps/details?id=com.gogolook.callgetter" target="_blank" class="download-link">📱 Android下載</a>
+                        <a href="https://appgallery.huawei.com/app/C101270687" target="_blank" class="download-link">📱 華為下載</a>
+                    </div>
+                    <div class="qr-row">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://whoscall.com/zh-hk/" alt="QR Code" class="qr-large">
+                    </div>
+                </div>
+                <div class="permission-glass">
+                    <i data-lucide="settings"></i> <strong>設定權限：</strong>允許「來電識別」及「通知」，App 唔會儲存你嘅通話紀錄。<br><br>
+                    <i data-lucide="help-circle"></i> <strong>唔識裝？</strong>可以帶手機去社區中心，有義工免費幫你安裝同設定。或致電 <strong>18222</strong> 查詢附近嘅長者數碼外展隊。
+                </div>
+                <div class="scameter-link" style="margin-top:1rem;">
+                    <i data-lucide="phone-call"></i> 緊急求助熱線：<strong>18222</strong>（24小時）
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 紅色求助按鈕 -->
+    <div class="urgent-help-section">
+        <button class="urgent-help-btn" id="urgentHelpBtn" aria-label="緊急求助按鈕">
+            <i data-lucide="alert-triangle"></i>
+            需要即時協助？立即按此
+            <i data-lucide="arrow-right"></i>
+        </button>
+    </div>
+
+    <div class="help-fab" id="helpFabBtn" aria-label="求助"><i data-lucide="alert-triangle"></i></div>
+
+    <div class="bottom-nav-bar" id="bottomNavBar">
+        <div class="bottom-nav-container">
+            <button class="bottom-nav-item" data-page="/manuals/learns"><i data-lucide="book-open"></i><span>說明書</span></button>
+            <button class="bottom-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>工具箱</span></button>
+            <button class="bottom-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
+            <button class="bottom-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>課程</span></button>
+            <button class="bottom-nav-item" data-page="/subscribes/subscribes"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="/index"><i data-lucide="home"></i><span>主頁</span></button>
+        </div>
+    </div>
+
+    <!-- 圖片放大模态框 -->
+    <div id="imageModal" class="image-modal">
+        <span class="close-modal-icon">&times;</span>
+        <div class="modal-content">
+            <div id="modalIcon"></div>
+            <p id="modalText"></p>
+            <button class="modal-close-btn" id="modalCloseBtn">🔍 點擊這裡關閉放大</button>
+            <div class="modal-instruction">點擊按鈕可返回正常大小</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block script %}
+    <script>
+        // ========== 騙局資料庫（僅用於面板2動態渲染）==========
+//Start Dynamic Tool02        
+        const scamLibrary = [
+       	{% for scamscript in scamscripts %}
+            { id: "{{forloop.counter0}}", title: "{{scamscript.topic}}", badge: "{{scamscript.description}}", realCase: "真實案例：{{scamscript.realcase}}",
+              scenes: [
+                {% if forloop.counter == 1 %}
+                  { label: "情景一", story: "騙徒假冒網購平台客服，謊稱帳戶被設為VIP會自動扣費。", icon: "message-circle" },
+                  { label: "情景二", story: "要求長者提供信用卡資料「取消設定」，否則每年扣$6000。", icon: "credit-card" },
+                  { label: "情景三", story: "假扮銀行職員來電，稱需「驗證戶口」指引轉賬到「安全戶口」。", icon: "building-2" },
+                  { label: "情景四", story: "最後長者發現戶口存款被轉走，騙徒失聯。", icon: "alert-triangle" }
+                {% elif forloop.counter == 2 %}
+                  { label: "情景一", story: "自稱「內地公安」來電，稱長者身份被盜用洗黑錢。", icon: "badge" },
+                  { label: "情景二", story: "要求長者交出銀行帳戶密碼及保證金證明清白。", icon: "lock" },
+                  { label: "情景三", story: "警告「唔准話俾家人知」，否則即時拘捕。", icon: "eye-off" },
+                  { label: "情景四", story: "長者按指示轉賬後，騙徒消失。", icon: "user-x" }
+                {% elif forloop.counter == 3 %}
+                  { label: "情景一", story: "社交媒體認識「投資專家」，群組內多人分享賺錢截圖。", icon: "trending-up" },
+                  { label: "情景二", story: "要求下載虛假投資App，初期小額獲利可提現。", icon: "smartphone" },
+                  { label: "情景三", story: "加碼後App顯示巨額盈利，但要「繳稅」先能提款。", icon: "receipt" },
+                  { label: "情景四", story: "最終平台關閉，專家失聯。", icon: "power-off" }
+                {% elif forloop.counter == 4 %}
+                  { label: "情景一", story: "來電自稱「仔女」換咗電話號碼，語氣急切。", icon: "phone-call" },
+                  { label: "情景二", story: "稱因打架/欠債被捕，急需保釋金。", icon: "handcuffs" },
+                  { label: "情景三", story: "要求唔好通知其他家人，速去銀行轉賬。", icon: "alert-octagon" },
+                  { label: "情景四", story: "長者轉賬後真仔女打來才知受騙。", icon: "heart-crack" }
+                {% endif %}
+              ] }
+            {% if not forloop.last %},{% endif %}
+        {% endfor %}
+        ]
+/*        const scamLibrary = [
+            { id: 0, title: "假冒客服騙局", badge: "你嘅帳戶會被自動扣費", realCase: "真實案例：82歲退休女教師被呃420萬元",
+              scenes: [
+                  { label: "情景一", story: "騙徒假冒網購平台客服，謊稱帳戶被設為VIP會自動扣費。", icon: "message-circle" },
+                  { label: "情景二", story: "要求長者提供信用卡資料「取消設定」，否則每年扣$6000。", icon: "credit-card" },
+                  { label: "情景三", story: "假扮銀行職員來電，稱需「驗證戶口」指引轉賬到「安全戶口」。", icon: "building-2" },
+                  { label: "情景四", story: "最後長者發現戶口存款被轉走，騙徒失聯。", icon: "alert-triangle" }
+              ] },
+            { id: 1, title: "假冒官員騙局", badge: "你涉及內地刑事案件", realCase: "真實案例：75歲長者被呃20萬元現金",
+              scenes: [
+                  { label: "情景一", story: "自稱「內地公安」來電，稱長者身份被盜用洗黑錢。", icon: "badge" },
+                  { label: "情景二", story: "要求長者交出銀行帳戶密碼及保證金證明清白。", icon: "lock" },
+                  { label: "情景三", story: "警告「唔准話俾家人知」，否則即時拘捕。", icon: "eye-off" },
+                  { label: "情景四", story: "長者按指示轉賬後，騙徒消失。", icon: "user-x" }
+              ] },
+            { id: 2, title: "網上投資騙局", badge: "專家帶你賺大錢", realCase: "真實案例：75歲婆婆被呃1,472萬元",
+              scenes: [
+                  { label: "情景一", story: "社交媒體認識「投資專家」，群組內多人分享賺錢截圖。", icon: "trending-up" },
+                  { label: "情景二", story: "要求下載虛假投資App，初期小額獲利可提現。", icon: "smartphone" },
+                  { label: "情景三", story: "加碼後App顯示巨額盈利，但要「繳稅」先能提款。", icon: "receipt" },
+                  { label: "情景四", story: "最終平台關閉，專家失聯。", icon: "power-off" }
+              ] },
+            { id: 3, title: "猜猜我是誰", badge: "阿媽，我出事啦！", realCase: "真實案例：10名長者共被呃219萬元",
+              scenes: [
+                  { label: "情景一", story: "來電自稱「仔女」換咗電話號碼，語氣急切。", icon: "phone-call" },
+                  { label: "情景二", story: "稱因打架/欠債被捕，急需保釋金。", icon: "handcuffs" },
+                  { label: "情景三", story: "要求唔好通知其他家人，速去銀行轉賬。", icon: "alert-octagon" },
+                  { label: "情景四", story: "長者轉賬後真仔女打來才知受騙。", icon: "heart-crack" }
+              ] }
+        ];
+*/        
+//End Dynamic Tool02
+
+        let currentScamIdx = 0;
+        let leafletMap = null;
+        let currentStation = null;
+
+        // 警署地圖數據
+        const stationsData = [
+            { name: "中區警署", district: "中區", address: "中環荷李活道10號", phone: "36601200", lat: 22.2799, lng: 114.1585 },
+            { name: "灣仔警署", district: "灣仔", address: "灣仔告士打道123號", phone: "36601600", lat: 22.2776, lng: 114.1748 },
+            { name: "東區警署", district: "東區", address: "筲箕灣道280號", phone: "36601900", lat: 22.2794, lng: 114.2292 },
+            { name: "西區警署", district: "西區", address: "西營盤德輔道西280號", phone: "36601700", lat: 22.2859, lng: 114.1355 },
+            { name: "旺角警署", district: "旺角", address: "旺角太子道西142號", phone: "36601800", lat: 22.3196, lng: 114.1696 },
+            { name: "油麻地警署", district: "油麻地", address: "油麻地廣東道627號", phone: "36609200", lat: 22.3125, lng: 114.1699 },
+            { name: "深水埗警署", district: "深水埗", address: "深水埗欽州街37號", phone: "36608800", lat: 22.3313, lng: 114.1628 },
+            { name: "九龍城警署", district: "九龍城", address: "九龍城亞皆老街202號", phone: "36601800", lat: 22.3282, lng: 114.1901 },
+            { name: "觀塘警署", district: "觀塘", address: "觀塘鯉魚門道10號", phone: "36600500", lat: 22.3126, lng: 114.2254 },
+            { name: "黃大仙警署", district: "黃大仙", address: "黃大仙龍翔道136號", phone: "36601000", lat: 22.3424, lng: 114.1948 },
+            { name: "荃灣警署", district: "荃灣", address: "荃灣蕙荃路2-32號", phone: "36601100", lat: 22.3691, lng: 114.1165 },
+            { name: "屯門警署", district: "屯門", address: "屯門杯渡路100號", phone: "36601500", lat: 22.3926, lng: 113.9721 },
+            { name: "元朗警署", district: "元朗", address: "元朗青山公路246號", phone: "36601300", lat: 22.4446, lng: 114.0318 },
+            { name: "沙田警署", district: "沙田", address: "沙田禾輋街1號", phone: "36601200", lat: 22.3831, lng: 114.1909 },
+            { name: "大埔警署", district: "大埔", address: "大埔安埔里6號", phone: "36601400", lat: 22.4515, lng: 114.1630 },
+            { name: "上水警署", district: "上水", address: "上水粉錦街1號", phone: "36601600", lat: 22.5025, lng: 114.1283 }
+        ];
+
+        // ========== 輔助函數 ==========
+        function showImageModal(iconName, label, story) {
+            const modal = document.getElementById('imageModal');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalText = document.getElementById('modalText');
+            modalIcon.innerHTML = `<i data-lucide="${iconName}" style="width:250px; height:250px; stroke:white; stroke-width:1.5;"></i>`;
+            modalText.innerText = label + '：' + story;
+            modal.classList.add('show');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeModal() { document.getElementById('imageModal').classList.remove('show'); }
+
+        // 渲染騙局劇本庫（面板2）
+        function renderScamPanel() {
+            const scam = scamLibrary[currentScamIdx];
+            let scenesHtml = '';
+<!-- Start Change icon & Text to img-->
+            scam.scenes.forEach((scene, idx) => {
+                scenesHtml += `
+                    <div class="scene-card">
+                        <div class="scene-icon"><i data-lucide="${scene.icon}"></i></div>
+                        <div class="scene-label">${scene.label}</div>
+                        <div class="scene-story">${scene.story}</div>
+                        <button class="zoom-btn" data-icon="${scene.icon}" data-label="${scene.label}" data-story="${scene.story}">🔍 點擊圖片放大</button>
+                    </div>
+                `;
+            });
+<!-- End Change icon & Text to img-->
+            let scamSelectorHtml = '';
+            scamLibrary.forEach((s, idx) => {
+                scamSelectorHtml += `<button class="scam-selector-btn ${idx === currentScamIdx ? 'active' : ''}" data-scam-idx="${idx}">${s.title}</button>`;
+            });
+            const html = `
+                <div class="scam-container">
+                    <div class="scam-header">
+                        <div class="scam-title-row">
+                            <span class="scam-title">${scam.title}</span>
+                            <span class="scam-badge">${scam.badge}</span>
+                        </div>
+                        <div class="scam-real-case">${scam.realCase}</div>
+                    </div>
+                    <div class="instruction-guide">📢 操作指引：點擊紅色按鈕可切換內容 | 點擊「點擊圖片放大」按鈕可放大查看</div>
+                    <div class="scenes-grid-2x2">${scenesHtml}</div>
+                    <div class="scam-selector-row">${scamSelectorHtml}</div>
+                </div>
+            `;
+            document.getElementById('scamDynamicContainer').innerHTML = html;
+            
+            // 綁定放大按鈕事件
+            document.querySelectorAll('#scamDynamicContainer .zoom-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showImageModal(btn.dataset.icon, btn.dataset.label, btn.dataset.story);
+                });
+            });
+            // 綁定切換按鈕事件
+            document.querySelectorAll('#scamDynamicContainer .scam-selector-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentScamIdx = parseInt(btn.dataset.scamIdx);
+                    renderScamPanel();
+                });
+            });
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // 初始化地圖（面板3）
+        function initPoliceMap() {
+            if (leafletMap) leafletMap.remove();
+            leafletMap = L.map('map').setView([22.319, 114.169], 11);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OSM' }).addTo(leafletMap);
+            stationsData.forEach(station => {
+                L.marker([station.lat, station.lng]).addTo(leafletMap).bindPopup(`<b>${station.name}</b><br>📍 ${station.address}<br>📞 ${station.phone}`).on('click', () => {
+                    currentStation = station;
+                    document.getElementById('stationInfo').innerHTML = `<div><strong>${station.name}</strong><br>📍 ${station.address}<br>📞 ${station.phone}</div>`;
+                });
+            });
+        }
+
+        function updateMapByDistrict() {
+            const district = document.getElementById('policeDistrictSelect').value;
+            if (!district) return;
+            const found = stationsData.find(s => s.district === district);
+            if (found) {
+                currentStation = found;
+                leafletMap.setView([found.lat, found.lng], 14);
+                document.getElementById('stationInfo').innerHTML = `<div><strong>${found.name}</strong><br>📍 ${found.address}<br>📞 ${found.phone}</div>`;
+            }
+        }
+
+        function copyPhone() {
+            if (currentStation) navigator.clipboard.writeText(currentStation.phone).then(() => alert(`已複製 ${currentStation.name} 電話`));
+            else alert('請先選擇警署');
+        }
+        function openNavigation() {
+            if (currentStation) window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentStation.lat},${currentStation.lng}`, '_blank');
+            else alert('請先選擇警署');
+        }
+
+        // 面板切換
+        function switchTool(toolId) {
+            document.querySelectorAll('.tool-card').forEach(card => {
+                const tid = parseInt(card.dataset.tool);
+                if (tid === toolId) card.classList.add('active-tool');
+                else card.classList.remove('active-tool');
+            });
+            document.querySelectorAll('.tool-panel').forEach(panel => panel.classList.remove('active-panel'));
+            if (toolId === 1) document.getElementById('panel-verify').classList.add('active-panel');
+            else if (toolId === 2) document.getElementById('panel-scam').classList.add('active-panel');
+            else if (toolId === 3) document.getElementById('panel-police').classList.add('active-panel');
+            else if (toolId === 4) document.getElementById('panel-download').classList.add('active-panel');
+            
+            // 每次切換到地圖面板時重新計算地圖大小（避免顯示問題）
+            if (toolId === 3 && leafletMap) setTimeout(() => leafletMap.invalidateSize(), 100);
+        }
+
+        // ========== 全域主題、字體、導航函數 ==========
+        const GLOBAL_THEMES = ['theme-pina-colada','theme-dark-stormy','theme-glass-window','theme-forest-bath','theme-mint-garden','theme-apple-cider','theme-nightcap','theme-sunrise'];
+        function setThemeByIndex(idx) { 
+            GLOBAL_THEMES.forEach(t=>document.body.classList.remove(t)); 
+            document.body.classList.add(GLOBAL_THEMES[idx]); 
+            localStorage.setItem('selected_theme_index', idx); 
+            const slider = document.getElementById('themeSlider');
+            if (slider) slider.value = idx;
+            if(window.lucide) lucide.createIcons(); 
+        }
+        function setFontSize(size) { 
+            document.documentElement.classList.remove('font-small','font-standard','font-xlarge'); 
+            document.documentElement.classList.add(size==='small'?'font-small':size==='xlarge'?'font-xlarge':'font-standard'); 
+            localStorage.setItem('elderly_font', size); 
+            document.querySelectorAll('.font-switch-btn').forEach(btn=>{ 
+                if(btn.dataset.font === size) btn.classList.add('active'); 
+                else btn.classList.remove('active'); 
+            }); 
+            if(window.lucide) lucide.createIcons(); 
+        }
+
+        const navMap = { learns:'learns.html', tools:'tools.html', emgs:'emgs.html', stories:'stories.html', courses:'courses.html', news:'news.html', subscribes:'subcribes.html', abouts:'abouts.html' };
+        function bindNavEvents() {
+            document.querySelectorAll('.top-nav-item').forEach(btn => {
+                btn.onclick = () => { const pg = btn.dataset.page; if(pg && navMap[pg]) location.href = navMap[pg]; };
+            });
+            document.querySelectorAll('.bottom-nav-item').forEach(btn => {
+                btn.onclick = () => { const pg = btn.dataset.page; if(pg === 'index') location.href = '/index.html'; else if(navMap[pg]) location.href = navMap[pg]; };
+            });
+        }
+
+        // 滾動控制頂部/底部導航欄
+        let ticking = false;
+        const topNavBar = document.getElementById('topNavBar');
+        const bottomNavBar = document.getElementById('bottomNavBar');
+        const macTopbar = document.querySelector('.mac-topbar');
+        function adjustTopNavPosition() { if(macTopbar && topNavBar) topNavBar.style.top = macTopbar.offsetHeight + 'px'; }
+        function handleScroll() {
+            const isNearBottom = (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 150);
+            if(isNearBottom) { topNavBar.classList.add('hide'); bottomNavBar.classList.remove('hide'); } 
+            else { topNavBar.classList.remove('hide'); bottomNavBar.classList.add('hide'); }
+            ticking = false;
+        }
+        function initScroll() {
+            window.addEventListener('scroll', () => { if(!ticking) requestAnimationFrame(handleScroll); ticking = true; });
+            bottomNavBar.classList.add('hide');
+            adjustTopNavPosition();
+        }
+
+        // 控制中心
+        let panelVisible = false;
+        const panel = document.getElementById('controlCenterPanel');
+        let toolsHidden = false;
+        const fontGroup = document.querySelector('.font-switch-group');
+        const themeWidget = document.querySelector('.theme-slider-widget');
+        const hideToolsBtn = document.getElementById('hideToolsBtn');
+        
+        function toggleToolsVisibility() {
+            toolsHidden = !toolsHidden;
+            if(fontGroup) fontGroup.style.display = toolsHidden ? 'none' : 'inline-flex';
+            if(themeWidget) themeWidget.style.display = toolsHidden ? 'none' : 'inline-flex';
+            hideToolsBtn.textContent = toolsHidden ? '🔧 顯示字體與主題工具' : '🔧 隱藏字體與主題工具';
+            localStorage.setItem('tools_hidden', toolsHidden);
+        }
+        
+        function initToolsVisibility() {
+            const saved = localStorage.getItem('tools_hidden') === 'true';
+            toolsHidden = saved;
+            if(fontGroup) fontGroup.style.display = saved ? 'none' : 'inline-flex';
+            if(themeWidget) themeWidget.style.display = saved ? 'none' : 'inline-flex';
+            if(hideToolsBtn) hideToolsBtn.textContent = saved ? '🔧 顯示字體與主題工具' : '🔧 隱藏字體與主題工具';
+        }
+
+        function updateFooterPadding() {
+            const f = document.querySelector('.footer');
+            const b = document.querySelector('.bottom-nav-bar');
+            if(f && b) document.body.style.paddingBottom = (f.offsetHeight + b.offsetHeight + 20) + 'px';
+        }
+
+        // ========== DOMContentLoaded 初始化 ==========
+        window.addEventListener('DOMContentLoaded', () => {
+            // 主題與字體
+            const savedTheme = localStorage.getItem('selected_theme_index');
+            setThemeByIndex(savedTheme ? parseInt(savedTheme) : 3);
+            const savedFont = localStorage.getItem('elderly_font');
+            setFontSize(savedFont || 'standard');
+            
+            // 導航事件
+            bindNavEvents();
+            initToolsVisibility();
+            initScroll();
+            
+            // 工具卡片點擊
+            document.querySelectorAll('.tool-card').forEach(card => {
+                card.addEventListener('click', () => switchTool(parseInt(card.dataset.tool)));
+            });
+            
+            // 渲染騙局面板（默認顯示第2個工具，與原版一致）
+            renderScamPanel();
+            
+            // 初始化地圖面板（先隱藏，切換時才真正初始化）
+            // 為了避免地圖在隱藏面板中初始化失敗，在首次切換到面板3時才初始化
+            let mapInitialized = false;
+            const originalSwitchTool = switchTool;
+            window.switchTool = function(toolId) {
+                if (toolId === 3 && !mapInitialized) {
+                    setTimeout(() => {
+                        initPoliceMap();
+                        mapInitialized = true;
+                        document.getElementById('policeDistrictSelect').addEventListener('change', updateMapByDistrict);
+                        document.getElementById('copyPhoneBtn').addEventListener('click', copyPhone);
+                        document.getElementById('openMapBtn').addEventListener('click', openNavigation);
+                    }, 50);
+                }
+                originalSwitchTool(toolId);
+            };
+            window.switchTool(1); // 默認顯示騙局劇本庫
+            
+            // 綁定面板1的按鈕事件（靜態 HTML 中的按鈕）
+            document.querySelectorAll('#panel-verify .scam-alert-btn').forEach(btn => {
+                btn.onclick = () => alert(`多謝舉報！請即收線。`);
+            });
+            document.querySelectorAll('#panel-verify .call-btn').forEach(btn => {
+                btn.onclick = () => alert(`模擬致電 ${btn.dataset.phone}`);
+            });
+            
+            // 全域按鈕事件
+            document.getElementById('homeLogoBtn').onclick = () => location.href = '/index.html';
+            document.getElementById('loginBtn').onclick = () => alert('登入功能開發中');
+            document.getElementById('helpFabBtn').onclick = () => location.href = '/helps.html';
+            document.getElementById('privacyBtn').onclick = () => alert('隱私權政策：我們嚴格保護您的個人資料。');
+            document.getElementById('urgentHelpBtn').onclick = () => location.href = '/helps.html';
+            
+            // 主題滑桿
+            document.getElementById('themeSlider').addEventListener('input', (e) => setThemeByIndex(parseInt(e.target.value)));
+            // 字體按鈕
+            document.querySelectorAll('.font-switch-btn').forEach(btn => btn.onclick = () => setFontSize(btn.dataset.font));
+            // 控制中心
+            document.getElementById('controlCenterBtn').onclick = () => { panelVisible = !panelVisible; panel.style.display = panelVisible ? 'block' : 'none'; if(panelVisible && window.lucide) lucide.createIcons(); };
+            document.getElementById('closeControlPanel').onclick = () => { panel.style.display = 'none'; panelVisible = false; };
+            hideToolsBtn.onclick = toggleToolsVisibility;
+            // 主題按鈕
+            document.querySelectorAll('#themeGroup8 .theme-option-btn').forEach(btn => {
+                btn.onclick = () => { setThemeByIndex(parseInt(btn.dataset.themeIndex)); panel.style.display = 'none'; panelVisible = false; };
+            });
+            
+            // 模態框關閉
+            document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+            document.querySelector('.close-modal-icon').addEventListener('click', closeModal);
+            document.getElementById('imageModal').addEventListener('click', (e) => { if(e.target === document.getElementById('imageModal')) closeModal(); });
+            
+            // 響應式調整
+            window.addEventListener('resize', () => { adjustTopNavPosition(); updateFooterPadding(); if(leafletMap) leafletMap.invalidateSize(); if(window.lucide) lucide.createIcons(); });
+            setTimeout(updateFooterPadding, 100);
+            if(window.lucide) lucide.createIcons();
+        });
+    </script>
+{% endblock %}

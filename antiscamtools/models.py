@@ -13,7 +13,7 @@ class AntiScamTool(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.top1_contact
 
 class UsefulContact(models.Model):
     id = models.BigAutoField(primary_key=True)	# AutoIncrementID
@@ -24,7 +24,7 @@ class UsefulContact(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.institute
 
 
 class ScamScript(models.Model):
@@ -40,7 +40,7 @@ class ScamScript(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.topic
 
 class AntiScamApp(models.Model):
     id = models.BigAutoField(primary_key=True)	# AutoIncrementID
@@ -54,4 +54,4 @@ class AntiScamApp(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.app_name

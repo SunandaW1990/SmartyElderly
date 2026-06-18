@@ -5,4 +5,5 @@ app_name = 'antiscamtools'
 
 urlpatterns = [
     path('antiscamtool.html', views.antiscamtool, name='antiscamtool'),
+    path('tools.html', views.tools, name='tools'),
 ]

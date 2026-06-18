@@ -47,12 +47,13 @@ DJANGO_APPS = [
 ]
 
 APPLICATION_APPS = [
+    'accounts.apps.AccountsConfig', 
     'manuals.apps.ManualsConfig',
     'stories.apps.StoriesConfig',
     'courses.apps.CoursesConfig',
     'antiscamtools.apps.AntiscamtoolsConfig',
     'guides.apps.GuidesConfig',
-    'subscribes.apps.SubscribesConfig',
+    #'subscribes.apps.SubscribesConfig',
     'index_photo.apps.IndexPhotoConfig',
 ]
 
@@ -169,3 +170,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/welcome/'
+LOGOUT_REDIRECT_URL = '/'

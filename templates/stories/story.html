@@ -1,5 +1,1890 @@
-<html>
-    <body>
-        {{input}}
-    </body>
-</html>
+{% extends "base.html" %}
+{% block title %} 故事角 · 耆醒老友記 {% endblock %}
+{% block stylesheet %}
+    <style>
+        /* ========== 全域動畫與背景 ========== */
+        @keyframes floatOrb1 {
+            0% { transform: translate(0%, 0%) scale(1); }
+            25% { transform: translate(15%, 20%) scale(1.2); }
+            50% { transform: translate(25%, -5%) scale(1.3); }
+            75% { transform: translate(-10%, 15%) scale(1.15); }
+            100% { transform: translate(0%, 0%) scale(1); }
+        }
+        @keyframes floatOrb2 {
+            0% { transform: translate(0%, 0%) scale(1); }
+            30% { transform: translate(-20%, 15%) scale(1.25); }
+            60% { transform: translate(-30%, -10%) scale(1.35); }
+            85% { transform: translate(10%, 20%) scale(1.2); }
+            100% { transform: translate(0%, 0%) scale(1); }
+        }
+        @keyframes floatOrb3 {
+            0% { transform: translate(0%, 0%) scale(1); }
+            20% { transform: translate(18%, -15%) scale(1.22); }
+            50% { transform: translate(5%, 25%) scale(1.35); }
+            80% { transform: translate(-15%, -5%) scale(1.18); }
+            100% { transform: translate(0%, 0%) scale(1); }
+        }
+        @keyframes breathe {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(55, 107, 126, 0.5); }
+            50% { box-shadow: 0 0 0 20px rgba(55, 107, 126, 0); }
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* ========== 字體 rem 基礎 ========== */
+        html { font-size: 18px; }
+        html.font-small { font-size: 16px; }
+        html.font-standard { font-size: 18px; }
+        html.font-xlarge { font-size: 24px; }
+
+        /* ========== 8個主題 ========== */
+        body.theme-pina-coloda {
+            --bg-body: #FFF9F5; --text-main: #1A1A2E; --text-secondary: rgba(26,26,46,0.7);
+            --card-bg: rgba(255,249,245,0.7); --card-bg-hover: rgba(255,249,245,0.9);
+            --card-border: rgba(255,94,77,0.35); --topbar-bg: rgba(255,249,245,0.95);
+            --primary: #FF5E4D; --primary-light: #FF7B6E; --accent: #4D9DE0;
+            --orb-1-gradient: radial-gradient(circle, #FF5E4D, #FF7B6E);
+            --orb-2-gradient: radial-gradient(circle, #4D9DE0, #72B0E8);
+            --orb-3-gradient: radial-gradient(circle, #FFD166, #FFE0A3);
+            --orb-opacity: 0.5;
+        }
+        body.theme-dark-stormy {
+            --bg-body: #FDF8F0; --text-main: #1E293B; --text-secondary: #475569;
+            --card-bg: rgba(255,255,255,0.25); --card-bg-hover: rgba(255,255,255,0.4);
+            --card-border: rgba(55,107,126,0.25); --topbar-bg: rgba(253,248,240,0.95);
+            --primary: #376B7E; --primary-light: #5B8A9B; --accent: #C87A65;
+            --orb-1-gradient: radial-gradient(circle, #376B7E, #5B8A9B);
+            --orb-2-gradient: radial-gradient(circle, #C87A65, #D99E7C);
+            --orb-3-gradient: radial-gradient(circle, #F3EFE6, #E8DBC8);
+            --orb-opacity: 0.7;
+        }
+        body.theme-glass-window {
+            --bg-body: #F2F2F6; --text-main: #1C1C1E; --text-secondary: #6C6C70;
+            --card-bg: rgba(255,255,255,0.68); --card-bg-hover: rgba(255,255,255,0.85);
+            --card-border: rgba(0,0,0,0.1); --topbar-bg: rgba(242,242,246,0.95);
+            --primary: #53248d; --primary-light: #5E5CE6; --accent: #FF9F0A;
+            --orb-1-gradient: radial-gradient(circle, #5E5CE6, #007AFF);
+            --orb-2-gradient: radial-gradient(circle, #FF9F0A, #FFCC00);
+            --orb-3-gradient: radial-gradient(circle, #AF52DE, #007AFF);
+            --orb-opacity: 0.45;
+        }
+        body.theme-forest-bath {
+            --bg-body: #FDF8F0; --text-main: #2C2C2C; --text-secondary: rgba(44,44,44,0.7);
+            --card-bg: rgba(253,248,240,0.78); --card-bg-hover: rgba(253,248,240,0.95);
+            --card-border: rgba(200,122,101,0.35); --topbar-bg: rgba(253,248,240,0.95);
+            --primary: #C87A65; --primary-light: #D99E7C; --accent: #E8A735;
+            --orb-1-gradient: radial-gradient(circle, #C87A65, #D99E7C);
+            --orb-2-gradient: radial-gradient(circle, #E8A735, #F5C88F);
+            --orb-3-gradient: radial-gradient(circle, #FDF8F0, #F0E2D0);
+            --orb-opacity: 0.42;
+        }
+        body.theme-mint-garden {
+            --bg-body: #E9F2EC; --text-main: #222522; --text-secondary: rgba(34,37,34,0.7);
+            --card-bg: rgba(233,242,236,0.62); --card-bg-hover: rgba(233,242,236,0.85);
+            --card-border: rgba(46,77,49,0.3); --topbar-bg: rgba(233,242,236,0.95);
+            --primary: #2E4D31; --primary-light: #4A6B4E; --accent: #E5AD53;
+            --orb-1-gradient: radial-gradient(circle, #2E4D31, #4A6B4E);
+            --orb-2-gradient: radial-gradient(circle, #E5AD53, #F0C67A);
+            --orb-3-gradient: radial-gradient(circle, #E9F2EC, #D0E0D6);
+            --orb-opacity: 0.5;
+        }
+        body.theme-apple-cider {
+            --bg-body: #F5F5F7; --text-main: #1C1C1E; --text-secondary: #6C6C70;
+            --card-bg: rgba(255,255,255,0.75); --card-bg-hover: rgba(255,255,255,0.92);
+            --card-border: rgba(0,0,0,0.08); --topbar-bg: rgba(245,245,247,0.95);
+            --primary: #007AFF; --primary-light: #5E5CE6; --accent: #FF9F0A;
+            --orb-1-gradient: radial-gradient(circle, #007AFF, #5E5CE6);
+            --orb-2-gradient: radial-gradient(circle, #FF9F0A, #FFCC00);
+            --orb-3-gradient: radial-gradient(circle, #AF52DE, #007AFF);
+            --orb-opacity: 0.08;
+        }
+        body.theme-nightcap {
+            --bg-body: #121212; --text-main: #FFD60A; --text-secondary: #CCCCCC;
+            --card-bg: rgba(30,30,35,0.95); --card-bg-hover: rgba(30,30,35,0.98);
+            --card-border: rgba(255,255,255,0.2); --topbar-bg: rgba(18,18,18,0.96);
+            --primary: #FFD60A; --primary-light: #FFE55C; --accent: #FF9F0A;
+            --orb-1-gradient: radial-gradient(circle, #3a3a3a, #2a2a2a);
+            --orb-2-gradient: radial-gradient(circle, #3a3a3a, #2a2a2a);
+            --orb-3-gradient: radial-gradient(circle, #2a2a2a, #1a1a1a);
+            --orb-opacity: 0.08;
+        }
+        body.theme-sunrise {
+            --bg-body: #FFFFFF; --text-main: #000000; --text-secondary: #333333;
+            --card-bg: #FFFFFF; --card-bg-hover: #F8F8F8;
+            --card-border: #000000; --topbar-bg: #FFFFFF;
+            --primary: #0000FF; --primary-light: #3333FF;
+            --accent: #FF0000; --orb-1-gradient: radial-gradient(circle, #eee, #ddd);
+            --orb-2-gradient: radial-gradient(circle, #eee, #ddd);
+            --orb-3-gradient: radial-gradient(circle, #ddd, #ccc);
+            --orb-opacity: 0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.02);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.1);
+            --shadow-lg: 0 16px 32px rgba(0,0,0,0.12);
+            --radius-lg: 2rem;
+            --radius-md: 1.5rem;
+            --blur-amount: blur(24px) saturate(180%);
+            background: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            transition: background 0.3s ease, color 0.2s ease;
+            min-height: 100vh;
+            font-weight: 450;
+            -webkit-font-smoothing: antialiased;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", system-ui, sans-serif;
+        }
+
+        .dynamic-orbs {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; overflow: hidden; pointer-events: none;
+        }
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(110px);
+            opacity: var(--orb-opacity); will-change: transform;
+        }
+        .orb-1 { width: 70vw; height: 70vw; top: -30%; left: -30%; background: var(--orb-1-gradient); animation: floatOrb1 16s ease-in-out infinite; }
+        .orb-2 { width: 60vw; height: 60vw; bottom: -25%; right: -25%; background: var(--orb-2-gradient); animation: floatOrb2 18s ease-in-out infinite; }
+        .orb-3 { width: 55vw; height: 55vw; top: 30%; left: 70%; background: var(--orb-3-gradient); animation: floatOrb3 14s ease-in-out infinite; }
+        .noise-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background-image: radial-gradient(circle at 20% 30%, rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 32px 32px; pointer-events: none;
+        }
+
+        /* 頂部欄 */
+        .mac-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(24px);
+            background: var(--topbar-bg);
+            border-bottom: none;
+            padding: 0.5rem 0;
+            margin-bottom: 0;
+            line-height: 0;
+        }
+        .topbar-container {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            line-height: normal;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
+        .home-icon { width: 2rem; height: 2rem; stroke: var(--primary); stroke-width: 1.7; fill: none; transition: transform 0.2s; }
+        .home-icon:hover { transform: scale(1.05); }
+        .brand-text { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+        .brand-logo { font-weight: 700; font-size: 1.6rem; letter-spacing: -0.02em; color: var(--text-main); }
+        .brand-en { font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); }
+        
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .login-btn {
+            background: rgba(55, 107, 126, 0.12);
+            border: none;
+            cursor: pointer;
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 980px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0 1rem;
+            font-weight: 520;
+            font-size: 0.9rem;
+            color: var(--primary);
+            order: 4;
+        }
+        .login-btn svg { width: 1.2rem; height: 1.2rem; stroke: var(--primary); stroke-width: 1.7; fill: none; }
+        .login-btn:hover { background: rgba(55, 107, 126, 0.22); transform: scale(1.02); }
+        
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 980px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            order: 3;
+        }
+        .icon-btn svg { width: 1.4rem; height: 1.4rem; stroke: var(--text-main); stroke-width: 1.7; fill: none; }
+        .icon-btn:hover { background: rgba(55, 107, 126, 0.15); transform: scale(1.02); }
+        
+        .font-switch-group {
+            display: inline-flex;
+            background: rgba(55,107,126,0.08);
+            border-radius: 60px;
+            padding: 0.2rem;
+            gap: 0.2rem;
+            order: 2;
+        }
+        .font-switch-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.3rem 0.7rem;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .font-switch-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .font-switch-btn:hover:not(.active) {
+            background: rgba(55,107,126,0.15);
+        }
+        .theme-slider-widget {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 0.2rem 0.6rem;
+            border-radius: 60px;
+            border: 0.5px solid rgba(255, 255, 255, 0.3);
+            order: 1;
+        }
+        .theme-slider-widget .slider-label { font-size: 0.7rem; font-weight: 500; color: var(--text-secondary); }
+        .theme-slider-widget .theme-slider { -webkit-appearance: none; width: 80px; height: 4px; border-radius: 4px; background: var(--primary); outline: none; cursor: pointer; }
+        .theme-slider-widget .theme-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--primary); border: 2px solid white; cursor: pointer; }
+        .theme-slider-widget .slider-hint { font-size: 0.6rem; color: var(--text-secondary); padding: 0.1rem 0.3rem; background: rgba(0, 0, 0, 0.05); border-radius: 30px; }
+
+        /* 頂部導航欄 */
+        .top-nav-bar {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--card-border);
+            border-top: none;
+            padding: 0.6rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            margin-top: 0;
+            line-height: 0;
+        }
+        .top-nav-bar.hide {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .top-nav-container {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.25rem;
+            line-height: normal;
+        }
+        .top-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+            padding: 0.4rem 0.6rem;
+            border-radius: 1.5rem;
+            transition: all 0.2s;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            flex: 1 0 auto;
+            min-width: 70px;
+        }
+        .top-nav-item svg { width: 1.5rem; height: 1.5rem; stroke: currentColor; stroke-width: 1.7; }
+        .top-nav-item span { font-size: 0.8rem; font-weight: 500; }
+        .top-nav-item:hover { background: rgba(55,107,126,0.12); color: var(--primary); transform: translateY(-2px); }
+
+        /* 控制中心面板 */
+        #controlCenterPanel {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            z-index: 200;
+            background: var(--card-bg-hover);
+            backdrop-filter: var(--blur-amount);
+            border-radius: 28px;
+            padding: 1.2rem;
+            width: 300px;
+            border: 0.5px solid var(--card-border);
+            box-shadow: var(--shadow-lg);
+            display: none;
+        }
+        #controlCenterPanel h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.8rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+        .theme-group-8 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+        .theme-option-btn {
+            padding: 0.35rem 0.5rem;
+            border-radius: 40px;
+            background: rgba(55,107,126,0.08);
+            border: 0.5px solid var(--card-border);
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 470;
+            color: var(--text-main);
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .theme-option-btn:hover { background: rgba(55,107,126,0.2); }
+        .hide-tools-btn {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 40px;
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+        }
+        .close-panel-btn {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 40px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* 主內容區 */
+        .main-container {
+            max-width: 1300px;
+            margin: 1.5rem auto 0;
+            padding: 0 1.5rem;
+        }
+
+        /* ========== 自訂彈窗 ========== */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s;
+        }
+        .custom-modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .custom-modal {
+            background: var(--card-bg);
+            backdrop-filter: var(--blur-amount);
+            border-radius: var(--radius-lg);
+            border: 0.5px solid var(--card-border);
+            box-shadow: var(--shadow-lg);
+            max-width: 90%;
+            width: 400px;
+            padding: 1.5rem;
+            text-align: center;
+            animation: modalFadeIn 0.2s ease;
+        }
+        .custom-modal-icon {
+            margin-bottom: 1rem;
+        }
+        .custom-modal-icon svg {
+            width: 48px;
+            height: 48px;
+            stroke: var(--primary);
+            stroke-width: 1.5;
+        }
+        .custom-modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--text-main);
+        }
+        .custom-modal-message {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        .custom-modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .custom-modal-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .custom-modal-btn.confirm {
+            background: var(--primary);
+            color: white;
+        }
+        .custom-modal-btn.cancel {
+            background: rgba(55, 107, 126, 0.15);
+            color: var(--text-main);
+            border: 0.5px solid var(--card-border);
+        }
+        .custom-modal-btn.confirm:hover {
+            transform: scale(1.02);
+            filter: brightness(1.05);
+        }
+        .custom-modal-btn.cancel:hover {
+            background: rgba(55, 107, 126, 0.25);
+        }
+
+        /* ========== 故事角專有樣式 ========== */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 620;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .page-header p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .share-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .share-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .subscribe-tip-btn {
+            background: rgba(0, 122, 255, 0.15);
+            border: 1px solid #007AFF;
+            border-radius: 60px;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #007AFF;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+        .subscribe-tip-btn:hover {
+            background: #007AFF;
+            color: white;
+            transform: scale(1.02);
+        }
+        .share-sub {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .method-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 1rem;
+        }
+        .method-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.8rem;
+            border-radius: 60px;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            font-size: 1rem;
+            font-weight: 550;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .method-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .method-btn.active svg {
+            stroke: white;
+        }
+        .method-btn svg {
+            width: 1.4rem;
+            height: 1.4rem;
+            stroke: currentColor;
+        }
+        .method-btn:hover {
+            transform: translateY(-2px);
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .share-card {
+            background: var(--card-bg);
+            backdrop-filter: var(--blur-amount);
+            border-radius: var(--radius-lg);
+            border: 0.5px solid var(--card-border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .voice-recorder-section {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border: 0.5px solid var(--card-border);
+            backdrop-filter: blur(4px);
+        }
+        .voice-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 590;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        .recorder-timer {
+            font-size: 2rem;
+            font-weight: 590;
+            font-family: monospace;
+            text-align: center;
+            letter-spacing: 4px;
+            background: var(--card-bg);
+            padding: 0.8rem;
+            border-radius: 60px;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        .recorder-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-bottom: 0.8rem;
+        }
+        .recorder-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            background: var(--card-bg-hover);
+            color: var(--text-main);
+            border: 0.5px solid var(--card-border);
+            transition: all 0.2s;
+        }
+        .recorder-btn:hover:not(:disabled) {
+            transform: scale(1.02);
+        }
+        .recorder-btn.record-btn { background: #FF3B30; color: white; border: none; }
+        .recorder-btn.record-btn.recording { animation: pulse 1s infinite; }
+        .recorder-btn.stop-btn { background: #FF9500; color: white; }
+        .recorder-btn.play-btn { background: #34C759; color: white; }
+        .recorder-btn.clear-btn { background: #8E8E93; color: white; }
+        .recorder-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .recorder-status {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .text-form-section {
+            transition: all 0.3s ease;
+        }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            font-size: 1rem;
+            border-radius: 1rem;
+            border: 1px solid var(--card-border);
+            background: rgba(255,255,255,0.5);
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(55,107,126,0.2);
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin: 1rem 0;
+        }
+        .checkbox-group input { width: 1.2rem; height: 1.2rem; cursor: pointer; }
+
+        .submit-btn-wrapper {
+            margin-top: 1rem;
+        }
+        .submit-btn {
+            width: 100%;
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 0.9rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .submit-btn:hover {
+            transform: scale(1.01);
+            background: #005BBF;
+            box-shadow: var(--shadow-md);
+        }
+
+        .login-banner {
+            background: rgba(255, 149, 0, 0.15);
+            border-left: 4px solid #FF9500;
+            border-radius: 1rem;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            backdrop-filter: blur(8px);
+        }
+        .login-banner svg { flex-shrink: 0; stroke: #FF9500; }
+        .login-banner-text { flex: 1; font-size: 0.9rem; }
+        .login-banner-btn {
+            background: #FF9500;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .login-banner-btn:hover {
+            transform: scale(1.02);
+            background: #E08600;
+        }
+
+        .stories-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .stories-grid { display: flex; flex-direction: column; gap: 1.2rem; }
+        .story-card {
+            background: var(--card-bg);
+            backdrop-filter: var(--blur-amount);
+            border-radius: var(--radius-md);
+            border: 0.5px solid var(--card-border);
+            padding: 1.2rem;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .story-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .story-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .story-author { display: flex; align-items: center; gap: 0.4rem; }
+        .author-name { font-weight: 500; }
+        .anonymous-badge {
+            font-size: 0.7rem;
+            padding: 0.1rem 0.6rem;
+            background: rgba(55,107,126,0.15);
+            border-radius: 20px;
+            color: var(--primary);
+        }
+        .story-date { font-size: 0.7rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.2rem; }
+        .story-title { font-size: 1.2rem; font-weight: 620; margin-bottom: 0.6rem; }
+        .story-content { color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.8rem; }
+        .story-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.8rem;
+            background: rgba(55,107,126,0.1);
+            border-radius: 20px;
+            color: var(--primary);
+        }
+        .story-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.8rem;
+            padding-top: 0.6rem;
+            border-top: 0.5px solid var(--card-border);
+        }
+        .story-like {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .story-like:hover {
+            transform: scale(1.05);
+        }
+        .story-like.liked svg { fill: #E84040; stroke: #E84040; }
+
+        .help-fab {
+            position: fixed;
+            bottom: 130px;
+            right: 20px;
+            backdrop-filter: blur(20px);
+            background: var(--card-bg);
+            border: 0.5px solid var(--card-border);
+            border-radius: 50%;
+            width: 3.5rem;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 90;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
+            animation: breathe 2.2s ease-in-out infinite;
+        }
+        .help-fab svg { width: 1.8rem; height: 1.8rem; stroke: var(--primary); stroke-width: 1.7; }
+        .help-fab:hover { transform: scale(1.08); background: var(--primary); animation: none; }
+        .help-fab:hover svg { stroke: white; }
+
+        .footer {
+            max-width: 1300px;
+            margin: 2rem auto 1rem;
+            padding: 1rem 1.5rem;
+            border-top: 0.5px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .glass-button {
+            backdrop-filter: blur(12px);
+            background: rgba(55, 107, 126, 0.1);
+            border: 0.5px solid var(--card-border);
+            border-radius: 980px;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .glass-button:hover {
+            transform: scale(1.02);
+            background: rgba(55, 107, 126, 0.2);
+        }
+
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255,255,245,0.94);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+            padding: 0.4rem 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(0);
+        }
+        .bottom-nav-bar.hide {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .bottom-nav-container {
+            width: 100%;
+            max-width: 1300px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0.2rem 1rem 0.4rem;
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            flex: 1;
+            padding: 0.2rem 0;
+            border-radius: 1.5rem;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+        .bottom-nav-item svg { width: 1.4rem; height: 1.4rem; stroke: currentColor; stroke-width: 1.7; }
+        .bottom-nav-item span { font-size: 0.7rem; font-weight: 500; }
+        .bottom-nav-item:hover { color: var(--primary); background: rgba(55,107,126,0.1); transform: translateY(-2px); }
+
+        @media (max-width: 780px) {
+            .topbar-container { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+            .topbar-left { justify-content: center; }
+            .topbar-right { justify-content: center; flex-wrap: wrap; }
+            .brand-logo { font-size: 1.3rem; }
+            .brand-en { font-size: 0.7rem; }
+            .main-container { padding: 0 1rem; }
+            .page-header h1 { font-size: 1.6rem; }
+            .share-header { flex-direction: column; align-items: flex-start; }
+            .share-card { padding: 1rem; }
+            .method-btn { padding: 0.6rem; font-size: 0.85rem; }
+            .recorder-timer { font-size: 1.6rem; }
+            .recorder-btn { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
+            .story-header { flex-direction: column; align-items: flex-start; }
+            .footer { flex-direction: column; text-align: center; margin: 1.5rem 1rem 0.5rem; padding: 0.8rem; }
+            .top-nav-container {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0.2rem;
+                padding: 0 0.3rem;
+            }
+            .top-nav-item { min-width: auto; padding: 0.3rem 0.2rem; }
+            .top-nav-item svg { width: 1.2rem; height: 1.2rem; }
+            .top-nav-item span { font-size: 0.65rem; }
+            .theme-slider-widget .theme-slider { width: 60px; }
+            .font-switch-btn { padding: 0.2rem 0.5rem; font-size: 0.65rem; }
+            .login-btn { padding: 0 0.7rem; font-size: 0.8rem; }
+            .bottom-nav-item svg { width: 1.2rem; height: 1.2rem; }
+            .bottom-nav-item span { font-size: 0.6rem; }
+            .help-fab { width: 3rem; height: 3rem; bottom: 100px; right: 15px; }
+            .help-fab svg { width: 1.5rem; height: 1.5rem; }
+            #controlCenterPanel { width: 280px; right: 10px; bottom: 80px; }
+            .custom-modal { width: 85%; padding: 1.2rem; }
+        }
+        
+        /* ========== 空狀態樣式 ========== */
+        .empty-stories {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            border: 0.5px solid var(--card-border);
+        }
+        .empty-stories svg {
+            width: 4rem;
+            height: 4rem;
+            stroke: var(--text-secondary);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        .empty-stories p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+    </style>
+{%endblock%}
+
+{% block content %}
+    <!-- 自訂彈窗容器 -->
+    <div id="customModal" class="custom-modal-overlay">
+        <div class="custom-modal">
+            <div class="custom-modal-icon"><i data-lucide="info"></i></div>
+            <div class="custom-modal-title">提示</div>
+            <div class="custom-modal-message"></div>
+            <div class="custom-modal-buttons">
+                <button class="custom-modal-btn confirm">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容區 -->
+    <div class="main-container">
+        <div class="page-header">
+            <h1>故事角</h1>
+            <p>你嘅經歷，可能係下一個人嘅救命稻草 — 一齊分享，互相守護</p>
+        </div>
+
+        <!-- 登入橫幅 - Django 改造時根據 user.is_authenticated 顯示/隱藏 -->
+        <div class="login-banner" id="loginBanner">
+            <i data-lucide="alert-circle"></i>
+            <div class="login-banner-text">
+                <strong>需要登入先可以分享故事</strong><br>
+                登入成為會員，你嘅故事先可以提交審核
+            </div>
+            <button class="login-banner-btn" id="bannerLoginBtn">立即登入 / 註冊</button>
+        </div>
+
+        <div class="share-card">
+            <div class="share-header">
+                <h2><i data-lucide="edit-3"></i> 分享你嘅經歷</h2>
+                <button id="subscribeTipBtn" class="subscribe-tip-btn">
+                    <i data-lucide="user-plus"></i> 訂閱 / 註冊
+                </button>
+            </div>
+            <div class="share-sub">請選擇分享方式，語音同打字二選一</div>
+            
+            <div class="method-selector">
+                <button id="methodVoiceBtn" class="method-btn active">
+                    <i data-lucide="mic"></i> 用語音講故事
+                </button>
+                <button id="methodTextBtn" class="method-btn">
+                    <i data-lucide="keyboard"></i> 打字分享
+                </button>
+            </div>
+
+            <div id="voiceSection" class="voice-recorder-section">
+                <div class="voice-title"><i data-lucide="mic"></i> <span>用語音講故事</span></div>
+                <div class="recorder-timer" id="recorderTimer">00:00</div>
+                <div class="recorder-buttons">
+                    <button id="recordBtn" class="recorder-btn record-btn"><i data-lucide="mic"></i> 開始錄音</button>
+                    <button id="stopBtn" class="recorder-btn stop-btn" disabled><i data-lucide="square"></i> 停止</button>
+                    <button id="playBtn" class="recorder-btn play-btn" disabled><i data-lucide="play"></i> 重聽</button>
+                    <button id="clearBtn" class="recorder-btn clear-btn" disabled><i data-lucide="trash-2"></i> 清除</button>
+                </div>
+                <div id="recorderStatus" class="recorder-status"><i data-lucide="info"></i> 點擊「開始錄音」講出你嘅故事</div>
+            </div>
+
+            <form name="storyform" action={% url "stories:story" %} method="post">
+            {% csrf_token %}
+            <input type="hidden" name="recType" value="text">
+            <input type="hidden" name="subscriber_id" value="{{ user.id }}"">   
+
+                <div id="textSection" class="text-form-section" style="display: none;">
+                    <!-- Django 改造時，form 內加入 {% csrf_token %} -->
+                    <div class="form-group">
+                        <label>標題 <span style="color:#E84040;">*</span></label>
+                        <input type="text" id="storyTitle" name="title" placeholder="例如：我差啲俾假兒子呃咗" maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label>你嘅故事 <span style="color:#E84040;">*</span> (最少20字)</label>
+                        <textarea id="storyContent" name="content" rows="4" placeholder="請分享你嘅經歷... 越詳細越能幫助其他人 (最少20字)"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>分類</label>
+                        <select id="storyCategory" name = "category">
+                            <option value="電話騙案">電話騙案</option>
+                            <option value="網上購物">網上購物</option>
+                            <option value="假冒官員">假冒官員</option>
+                            <option value="投資騙局">投資騙局</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="anonymousCheckbox" name="is_anonymous">
+                        <label>匿名發表（唔顯示姓名）</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="consentCheckbox">
+                        <label>我同意故事經審核後可於網站展示 <span style="color:#E84040;">*</span></label>
+                    </div>
+                </div>
+            </form>
+            <div class="submit-btn-wrapper">
+                <button id="submitBtn" class="submit-btn">用語音提交故事</button>
+            </div>
+        </div>
+
+        <div class="stories-section">
+            <h2><i data-lucide="users"></i> 街坊故事分享</h2>
+            <div class="stories-grid" id="storiesGrid">
+                <!-- 
+                ============================================
+                DJANGO 改造指引：
+                將此區域改為 Django 模板語法：
+                -->
+
+                {% if stories %}
+                    {% for story in stories %}
+                        <div class="story-card" data-story-id="{{ story.id }}">
+                            <div class="story-header">
+                                <div class="story-author">
+                                    <i data-lucide="user"></i>
+                                    <span class="author-name">{{ story.get_display_name }}</span>
+                                    {% if story.is_anonymous %}
+                                        <span class="anonymous-badge">匿名</span>
+                                    {% endif %}
+                                </div>
+                                <div class="story-date">
+                                    <i data-lucide="calendar" style="width:12px; height:12px;"></i>
+                                    {{ story.created_at|date:"Y-m-d" }}
+                                </div>
+                            </div>
+                            <div class="story-title">{{ story.title }}</div>
+                            <div class="story-content">{{ story.content|linebreaksbr|truncatechars:500 }}</div>
+                            <div class="story-tag">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px; height:12px;">...</svg>
+                                <span>{{ story.category }}</span>
+                            </div>
+                            <div class="story-actions">
+                                <div class="story-like" data-story-id="{{ story.id }}">
+                                    <i data-lucide="heart"></i>
+                                    <span class="like-count">{{ story.likes_count }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-stories">
+                        <i data-lucide="heart"></i>
+                        <p>暫時未有故事，做第一個分享者啦！</p>
+                    </div>
+                {% endif %}
+
+                <!--
+                ============================================
+                -->
+                
+                <!-- 靜態示範故事 - 純前端版本用，Django 改造時刪除此區 -->
+{%comment%}
+                <div class="story-card" data-story-id="1">
+                    <div class="story-header">
+                        <div class="story-author"><i data-lucide="user"></i><span class="author-name">匿名街坊</span><span class="anonymous-badge">匿名</span></div>
+                        <div class="story-date"><i data-lucide="calendar" style="width:12px; height:12px;"></i> 2026-05-15</div>
+                    </div>
+                    <div class="story-title">差啲俾銀行職員呃走20萬</div>
+                    <div class="story-content">上個月收到自稱匯豐銀行職員電話，話我戶口有異常交易，要我提供密碼確認。好彩我個仔之前教過我，銀行唔會打電話問密碼。我即刻收線，打返去匯豐熱線問，先知係騙局。</div>
+                    <div class="story-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px; height:12px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>電話騙案</span></div>
+                    <div class="story-actions"><div class="story-like" data-story-id="1"><i data-lucide="heart"></i><span class="like-count">47</span></div></div>
+                </div>
+                <div class="story-card" data-story-id="2">
+                    <div class="story-header">
+                        <div class="story-author"><i data-lucide="user"></i><span class="author-name">李太</span></div>
+                        <div class="story-date"><i data-lucide="calendar" style="width:12px; height:12px;"></i> 2026-05-20</div>
+                    </div>
+                    <div class="story-title">假冒我個仔嚟電，把聲好似</div>
+                    <div class="story-content">真係好恐怖，騙徒用AI扮我個仔把聲，話佢被人捉咗要贖金。我差啲就轉帳，好彩我太太提醒我打俾阿仔先。一打去，阿仔話佢喺公司好好地。</div>
+                    <div class="story-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px; height:12px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>電話騙案</span></div>
+                    <div class="story-actions"><div class="story-like" data-story-id="2"><i data-lucide="heart"></i><span class="like-count">128</span></div></div>
+                </div>
+                <div class="story-card" data-story-id="3">
+                    <div class="story-header">
+                        <div class="story-author"><i data-lucide="user"></i><span class="author-name">王先生</span></div>
+                        <div class="story-date"><i data-lucide="calendar" style="width:12px; height:12px;"></i> 2026-05-10</div>
+                    </div>
+                    <div class="story-title">Facebook買二手傢俬俾人呃訂金</div>
+                    <div class="story-content">喺Facebook見到平價二手梳化，賣家要我俾$500訂金留貨。我過數之後，對方就失蹤咗。後來先知嗰個係假帳戶。</div>
+                    <div class="story-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px; height:12px;"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span>網上購物</span></div>
+                    <div class="story-actions"><div class="story-like" data-story-id="3"><i data-lucide="heart"></i><span class="like-count">32</span></div></div>
+                </div>
+{%endcomment%}                
+            </div>
+        </div>
+    </div>
+
+    <div class="help-fab" id="helpFabBtn" aria-label="求助">
+        <i data-lucide="alert-triangle"></i>
+    </div>
+
+    {%comment%}
+    <footer class="footer" id="footer">
+        <span>版權所有 © 2026 Smarty Elderly. 保留所有權利</span>
+        <button class="glass-button" id="privacyBtn" aria-label="隱私權政策">
+            <i data-lucide="lock"></i> 隱私權政策
+        </button>
+    </footer>
+    {%endcomment%}
+
+    <div class="bottom-nav-bar" id="bottomNavBar">
+        <div class="bottom-nav-container">
+            <button class="bottom-nav-item" data-page="learns"><i data-lucide="book-open"></i><span>說明書</span></button>
+            <button class="bottom-nav-item" data-page="tools"><i data-lucide="star"></i><span>工具箱</span></button>
+            <button class="bottom-nav-item" data-page="emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
+            <button class="bottom-nav-item" data-page="courses"><i data-lucide="compass"></i><span>課程</span></button>
+            <button class="bottom-nav-item" data-page="subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="index"><i data-lucide="home"></i><span>主頁</span></button>
+        </div>
+    </div>
+
+{%comment%}
+   <form name="storyform" action={% url "stories:story" %} method="post">
+{% csrf_token %}   
+  //      <input type="hidden" name="title" value="CDE">
+        <input type="hidden" name="content" value="">
+        <input type="hidden" name="category" value="">
+        <input type="hidden" name="speech_url" value="">        
+        <input type="hidden" name="is_anonymous" value="">     
+   </form>
+{%endcomment%}
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        // ========== 自訂彈窗系統 ==========
+        const modalOverlay = document.getElementById('customModal');
+        const modalMessage = document.querySelector('.custom-modal-message');
+        const modalTitle = document.querySelector('.custom-modal-title');
+        const modalIcon = document.querySelector('.custom-modal-icon i');
+
+        function showAlert(message, title = '提示', iconName = 'info') {
+            return new Promise((resolve) => {
+                modalTitle.innerText = title;
+                modalMessage.innerText = message;
+                if (modalIcon) {
+                    modalIcon.setAttribute('data-lucide', iconName);
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }
+                const confirmBtn = modalOverlay.querySelector('.confirm');
+                const cancelBtn = modalOverlay.querySelector('.cancel');
+                if (cancelBtn) cancelBtn.style.display = 'none';
+                confirmBtn.onclick = () => {
+                    modalOverlay.classList.remove('active');
+                    resolve();
+                };
+                modalOverlay.classList.add('active');
+            });
+        }
+
+        function showConfirm(message, title = '確認', onConfirm, iconName = 'help-circle') {
+            modalTitle.innerText = title;
+            modalMessage.innerText = message;
+            if (modalIcon) {
+                modalIcon.setAttribute('data-lucide', iconName);
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+            let confirmBtn = modalOverlay.querySelector('.confirm');
+            let cancelBtn = modalOverlay.querySelector('.cancel');
+            if (!cancelBtn) {
+                const btnsDiv = modalOverlay.querySelector('.custom-modal-buttons');
+                cancelBtn = document.createElement('button');
+                cancelBtn.className = 'custom-modal-btn cancel';
+                cancelBtn.innerText = '取消';
+                btnsDiv.appendChild(cancelBtn);
+            }
+            cancelBtn.style.display = 'inline-flex';
+            confirmBtn.innerText = '確定';
+            confirmBtn.onclick = () => {
+                modalOverlay.classList.remove('active');
+                if (onConfirm) onConfirm();
+            };
+            cancelBtn.onclick = () => {
+                modalOverlay.classList.remove('active');
+            };
+            modalOverlay.classList.add('active');
+        }
+
+        // ========== 模擬登入功能 (第一階段) ==========
+        // Django 改造時：改為檢查 Django session，使用 redirect 到 login url
+        function performMockLogin() {
+            //localStorage.setItem('mock_logged_in', 'true');
+            //showAlert('模擬登入成功！頁面即將重新整理，你現在可以分享故事、錄音、點讚。', '登入成功', 'check-circle')
+            //    .then(() => {
+            //        location.reload();
+            //    });
+            {% if not user.is_authenticated %}
+                window.location.href = '{% url "login" %}'
+            {% endif %}
+        }
+
+        function handleLoginClick() {
+            showConfirm(
+                '此為測試版本，點擊「確定」將模擬登入（無需真實帳號）。\n\n登入後即可體驗完整功能。',
+                '模擬登入',
+                performMockLogin,
+                'log-in'
+            );
+        }
+
+        // ========== 全域 UI 控制 ==========
+        const GLOBAL_THEMES = [
+            'theme-pina-coloda', 'theme-dark-stormy', 'theme-glass-window', 'theme-forest-bath',
+            'theme-mint-garden', 'theme-apple-cider', 'theme-nightcap', 'theme-sunrise'
+        ];
+        function setThemeByIndex(index) {
+            GLOBAL_THEMES.forEach(t => document.body.classList.remove(t));
+            document.body.classList.add(GLOBAL_THEMES[index]);
+            const slider = document.getElementById('themeSlider');
+            if (slider) slider.value = index;
+            localStorage.setItem('selected_theme_index', index);
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        function initTheme() {
+            const saved = localStorage.getItem('selected_theme_index');
+            setThemeByIndex(saved !== null ? parseInt(saved) : 5);
+        }
+
+        function setFontSize(size) {
+            const html = document.documentElement;
+            html.classList.remove('font-small', 'font-standard', 'font-xlarge');
+            if (size === 'small') html.classList.add('font-small');
+            else if (size === 'xlarge') html.classList.add('font-xlarge');
+            else html.classList.add('font-standard');
+            localStorage.setItem('elderly_font', size);
+            document.querySelectorAll('.font-switch-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-font') === size) btn.classList.add('active');
+            });
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        function initFont() {
+            const saved = localStorage.getItem('elderly_font');
+            const defaultSize = (saved === 'small' || saved === 'xlarge') ? saved : 'standard';
+            setFontSize(defaultSize);
+        }
+
+        function updateBodyPaddingForFooter() {
+            const footer = document.getElementById('footer');
+            const bottomNav = document.getElementById('bottomNavBar');
+            if (footer && bottomNav) {
+                const footerHeight = footer.offsetHeight;
+                const bottomNavHeight = bottomNav.offsetHeight;
+                const totalPadding = footerHeight + bottomNavHeight + 30;
+                document.body.style.paddingBottom = totalPadding + 'px';
+            }
+        }
+
+        let ticking = false;
+        const topNavBar = document.getElementById('topNavBar');
+        const bottomNavBar = document.getElementById('bottomNavBar');
+        const macTopbar = document.querySelector('.mac-topbar');
+        function adjustTopNavPosition() {
+            if (macTopbar && topNavBar) {
+                const topbarHeight = macTopbar.offsetHeight;
+                topNavBar.style.top = topbarHeight + 'px';
+            }
+        }
+        function handleScroll() {
+            const currentScrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const isNearBottom = currentScrollY + windowHeight >= documentHeight - 150;
+            if (isNearBottom) {
+                topNavBar.classList.add('hide');
+                bottomNavBar.classList.remove('hide');
+            } else {
+                topNavBar.classList.remove('hide');
+                bottomNavBar.classList.add('hide');
+            }
+            ticking = false;
+        }
+        function initScrollHandler() {
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(handleScroll);
+                    ticking = true;
+                }
+            });
+            bottomNavBar.classList.add('hide');
+        }
+
+        let toolsHidden = false;
+        const fontGroup = document.querySelector('.font-switch-group');
+        const themeWidget = document.querySelector('.theme-slider-widget');
+        const hideToolsBtn = document.getElementById('hideToolsBtn');
+        function toggleToolsVisibility() {
+            toolsHidden = !toolsHidden;
+            if (fontGroup) fontGroup.style.display = toolsHidden ? 'none' : 'inline-flex';
+            if (themeWidget) themeWidget.style.display = toolsHidden ? 'none' : 'inline-flex';
+            hideToolsBtn.textContent = toolsHidden ? '🔧 顯示字體與主題工具' : '🔧 隱藏字體與主題工具';
+            localStorage.setItem('tools_hidden', toolsHidden);
+        }
+        function initToolsVisibility() {
+            const saved = localStorage.getItem('tools_hidden');
+            if (saved === 'true') {
+                toolsHidden = true;
+                if (fontGroup) fontGroup.style.display = 'none';
+                if (themeWidget) themeWidget.style.display = 'none';
+                hideToolsBtn.textContent = '🔧 顯示字體與主題工具';
+            } else {
+                toolsHidden = false;
+                if (fontGroup) fontGroup.style.display = 'inline-flex';
+                if (themeWidget) themeWidget.style.display = 'inline-flex';
+                hideToolsBtn.textContent = '🔧 隱藏字體與主題工具';
+            }
+        }
+
+        function bindNavs() {
+            document.querySelectorAll('.top-nav-item, .bottom-nav-item').forEach(btn => {
+                btn.onclick = () => {
+                    const page = btn.getAttribute('data-page');
+                    if (page === 'index') window.location.href = '/index.html';
+                    else if (page) window.location.href = page + '.html';
+                };
+            });
+        }
+
+        // ========== 故事角核心功能 ==========
+        let isLoggedIn = false;
+        let selectedMethod = 'voice';
+        
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let audioBlob = null;
+        let audioURL = null;
+        let isRecording = false;
+        let timerInterval = null;
+        let recordingSeconds = 0;
+        
+        const voiceSection = document.getElementById('voiceSection');
+        const textSection = document.getElementById('textSection');
+        const methodVoiceBtn = document.getElementById('methodVoiceBtn');
+        const methodTextBtn = document.getElementById('methodTextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const playBtn = document.getElementById('playBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const recorderTimer = document.getElementById('recorderTimer');
+        const recorderStatus = document.getElementById('recorderStatus');
+        
+        const storyTitle = document.getElementById('storyTitle');
+        const storyContent = document.getElementById('storyContent');
+        const storyCategory = document.getElementById('storyCategory');
+        const anonymousCheckbox = document.getElementById('anonymousCheckbox');
+        const consentCheckbox = document.getElementById('consentCheckbox');
+        
+        function updateSubmitButtonText() {
+            if (selectedMethod === 'voice') {
+                submitBtn.innerText = '用語音提交故事';
+            } else {
+                submitBtn.innerText = '用文字提交故事';
+            }
+        }
+        
+        function checkLoginStatus() {
+            //const savedLogin = localStorage.getItem('mock_logged_in');
+            const savedLogin = '{{user.is_authenticated}}'
+            //isLoggedIn = (savedLogin === 'true');
+            isLoggedIn = (savedLogin === 'True');
+            updateLoginUI();
+        }
+        
+        function updateLoginUI() {
+            const banner = document.getElementById('loginBanner');
+            const subscribeTipBtn = document.getElementById('subscribeTipBtn');
+            if (isLoggedIn) {
+                if (banner) banner.style.display = 'none';
+                if (recordBtn) recordBtn.disabled = false;
+                if (subscribeTipBtn) subscribeTipBtn.style.display = 'none';
+            } else {
+                if (banner) banner.style.display = 'flex';
+                if (recordBtn) recordBtn.disabled = true;
+                if (stopBtn) stopBtn.disabled = true;
+                if (playBtn) playBtn.disabled = true;
+                if (clearBtn) clearBtn.disabled = true;
+                if (subscribeTipBtn) subscribeTipBtn.style.display = 'inline-flex';
+            }
+            updateSubmitButtonText();
+        }
+        
+        async function requireLoginThenAction(actionName, actionCallback) {
+            if (!isLoggedIn) {
+                showConfirm(`需要登入／註冊會員先可以${actionName}`, '提示', performMockLogin);
+                return false;
+            }
+            if (actionCallback) await actionCallback();
+            return true;
+        }
+        
+        function switchMethod(method) {
+            selectedMethod = method;
+            if (method === 'voice') {
+                methodVoiceBtn.classList.add('active');
+                methodTextBtn.classList.remove('active');
+                voiceSection.style.display = 'block';
+                textSection.style.display = 'none';
+            } else {
+                methodVoiceBtn.classList.remove('active');
+                methodTextBtn.classList.add('active');
+                voiceSection.style.display = 'none';
+                textSection.style.display = 'block';
+            }
+            updateSubmitButtonText();
+        }
+        
+        function updateTimerDisplay() {
+            const mins = Math.floor(recordingSeconds / 60);
+            const secs = recordingSeconds % 60;
+            if (recorderTimer) recorderTimer.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (isRecording) { recordingSeconds++; updateTimerDisplay(); }
+            }, 1000);
+        }
+        
+        function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+        
+        function resetRecorderUI() {
+            if (audioURL) { URL.revokeObjectURL(audioURL); audioURL = null; }
+            audioChunks = [];
+            audioBlob = null;
+            recordingSeconds = 0;
+            updateTimerDisplay();
+            if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="info"></i> 點擊「開始錄音」講出你嘅故事';
+            if (playBtn) playBtn.disabled = true;
+            if (clearBtn) clearBtn.disabled = true;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        
+        async function startRecording() {
+            const canProceed = await requireLoginThenAction('錄音');
+            if (!canProceed) return;
+            
+            if (audioBlob) resetRecorderUI();
+            
+//Start Recording
+            try {
+/*                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                let mimeType = '';
+                const mimeTypes = ['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav'];
+                for (const type of mimeTypes) {
+                    if (MediaRecorder.isTypeSupported(type)) {
+                        mimeType = type;
+                        break;
+                    }
+                }
+                mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+                audioChunks = [];
+                mediaRecorder.ondataavailable = (event) => { if (event.data && event.data.size > 0) audioChunks.push(event.data); };
+                mediaRecorder.onstop = () => {
+                    if (audioChunks.length > 0) {
+                        audioBlob = new Blob(audioChunks, { type: mimeType || 'audio/webm' });
+                        audioURL = URL.createObjectURL(audioBlob);
+                        if (playBtn) playBtn.disabled = false;
+                        if (clearBtn) clearBtn.disabled = false;
+                        if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="check-circle"></i> 錄音完成！可按「重聽」或點擊下方藍色按鈕提交';
+                    } else {
+                        if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="alert-circle"></i> 錄音失敗，請再試一次';
+                    }
+                    stream.getTracks().forEach(track => track.stop());
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                };
+
+                mediaRecorder.start(100);
+*/
+
+audioChunks = []; // Clear previous data
+/*    const mimeTypes = ['audio/mp3', 'audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav'];
+    for (const type of mimeTypes) {
+        if (MediaRecorder.isTypeSupported(type)) {
+            mimeType = type;
+            break;
+        }
+    }
+alert(mimeType);
+*/
+//try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    //mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+    mediaRecorder = new MediaRecorder(stream);
+
+    // Store audio data chunks as they become available
+    mediaRecorder.ondataavailable = (event) => { 
+        if (event.data && event.data.size > 0) 
+           audioChunks.push(event.data); 
+    };
+
+    // Trigger server upload when recording explicitly stops
+    mediaRecorder.onstop = () => {
+        if (audioChunks.length > 0) {
+            audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+            if (playBtn) playBtn.disabled = false;
+            if (clearBtn) clearBtn.disabled = false;
+            if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="check-circle"></i> 錄音完成！可按「重聽」或點擊下方藍色按鈕提交';
+        } else {
+            if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="alert-circle"></i> 錄音失敗，請再試一次';
+        }
+        stream.getTracks().forEach(track => track.stop());
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    };
+
+    mediaRecorder.start(100);
+//    startBtn.disabled = true;
+//    stopBtn.disabled = false;
+//} catch (err) {
+//    console.error("Microphone access denied:", err);
+//}
+
+
+                isRecording = true;
+                recordingSeconds = 0;
+                updateTimerDisplay();
+                startTimer();
+                if (recordBtn) { recordBtn.disabled = true; recordBtn.classList.add('recording'); }
+                if (stopBtn) stopBtn.disabled = false;
+                if (playBtn) playBtn.disabled = true;
+                if (clearBtn) clearBtn.disabled = true;
+                if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="mic"></i> 🔴 錄音中... 講你嘅故事，完成後按「停止」';
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+//End Recording
+            } catch (err) {
+                let errorMsg = '無法開啟麥克風，請檢查權限設定。';
+                if (err.name === 'NotAllowedError') errorMsg = '請允許使用麥克風權限後再試。';
+                else if (err.name === 'NotFoundError') errorMsg = '未偵測到麥克風裝置。';
+                await showAlert(errorMsg, '錯誤', 'alert-circle');
+                if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="alert-circle"></i> ' + errorMsg;
+                if (recordBtn) recordBtn.disabled = false;
+            }
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                isRecording = false;
+                stopTimer();
+                if (recordBtn) { recordBtn.disabled = false; recordBtn.classList.remove('recording'); }
+                if (stopBtn) stopBtn.disabled = true;
+                if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="square"></i> 錄音已停止，正在處理...';
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        }
+        
+        function playRecording() {
+            if (audioURL) {
+                const audio = new Audio(audioURL);
+                audio.play();
+                if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="volume-2"></i> 🔊 正在播放你嘅錄音...';
+                audio.onended = () => { if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="check-circle"></i> 播放完畢'; if (typeof lucide !== 'undefined') lucide.createIcons(); };
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } else { showAlert('未有錄音，請先錄製一段故事', '提示', 'mic-off'); }
+        }
+        
+        function clearRecording() {
+            if (audioURL) { URL.revokeObjectURL(audioURL); audioURL = null; }
+            audioChunks = [];
+            audioBlob = null;
+            recordingSeconds = 0;
+            updateTimerDisplay();
+            if (playBtn) playBtn.disabled = true;
+            if (clearBtn) clearBtn.disabled = true;
+            if (recorderStatus) recorderStatus.innerHTML = '<i data-lucide="trash-2"></i> 錄音已清除';
+            setTimeout(() => { if (recorderStatus && selectedMethod === 'voice') recorderStatus.innerHTML = '<i data-lucide="info"></i> 點擊「開始錄音」講出你嘅故事'; if (typeof lucide !== 'undefined') lucide.createIcons(); }, 1500);
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        // ========== 提交故事 - 前端模擬版 ==========
+        // Django 改造時：改為真正的 POST 請求到 /api/stories/submit/
+        async function submitStory() {
+            const canProceed = await requireLoginThenAction('提交故事');
+            if (!canProceed) return;
+
+//Start Voice Submit            
+            if (selectedMethod === 'voice') {
+                if (!audioBlob) {
+                    await showAlert('請先錄製一段故事', '提示', 'mic-off');
+                    return;
+                }
+                showConfirm('你將送出錄音故事（不包含文字）\n\n管理員會審核後處理。確定送出嗎？', '確認', async () => {
+                    // ============================================
+                    // DJANGO 改造時：替換此區為真正的 API 調用
+                    // 使用 FormData 包含 audioBlob 和 csrf_token
+                    // ============================================
+
+                    //Upload Audio Start
+                    uploadAudio(audioBlob);
+                    //End Upload Audio
+
+                    console.log('🎤 語音故事提交 (模擬)', { 
+                        voiceFile: `story_voice_${Date.now()}.webm`, 
+                        fileSize: audioBlob.size, 
+                        duration: recordingSeconds, 
+                        submitMethod: 'voice', 
+                        status: 'pending', 
+                        timestamp: new Date().toISOString() 
+                    });
+                    await showAlert('錄音故事已送出！管理員審核後會處理。', '提交成功', 'check-circle');
+                    resetRecorderUI();
+                });
+//End Voice Submit
+            } else {
+                const title = storyTitle.value.trim();
+                const content = storyContent.value.trim();
+                const category = storyCategory.value;
+                const isAnonymous = anonymousCheckbox.checked;
+                const consent = consentCheckbox.checked;
+                
+                if (!title) { await showAlert('請填寫標題', '提示', 'alert-circle'); storyTitle.focus(); return; }
+                if (!content) { await showAlert('請填寫你嘅故事內容', '提示', 'alert-circle'); storyContent.focus(); return; }
+                if (content.length < 20) { await showAlert(`你嘅故事只有 ${content.length} 個字，最少需要 20 個字。\n請分享更多細節，幫助其他人。`, '提示', 'alert-circle'); storyContent.focus(); return; }
+                if (!consent) { await showAlert('請同意故事審核條款（勾選「我同意故事經審核後可於網站展示」）', '提示', 'alert-circle'); consentCheckbox.focus(); return; }
+                
+                let authorName = '';
+                if (!isAnonymous) {
+                    authorName = prompt('請輸入你嘅稱呼', '熱心街坊') || '熱心街坊';
+                }
+                
+                // ============================================
+                // DJANGO 改造時：替換為真正的 POST 請求
+                // fetch('/api/stories/submit/', {
+                //     method: 'POST',
+                //     headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ title, content, category, is_anonymous: isAnonymous, author_name: authorName })
+                // })
+                // ============================================
+                // Johnny <a href="{% url 'stories:story'%}" class="btn btn-primary btn-block">文字故a提交</a>
+                // Johnny storyform.name.value="1";
+                // Johnny storyform.content.value="2";
+                document.storyform.submit();
+                // == Johnny remark console
+                console.log('📝 文字故事aa提交 (模擬)', { 
+                    title, content, category, isAnonymous, 
+                    authorName: isAnonymous ? null : authorName, 
+                    submitMethod: 'text', 
+                    status: 'pending', 
+                    timestamp: new Date().toISOString() 
+                });
+
+                await showAlert('多謝分享！你嘅文字故事已提交，管理員審核後會顯示。', '提交成功', 'check-circle');
+                storyTitle.value = '';
+                storyContent.value = '';
+                storyCategory.value = '電話騙案';
+                anonymousCheckbox.checked = false;
+                consentCheckbox.checked = false;
+            }
+        }
+        
+
+        async function uploadAudio(blob) {
+
+            const formData = new FormData();
+
+            formData.append('recType', 'voice');
+            formData.append('subscriber_id', '{{ user.id }}');
+
+            // Append the binary blob file with a fallback file name
+
+            formData.append('audio_file', blob, 'story_voice_{% now "YmdHi" %}.mp3');
+
+            try {
+                const response = await fetch('{% url "stories:story" %}', {
+                    method: 'POST',
+                    headers: {
+                        // Django requires CSRF protection for POST requests
+                        'X-CSRFToken': getCookie('csrftoken') 
+                    },
+                    body: formData
+                });
+
+/*                const result = await response.json();
+                if (response.ok) {
+                    alert('Audio uploaded successfully! Path: ' + result.file_path);
+                } else {
+                    alert('Upload failed: ' + result.error);
+                }
+*/                    
+            } catch (error) {
+                console.error('Network error during upload:', error);
+            }
+        }
+
+        // Helper function to extract Django's CSRF token from browser cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // ========== 點讚功能 ==========
+        // Django 改造時：改為 POST 請求到 /api/stories/like/
+        async function handleLike(storyElement, storyId) {
+            if (!isLoggedIn) {
+                showConfirm('需要登入／註冊會員先可以點讚', '提示', performMockLogin);
+                return false;
+            }
+            
+            const likeBtn = storyElement.querySelector('.story-like');
+            const likeCountSpan = likeBtn.querySelector('.like-count');
+            let currentLikes = parseInt(likeCountSpan.innerText);
+            const isLiked = likeBtn.classList.contains('liked');
+            
+            // 前端樂觀更新
+            if (isLiked) {
+                likeBtn.classList.remove('liked');
+                likeCountSpan.innerText = currentLikes - 1;
+            } else {
+                likeBtn.classList.add('liked');
+                likeCountSpan.innerText = currentLikes + 1;
+            }
+            
+            // ============================================
+            // DJANGO 改造時：取消註解以下程式碼，並移除上方樂觀更新中的 localStorage 部分
+            // try {
+            //     const response = await fetch(`/api/stories/${storyId}/like/`, {
+            //         method: 'POST',
+            //         headers: { 'X-CSRFToken': csrftoken }
+            //     });
+            //     const data = await response.json();
+            //     likeCountSpan.innerText = data.likes_count;
+            //     if (data.liked) likeBtn.classList.add('liked');
+            //     else likeBtn.classList.remove('liked');
+            // } catch (error) {
+            //     // 回滾
+            //     if (isLiked) likeBtn.classList.add('liked');
+            //     else likeBtn.classList.remove('liked');
+            //     likeCountSpan.innerText = currentLikes;
+            //     await showAlert('網絡錯誤，請稍後再試', '錯誤', 'alert-circle');
+            // }
+            // ============================================
+            
+            console.log(`❤️ 點讚 (模擬) - storyId: ${storyId}, 新狀態: ${!isLiked ? '已點讚' : '取消點讚'}`);
+            return true;
+        }
+        
+        function attachStoryLikeEvents() {
+            document.querySelectorAll('.story-card').forEach(card => {
+                const likeBtn = card.querySelector('.story-like');
+                if (likeBtn && !likeBtn.hasAttribute('data-listener-attached')) {
+                    likeBtn.setAttribute('data-listener-attached', 'true');
+                    const storyId = parseInt(card.getAttribute('data-story-id'));
+                    likeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        handleLike(card, storyId);
+                    });
+                }
+            });
+        }
+        
+        // ========== 初始化 ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initFont();
+            initToolsVisibility();
+            adjustTopNavPosition();
+            initScrollHandler();
+            bindNavs();
+            checkLoginStatus();
+            attachStoryLikeEvents();
+            updateBodyPaddingForFooter();
+            
+            methodVoiceBtn.onclick = () => switchMethod('voice');
+            methodTextBtn.onclick = () => switchMethod('text');
+            
+            if (recordBtn) recordBtn.onclick = startRecording;
+            if (stopBtn) stopBtn.onclick = stopRecording;
+            if (playBtn) playBtn.onclick = playRecording;
+            if (clearBtn) clearBtn.onclick = clearRecording;
+            
+            submitBtn.onclick = submitStory;
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const bannerLoginBtn = document.getElementById('bannerLoginBtn');
+            const TipBtn = document.getElementById('subscribeTipBtn');
+            if (loginBtn) loginBtn.onclick = handleLoginClick;
+            if (bannerLoginBtn) bannerLoginBtn.onclick = handleLoginClick;
+            if (subscribeTipBtn) subscribeTipBtn.onclick = handleLoginClick;
+            
+            let panelVisible = false;
+            const panel = document.getElementById('controlCenterPanel');
+            const ctrlBtn = document.getElementById('controlCenterBtn');
+            if (ctrlBtn) ctrlBtn.onclick = () => { panelVisible = !panelVisible; panel.style.display = panelVisible ? 'block' : 'none'; if (panelVisible && typeof lucide !== 'undefined') lucide.createIcons(); };
+            const closePanel = document.getElementById('closeControlPanel');
+            if (closePanel) closePanel.onclick = () => { panel.style.display = 'none'; panelVisible = false; };
+            if (hideToolsBtn) hideToolsBtn.onclick = toggleToolsVisibility;
+            document.querySelectorAll('.theme-option-btn').forEach(btn => {
+                btn.onclick = () => { setThemeByIndex(parseInt(btn.getAttribute('data-theme-index'))); panel.style.display = 'none'; panelVisible = false; };
+            });
+            document.querySelectorAll('.font-switch-btn').forEach(btn => {
+                btn.onclick = () => { setFontSize(btn.getAttribute('data-font')); };
+            });
+            const themeSlider = document.getElementById('themeSlider');
+            if (themeSlider) themeSlider.addEventListener('input', (e) => setThemeByIndex(parseInt(e.target.value)));
+            
+            document.getElementById('homeLogoBtn')?.addEventListener('click', () => window.location.href = '/index.html');
+            const helpFab = document.getElementById('helpFabBtn');
+            if (helpFab) helpFab.onclick = () => window.location.href = '/helps.html';
+            document.getElementById('privacyBtn')?.addEventListener('click', async () => await showAlert('我們嚴格保護您的個人資料，不會與第三方分享。', '隱私權政策', 'lock'));
+            
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                if (resizeTimeout) clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => { adjustTopNavPosition(); updateBodyPaddingForFooter(); }, 150);
+            });
+            
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+    </script>
+{% endblock %}

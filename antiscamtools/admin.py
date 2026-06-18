@@ -1,7 +1,6 @@
-'''
 from django.contrib import admin
 from django import forms
-from .models import AntiScamTool, ScamScript, AntiScamApp
+from .models import AntiScamTool, UsefulContact, ScamScript, AntiScamApp
 from taggit.forms import TagWidget
 from django.forms import NumberInput
 from django.db import models
@@ -18,10 +17,45 @@ class AntiScamToolAdminForm(forms.ModelForm):
         #}
 
 class AntiScamToolAdmin(admin.ModelAdmin):
-    list_display = ('id', 'institute', 'contact', 'event', 'is_active', 'creation_date')
-    list_display_links = ('id', 'institute')
+    list_display = ('id', 'top1_contact', 'top1_description', 'top2_contact', 'top2_description', 
+                    'top3_contact', 'top3_description', 'is_active', 'creation_date')
+    list_display_links = ('id',)
     #list_filter = ('doctor', 'services')
-    list_editable = ('is_active', )
+    list_editable = ('top1_contact', 'top1_description', 'top2_contact', 'top2_description', 
+                    'top3_contact', 'top3_description', 'is_active', )
+    search_fields = ('top1_contact', 'top2_contact', 'top3_contact',)
+    list_per_age = 25                
+    #formfield_overrides = {
+    #    models.IntegerField: {
+    #        "widget": forms.NumberInput(attrs={"size":"10"})
+    #    }
+    #}      
+
+    """
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related("services")
+
+    def tag_list(self, obj):
+        return ", ".join([tag.name for tag in obj.services.all()]) or "No tags"
+    
+    tag_list.short_description = "Services"
+    """
+
+class UsefulContactAdminForm(forms.ModelForm):
+    class Meta:
+        model = UsefulContact
+        fields = '__all__'
+        #widgets = {
+        #    'services': TagWidget(attrs={
+        #        "style": "width: 100px"
+        #    }),
+        #}
+
+class UsefulContactAdmin(admin.ModelAdmin):
+    list_display = ('id', 'institute', 'contact', 'is_active', 'creation_date', 'tool_id_id')
+    list_display_links = ('id', 'creation_date', 'tool_id_id')
+    #list_filter = ('doctor', 'services')
+    list_editable = ('institute', 'contact', 'is_active',)
     search_fields = ('institute', 'contact',)
     list_per_age = 25                
     #formfield_overrides = {
@@ -51,10 +85,11 @@ class ScamScriptAdminForm(forms.ModelForm):
         #}
 
 class ScamScriptAdmin(admin.ModelAdmin):
-    list_display = ('id', 'topic', 'img_url', 'is_active', 'creation_date')
-    list_display_links = ('id', 'topic')
+    list_display = ('id', 'topic', 'description', 'realcase', 'img_url_s1', 'img_url_s2', 'img_url_s3', 'img_url_s4', 
+                    'is_active', 'creation_date')
+    list_display_links = ('id', 'creation_date')
     #list_filter = ('doctor', 'services')
-    list_editable = ('is_active', )
+    list_editable = ('topic', 'description', 'realcase', 'img_url_s1', 'img_url_s2', 'img_url_s3', 'img_url_s4', 'is_active',)
     search_fields = ('topic',)
     list_per_age = 25                
     #formfield_overrides = {
@@ -73,6 +108,7 @@ class ScamScriptAdmin(admin.ModelAdmin):
     tag_list.short_description = "Services"
     """
 
+'''
 class AntiScamAppAdminForm(forms.ModelForm):
     class Meta:
         model = AntiScamApp
@@ -105,10 +141,10 @@ class AntiScamAppAdmin(admin.ModelAdmin):
     
     tag_list.short_description = "Services"
     """
-
+'''
 
 
 admin.site.register(AntiScamTool, AntiScamToolAdmin)
+admin.site.register(UsefulContact, UsefulContactAdmin)
 admin.site.register(ScamScript, ScamScriptAdmin)
-admin.site.register(AntiScamApp, AntiScamAppAdmin)
-'''
+#admin.site.register(AntiScamApp, AntiScamAppAdmin)

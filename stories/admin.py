@@ -1,4 +1,3 @@
-'''
 from django.contrib import admin
 from django import forms
 from .models import Story
@@ -11,18 +10,18 @@ class StoryAdminForm(forms.ModelForm):
     class Meta:
         model = Story
         fields = '__all__'
-        #widgets = {
-        #    'services': TagWidget(attrs={
-        #        "style": "width: 100px"
-        #    }),
-        #}
+        widgets = {
+            'services': TagWidget(attrs={
+                "style": "width: 100px"
+            }),
+        }
 
 class StoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'subscriber_id', 'title', 'content', 'speech_url', 'is_published', 'creation_date')
-    list_display_links = ('id', 'title')
+    list_display = ('id', 'user', 'title', 'content', 'category', 'speech_url', 'is_published', 'is_anonymous', 'creation_date')
+    list_display_links = ('id', 'user')
     #list_filter = ('doctor', 'services')
-    list_editable = ('is_published', )
-    search_fields = ('title',)
+    list_editable = ('title', 'content', 'category', 'speech_url', 'is_published', 'is_anonymous' )
+    search_fields = ('title', 'content', 'category')
     list_per_age = 25                
     #formfield_overrides = {
     #    models.IntegerField: {
@@ -40,4 +39,3 @@ class StoryAdmin(admin.ModelAdmin):
     tag_list.short_description = "Services"
     """
 admin.site.register(Story, StoryAdmin)
-'''

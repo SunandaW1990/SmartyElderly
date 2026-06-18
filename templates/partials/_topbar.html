@@ -21,23 +21,27 @@
                 <button class="icon-btn" id="controlCenterBtn" aria-label="控制中心">
                     <i data-lucide="sliders"></i>
                 </button>
-                <button class="login-btn" id="loginBtn" aria-label="登入">
-                    <i data-lucide="log-in"></i> 登入
-                </button>
+                <div id="authButtonContainer">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:dashboard' %}" class="login-btn"><i data-lucide="user"></i> {{ user.username }}</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="login-btn"><i data-lucide="log-in"></i> 登入</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </header>
 
     <div class="top-nav-bar" id="topNavBar">
         <div class="top-nav-container">
-            <button class="top-nav-item" data-page="learns"><i data-lucide="book-open"></i><span>數位說明書</span></button>
-            <button class="top-nav-item" data-page="tools"><i data-lucide="star"></i><span>防騙工具箱</span></button>
-            <button class="top-nav-item" data-page="emgs"><i data-lucide="life-buoy"></i><span>應急指南</span></button>
-            <button class="top-nav-item" data-page="stories"><i data-lucide="heart"></i><span>故事角</span></button>
-            <button class="top-nav-item" data-page="courses"><i data-lucide="compass"></i><span>教育課程</span></button>
-            <button class="top-nav-item" data-page="news"><i data-lucide="newspaper"></i><span>最新資訊</span></button>
-            <button class="top-nav-item" data-page="subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
-            <button class="top-nav-item" data-page="abouts"><i data-lucide="users"></i><span>關於我們</span></button>
+            <button class="top-nav-item" data-page="/manuals/learns"><i data-lucide="book-open"></i><span>數位說明書</span></button>
+            <button class="top-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>防騙工具箱</span></button>
+            <button class="top-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急指南</span></button>
+            <button class="top-nav-item" data-page="/stories/story"><i data-lucide="heart"></i><span>故事角</span></button>
+            <button class="top-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>教育課程</span></button>
+            <button class="top-nav-item" data-page="/news"><i data-lucide="newspaper"></i><span>最新資訊</span></button>
+            <button class="top-nav-item" data-page="/accounts/subscribe"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="top-nav-item" data-page="/abouts"><i data-lucide="users"></i><span>關於我們</span></button>
         </div>
     </div>
 

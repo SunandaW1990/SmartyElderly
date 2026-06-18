@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="zh-HK">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>求助支援站 · 耆醒老友記</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
+{% extends "base.html" %}
+{% block title %} 求助支援站 · 耆醒老友記 {% endblock %}
+{% block stylesheet %}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -897,78 +893,8 @@
             .apps-grid-2x2 { grid-template-columns: 1fr; }
         }
     </style>
-</head>
-<body class="theme-forest-bath">
-
-    <div class="dynamic-orbs">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
-    <div class="noise-bg"></div>
-
-    <!-- 頂部欄 -->
-    <header class="mac-topbar">
-        <div class="topbar-container">
-            <div class="topbar-left" id="homeLogoBtn">
-                <i data-lucide="home" class="home-icon"></i>
-                <div class="brand-text">
-                    <span class="brand-logo">耆醒老友記</span>
-                    <span class="brand-en">Smarty Elderly</span>
-                </div>
-            </div>
-            <div class="topbar-right">
-                <div class="theme-slider-widget">
-                    <span class="slider-label">主題</span>
-                    <input type="range" id="themeSlider" class="theme-slider" min="0" max="7" step="1" value="3">
-                    <span class="slider-hint">護眼</span>
-                </div>
-                <div class="font-switch-group" id="fontSwitchGroup">
-                    <button data-font="small" class="font-switch-btn">小字</button>
-                    <button data-font="standard" class="font-switch-btn">標準</button>
-                    <button data-font="xlarge" class="font-switch-btn">特大</button>
-                </div>
-                <button class="icon-btn" id="controlCenterBtn" aria-label="控制中心">
-                    <i data-lucide="sliders"></i>
-                </button>
-                <button class="login-btn" id="loginBtn" aria-label="登入">
-                    <i data-lucide="log-in"></i> 登入
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- 頂部導航欄 -->
-    <div class="top-nav-bar" id="topNavBar">
-        <div class="top-nav-container">
-            <button class="top-nav-item" data-page="learns"><i data-lucide="book-open"></i><span>數位說明書</span></button>
-            <button class="top-nav-item" data-page="tools"><i data-lucide="star"></i><span>防騙工具箱</span></button>
-            <button class="top-nav-item" data-page="emgs"><i data-lucide="life-buoy"></i><span>應急指南</span></button>
-            <button class="top-nav-item" data-page="stories"><i data-lucide="heart"></i><span>故事角</span></button>
-            <button class="top-nav-item" data-page="courses"><i data-lucide="compass"></i><span>教育課程</span></button>
-            <button class="top-nav-item" data-page="news"><i data-lucide="newspaper"></i><span>最新資訊</span></button>
-            <button class="top-nav-item" data-page="subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
-            <button class="top-nav-item" data-page="abouts"><i data-lucide="users"></i><span>關於我們</span></button>
-        </div>
-    </div>
-
-    <!-- 控制中心面板 -->
-    <div id="controlCenterPanel">
-        <h4><i data-lucide="palette"></i> 完整主題切換 (8種)</h4>
-        <div class="theme-group-8">
-            <button data-theme-index="0" class="theme-option-btn">Piña Colada</button>
-            <button data-theme-index="1" class="theme-option-btn">Dark 'n' Stormy</button>
-            <button data-theme-index="2" class="theme-option-btn">Glass Window</button>
-            <button data-theme-index="3" class="theme-option-btn">Forest Bath</button>
-            <button data-theme-index="4" class="theme-option-btn">Mint Garden</button>
-            <button data-theme-index="5" class="theme-option-btn">Apple Cider</button>
-            <button data-theme-index="6" class="theme-option-btn">Nightcap</button>
-            <button data-theme-index="7" class="theme-option-btn">Sunrise</button>
-        </div>
-        <button id="hideToolsBtn" class="hide-tools-btn">🔧 隱藏字體與主題工具</button>
-        <button id="closeControlPanel" class="close-panel-btn">關閉</button>
-    </div>
-
+{% endblock %}
+{% block content%}
     <!-- 主要內容區 -->
     <div class="emergency-container">
         <div class="emergency-header">
@@ -1050,25 +976,28 @@
     <!-- 底部導航欄 -->
     <div class="bottom-nav-bar" id="bottomNavBar">
         <div class="bottom-nav-container">
-            <button class="bottom-nav-item" data-page="learns"><i data-lucide="book-open"></i><span>說明書</span></button>
-            <button class="bottom-nav-item" data-page="tools"><i data-lucide="star"></i><span>工具箱</span></button>
-            <button class="bottom-nav-item" data-page="emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
-            <button class="bottom-nav-item" data-page="courses"><i data-lucide="compass"></i><span>課程</span></button>
-            <button class="bottom-nav-item" data-page="subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="/manuals/learns"><i data-lucide="book-open"></i><span>說明書</span></button>
+            <button class="bottom-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>工具箱</span></button>
+            <button class="bottom-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
+            <button class="bottom-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>課程</span></button>
+            <button class="bottom-nav-item" data-page="/subscribes/subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
             <button class="bottom-nav-item" data-page="index"><i data-lucide="home"></i><span>主頁</span></button>
         </div>
     </div>
 
+    {%comment%}
     <!-- 頁尾 -->
     <footer class="footer" id="footer">
         <span>版權所有 © 2026 Smarty Elderly. 保留所有權利</span>
         <button class="glass-button" id="privacyBtn" aria-label="隱私權政策"><i data-lucide="lock"></i> 隱私權政策</button>
     </footer>
+    {%endcomment%}
 
     <div id="detailModal" class="modal-overlay">
         <div class="modal-content"><div id="modalContent"></div><button class="close-modal" onclick="closeModal()">關閉</button></div>
     </div>
-
+{%endblock%}
+{%block script%}
     <script>
         // ========== 主題/字體系統（與 index 相同） ==========
         const GLOBAL_THEMES = [
@@ -1310,5 +1239,4 @@
             });
         });
     </script>
-</body>
-</html>
+{%endblock%}
