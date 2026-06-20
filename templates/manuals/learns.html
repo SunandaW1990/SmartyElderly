@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} 應急指南 · 騙局特徵比對工具 · 耆醒老友記 {% endblock %}
+{% block title %} 數位說明書 · 耆醒老友記 Smarty Elderly {% endblock %}
 {% block stylesheet %}
     <style>
         /* ========== 全域動畫 ========== */
@@ -699,6 +699,22 @@
             stroke-width: 1.5;
             fill: none;
         }
+        .story-image-wrapper {
+            width: 100%;
+            max-width: 100%;          /* 可以加大少少 */
+            margin: 0 auto 16px auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            background: rgba(55,107,126,0.05);
+        }
+        .story-image-wrapper img {
+            width: 100%;
+            height: 100%;              /* 高度自動，唔會裁剪 */
+            max-height: none;         /* 可以放寬啲 */
+            object-fit: cover;       /* 由 cover 改為 contain，令成張相睇到晒 */
+            display: block;
+        }
         .story-large-label {
             font-size: 1.2rem;
             font-weight: 600;
@@ -1067,6 +1083,7 @@
 {% endblock %}
 
 {% block content %}
+    <!-- 主內容區 -->
     <div class="main-container">
         <div class="page-header">
             <h1><i data-lucide="book-open"></i> 數位說明書</h1>
@@ -1083,19 +1100,14 @@
         <div class="story-carousel-section">
             <div class="story-title"><i data-lucide="image"></i> 生活小劇場</div>
             <div class="story-display-area" id="storyDisplayArea">
-                <div class="story-large-icon" id="storyLargeIcon">
-                    <i data-lucide="message-circle"></i>
+                <!-- 相片容器 -->
+                <div class="story-image-wrapper">
+                    {% with manuals.0 as manual %}
+                    {% with manual.lifefilm_set.all.0 as lifefilm %}
+                        <img id="storyImage" src="{{ lifefilm.image.url }}" alt="生活小劇場插圖">
+                    {% endwith %}
+                    {% endwith %}
                 </div>
-                {% with manuals.0 as manual %}
-                {% with manual.lifefilm_set.all.0 as lifefilm %}
-                <div class="story-large-label" id="storyLargeLabel">{{ lifefilm.name }}</div>
-                {#<div class="story-large-label" id="storyLargeLabel">過錯數</div>#}
-                <div class="story-large-text" id="storyLargeText">
-                {{ lifefilm.description }}
-                {#    陳伯收到WhatsApp：「唔好意思過錯數，可否退番$5000？」 #}
-                </div>
-                {% endwith %}
-                {% endwith %}
             </div>
             <div class="story-nav">
                 <button class="story-nav-btn" id="storyPrevBtn">
@@ -1107,30 +1119,31 @@
             </div>
             <div class="story-dots" id="storyDots"></div>
         </div>
+
         <!-- 章節選擇器 -->
         <div class="chapter-selector" id="chapterSelector">
             <div class="chapter-card" data-chapter="0">
-                <div class="chapter-icon-wrapper"><i data-lucide="banknote"></i></div>
+                <div class="chapter-icon-wrapper"><i data-lucide="landmark"></i></div>
                 <h3>第一章</h3>
-                <p>電子貨幣原理</p>
+                <p>理財產品騙局</p>
                 <div class="click-hint">點擊進入</div>
             </div>
             <div class="chapter-card" data-chapter="1">
-                <div class="chapter-icon-wrapper"><i data-lucide="phone-forwarded"></i></div>
+                <div class="chapter-icon-wrapper"><i data-lucide="piggy-bank"></i></div>
                 <h3>第二章</h3>
-                <p>來電偽造</p>
+                <p>龐氏騙局</p>
                 <div class="click-hint">點擊進入</div>
             </div>
             <div class="chapter-card" data-chapter="2">
-                <div class="chapter-icon-wrapper"><i data-lucide="link"></i></div>
+                <div class="chapter-icon-wrapper"><i data-lucide="fish"></i></div>
                 <h3>第三章</h3>
                 <p>釣魚網站</p>
                 <div class="click-hint">點擊進入</div>
             </div>
             <div class="chapter-card" data-chapter="3">
-                <div class="chapter-icon-wrapper"><i data-lucide="mic"></i></div>
+                <div class="chapter-icon-wrapper"><i data-lucide="phone"></i></div>
                 <h3>第四章</h3>
-                <p>AI扮聲</p>
+                <p>來電偽造</p>
                 <div class="click-hint">點擊進入</div>
             </div>
         </div>
@@ -1140,35 +1153,78 @@
         <!-- ============================================ -->
         <div id="chaptersContainer">
     	{% for manual in manuals %}
-            <!-- 第一章：電子貨幣原理 -->
             {% if forloop.counter == 1 %}
                 <div class="learn-card" id="chapter1-card" data-chapter-id="chapter1">
             {% else %}
-            <div class="learn-card" id="chapter{{forloop.counter}}-card" data-chapter-id="chapter{{forloop.counter}}" style="display: none;">
+                <div class="learn-card" id="chapter{{forloop.counter}}-card" data-chapter-id="chapter{{forloop.counter}}" style="display: none;">
             {% endif %}
+
                 <div class="card-header-simple">
-                    <div class="topic-icon"><i data-lucide="banknote"></i></div>
-                    <h2>{{manual.detail_title}}——{{manual.detail_title2}}</h2>
+                    {% if forloop.counter == 1 %}
+                        <div class="topic-icon"><i data-lucide="banknote"></i></div>
+                    {% elif forloop.counter == 2 %}
+                        <div class="topic-icon"><i data-lucide="piggy-bank"></i></div>
+                    {% elif forloop.counter == 3 %}
+                        <div class="topic-icon"><i data-lucide="fish"></i></div>
+                    {% elif forloop.counter == 4 %}
+                        <div class="topic-icon"><i data-lucide="phone"></i></div>
+                    {% endif %}
+
+                    <h2>{{manual.detail_title}}{{manual.detail_title2}}</h2>
                     <div class="topic-desc">{{manual.detail_desc}}</div>
                 </div>
-                
+            
                 <div class="collapsible-section">
                     <div class="collapsible-header" onclick="window.toggleCollapseStatic('chapter{{forloop.counter}}')">
                         <h3><i data-lucide="list-check"></i> 呢章你會學到</h3>
                         <i data-lucide="chevron-down" class="collapsible-icon" id="collapse-icon-chapter{{forloop.counter}}"></i>
                     </div>
                     <div class="collapsible-content" id="collapse-content-chapter{{forloop.counter}}">
-                        <p>✔️ 電子點解唔係「真錢」但一樣用得</p>
-                        <p>✔️ 轉數快（FPS）即時過數，一禁就冇得返轉頭</p>
-                        <p>✔️ PayMe「虛假驗證碼」騙局點樣偷你錢</p>
-                        <p>✔️ 收到陌生人過數千祈唔好自己退</p>
+                    {% if forloop.counter == 1 %}
+                        <p>✔️ 拆解「發起—分銷」（Originate-to-Distribute）機制：點樣將次級貸款打包成複雜衍生品</p>
+                        <p>✔️ 極高槓桿＋自有交易（Proprietary Trading）點樣賺取巨額差價</p>
+                        <p>✔️ 多層打包（Tranches）同評級「化妝術」：垃圾變債券嘅魔法</p>
+                        <p>✔️ 認清「佣金極高、銷售期極短」嘅銷售紅旗</p>
+                    {% elif forloop.counter == 2 %}
+                        <p>✔️「老鼠會」運作原理：誘餌→初期派錢→口耳相傳→雪球爆破</p>
+                        <p>✔️ 點解「舊投資者」真係收到錢，反而係最大嘅陷阱</p>
+                        <p>✔️ 認清「資金鏈斷裂」嘅致命一刻</p>
+                    {% elif forloop.counter == 3 %}
+                        <p>✔️ 釣魚網站點樣扮銀行（2025年首四個月發現8個假銀行網站）</p>
+                        <p>✔️ 「防騙視伏器」一查就知堅定流</p>
+                        <p>✔️ 點解有鎖頭🔒都唔一定安全</p>
+                    {% elif forloop.counter == 4 %}
+                        <p>✔️ 來電顯示可以造假，好似信封面寫假地址</p>
+                        <p>✔️ 2025年超過七成騙案電話由本地號碼打出（唔好以為「+852」就安全）</p>
+                        <p>✔️ 點解騙徒要用本地儲值卡？點樣一招KO</p>
+                    {% endif %}
                     </div>
                 </div>
-                
+
                 <div class="learn-section">
                     <h3><i data-lucide="lightbulb"></i> 原來係咁樣嘅</h3>
                     <p>{{manual.explanation}}</p>
                 </div>
+                {% if forloop.counter == 1 %}
+                    <div class="learn-section">
+                        <p>點解明明係次級貸款，可以變身「迷你債券」？</p>
+                        <p>過程就係：</p>
+                        <p>1. 多層打包（Tranches）：將一堆垃圾資產分層、切割。</p>
+                        <p>2. 評級「化妝」：每層經過評級機構俾評級，經過多層打包同評級後，劣質資產嘅評級竟然被推高到 債券級別，於是改個靚名叫「迷你債券」。</p>
+                        <p>3. 銷售陷阱：呢類產品 推售期極短，因為驚你睇得耐會發現問題；而 代理人 收到嘅佣金比一般產品高好多，自然硬銷。</p>
+                    </div>
+                {% elif forloop.counter == 2 %}
+                    <div class="learn-section">
+                        <p>運作嘅四個階段：</p>
+                        <p>1. 誘餌階段：集團創立投資項目，承諾極高且不合常理嘅短期回報（例如保證每月獲利20%）。</p>
+                        <p>2. 初期運作 (建立信任) : 頭幾名加入嘅投資人，通常 真係會收到承諾嘅高額利潤，呢步就係用嚟引你瞓身。</p>
+                        <p>3. 口耳相傳與滾雪球: 嘗到甜頭嘅舊投資者，會以為自己執到寶，主動介紹親友加入。加上騙徒不斷吸納新會員，令帳面數字持續膨脹。</p>
+                        <p>4. 崩盤 (資金鏈斷裂) : 為咗支付越來越龐大嘅利息，項目需要極大量嘅新資金。一旦搵唔到足夠嘅新投資人，個系統就會一秒爆破，主謀捲款潛逃。</p>
+                    </div>
+                    <div class="learn-section">
+                        <p>2025年香港警方發現，呢類騙局已經進化到用虛擬資產同去中心化平台做包裝，令人更加難追查資金流向。</p>
+                    </div>
+                {% endif %}
                 <div class="learn-section">
                     <h3><i data-lucide="bookmark"></i> 記住呢三句</h3>
                     <div class="remember-box">
@@ -1182,19 +1238,216 @@
                     <button class="feedback-btn good" data-chapter="chapter{{forloop.counter}}" data-feedback="good"><i data-lucide="thumbs-up"></i> 我明啦</button>
                     <button class="feedback-btn confused" data-chapter="chapter{{forloop.counter}}" data-feedback="confused"><i data-lucide="help-circle"></i> 仲有疑問</button>
                 </div>
-{%comment%}
                 <div class="next-chapter-section">
-                {% if forloop.counter != forloop.last %}
-                    <button class="next-chapter-btn" data-next-chapter="1"><i data-lucide="arrow-right-circle"></i> 前往下一章：{{manual.detail_title2}}</button>
-                {% else %}
+                {% if forloop.counter == 1 %}
+                    <button class="next-chapter-btn" data-next-chapter="1"><i data-lucide="arrow-right-circle"></i> 前往下一章：龐氏騙局與「無風險」神話</button>
+                {% elif forloop.counter == 2 %}
+                    <button class="next-chapter-btn" data-next-chapter="2"><i data-lucide="arrow-right-circle"></i> 前往下一章：釣魚網站</button>
+                {% elif forloop.counter == 3 %}
+                    <button class="next-chapter-btn" data-next-chapter="3"><i data-lucide="arrow-right-circle"></i> 前往下一章：來電偽造</button>
+                {% elif forloop.counter == 4 %}
                     <button class="next-chapter-btn complete" data-next-chapter="complete"><i data-lucide="trophy"></i> 🎉 完成學習，前往防騙工具箱</button>
                 {% endif %}
                 </div>
-{%endcomment%}
             </div>
-        {% endfor %}            
+        {% endfor %}
 
+
+
+
+
+
+
+
+
+{%comment%}
+            <!-- 第1章：銀行都呃人？ -->
+            <div class="learn-card" id="chapter1-card" data-chapter-id="chapter1">
+                <div class="card-header-simple">
+                    <div class="topic-icon"><i data-lucide="landmark"></i></div>
+                    <h2>銀行都呃人？（＋雷曼教訓）</h2>
+                    <div class="topic-desc">結構性產品與銷售話術</div>
+                </div>
+                
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="window.toggleCollapseStatic('chapter1')">
+                        <h3><i data-lucide="list-check"></i> 呢章你會學到</h3>
+                        <i data-lucide="chevron-down" class="collapsible-icon" id="collapse-icon-chapter1"></i>
+                    </div>
+                    <div class="collapsible-content" id="collapse-content-chapter1">
+                        <p>✔️ 拆解「發起—分銷」（Originate-to-Distribute）機制：點樣將次級貸款打包成複雜衍生品</p>
+                        <p>✔️ 極高槓桿＋自有交易（Proprietary Trading）點樣賺取巨額差價</p>
+                        <p>✔️ 多層打包（Tranches）同評級「化妝術」：垃圾變債券嘅魔法</p>
+                        <p>✔️ 認清「佣金極高、銷售期極短」嘅銷售紅旗</p>
+                    </div>
+                </div>
+                
+                <div class="learn-section">
+                    <h3><i data-lucide="lightbulb"></i> 原來係咁樣嘅</h3>
+                    <p>【回顧】2008年雷曼兄弟倒閉，揭開咗金融界最大嘅包裝騙局。雷曼嘅商業模式係依賴 「極高槓桿率」 同 「資產證券化」（Securitization） 嘅結合。具體點玩？就係透過 「發起—分銷」機制（Originate-to-Distribute），先將次級抵押貸款（即借畀還款能力差嘅人嘅貸款）從帳簿中剝離，轉化為 複雜衍生品 ，再打包賣出。與此同時，雷曼自己用 極高嘅負債比例 喺「自有交易」（Proprietary Trading）中狂賺巨額利差同手續費。</p>
+                </div>
+                <div class="learn-section">
+                    <p>點解明明係次級貸款，可以變身「迷你債券」？</p>
+                    <p>過程就係：</p>
+                    <p>1. 多層打包（Tranches）：將一堆垃圾資產分層、切割。</p>
+                    <p>2. 評級「化妝」：每層經過評級機構俾評級，經過多層打包同評級後，劣質資產嘅評級竟然被推高到 債券級別，於是改個靚名叫「迷你債券」。</p>
+                    <p>3. 銷售陷阱：呢類產品 推售期極短，因為驚你睇得耐會發現問題；而 代理人 收到嘅佣金比一般產品高好多，自然硬銷。</p>
+                </div>
+                <div class="learn-section">
+                    <h3><i data-lucide="bookmark"></i> 記住呢三句</h3>
+                    <div class="remember-box">
+                        <p><i data-lucide="check-circle"></i> 聽唔明嘅產品，即係唔適合你，唔好簽名（不明白不要簽名）。 </p>
+                        <p><i data-lucide="check-circle"></i> 不斷換人解釋=產品複雜到連職員都唔識，你點會識？ </p>
+                        <p><i data-lucide="check-circle"></i> 佣金高、銷售期短、息口高得離譜——呢三樣嘢同時出現，就係計時炸彈。</p>
+                    </div>
+                </div>
+                <div class="feedback-section">
+                    <span class="feedback-label">呢個說明幫到你嗎？</span>
+                    <button class="feedback-btn good" data-chapter="chapter1" data-feedback="good"><i data-lucide="thumbs-up"></i> 我明啦</button>
+                    <button class="feedback-btn confused" data-chapter="chapter1" data-feedback="confused"><i data-lucide="help-circle"></i> 仲有疑問</button>
+                </div>
+                <div class="next-chapter-section">
+                    <button class="next-chapter-btn" data-next-chapter="1"><i data-lucide="arrow-right-circle"></i> 前往下一章：龐氏騙局與「無風險」神話</button>
+                </div>
+            </div>
+
+            <!-- 第2章：龐氏騙局與「無風險」神話 -->
+            <div class="learn-card" id="chapter2-card" data-chapter-id="chapter2" style="display: none;">
+                <div class="card-header-simple">
+                    <div class="topic-icon"><i data-lucide="piggy-bank"></i></div>
+                    <h2>好得滯？——龐氏騙局與「無風險」神話（＋資金鏈斷裂）</h2>
+                    <div class="topic-desc">「龐氏騙局」(Ponzi Scheme)，俗稱「老鼠會」或「拆東牆補西牆」</div>
+                </div>
+                
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="window.toggleCollapseStatic('chapter2')">
+                        <h3><i data-lucide="list-check"></i> 呢章你會學到</h3>
+                        <i data-lucide="chevron-down" class="collapsible-icon" id="collapse-icon-chapter2"></i>
+                    </div>
+                    <div class="collapsible-content" id="collapse-content-chapter2">
+                        <p>✔️「老鼠會」運作原理：誘餌→初期派錢→口耳相傳→雪球爆破</p>
+                        <p>✔️ 點解「舊投資者」真係收到錢，反而係最大嘅陷阱</p>
+                        <p>✔️ 認清「資金鏈斷裂」嘅致命一刻</p>
+                    </div>
+                </div>
+                
+                <div class="learn-section">
+                    <h3><i data-lucide="lightbulb"></i> 原來係咁樣嘅</h3>
+                    <p>「龐氏騙局」(Ponzi Scheme)，佢嘅核心唔係投資，而係一場數字遊戲。詐騙者根本冇用你啲錢去做任何實質嘅商業投資，而係將「新投資者」加入嘅資金，當作利潤支付俾「舊投資者」，藉此營造「穩賺不賠」嘅假象，直到 資金鏈斷裂 為止。記住：呢個世界冇「無風險嘅高回報」。如果你唔肯定自己賺緊嘅錢係邊度嚟，咁你極有可能就係嗰個「最後嘅水魚」——即係資金鏈斷裂前接貨嗰個。</p>
+                </div>
+                <div class="learn-section">
+                    <p>運作嘅四個階段：</p>
+                    <p>1. 誘餌階段：集團創立投資項目，承諾極高且不合常理嘅短期回報（例如保證每月獲利20%）。</p>
+                    <p>2. 初期運作 (建立信任) : 頭幾名加入嘅投資人，通常 真係會收到承諾嘅高額利潤，呢步就係用嚟引你瞓身。</p>
+                    <p>3. 口耳相傳與滾雪球: 嘗到甜頭嘅舊投資者，會以為自己執到寶，主動介紹親友加入。加上騙徒不斷吸納新會員，令帳面數字持續膨脹。</p>
+                    <p>4. 崩盤 (資金鏈斷裂) : 為咗支付越來越龐大嘅利息，項目需要極大量嘅新資金。一旦搵唔到足夠嘅新投資人，個系統就會一秒爆破，主謀捲款潛逃。</p>
+                </div>
+                <div class="learn-section">
+                    <p>2025年香港警方發現，呢類騙局已經進化到用虛擬資產同去中心化平台做包裝，令人更加難追查資金流向。</p>
+                </div>
+                <div class="learn-section">
+                    <h3><i data-lucide="bookmark"></i> 記住呢三句</h3>
+                    <div class="remember-box">
+                        <p><i data-lucide="check-circle"></i> 好得唔真實嘅回報，背後一定隱藏對稱嘅風險，甚至係騙局（風險一定有，幾時出現只係機率問題）。</p>
+                        <p><i data-lucide="check-circle"></i> 代理人身份高 與 產品風險 無關：就算介紹俾你嗰個係西裝骨骨嘅銀行經理或知名KOL，都唔代表件產品安全。</p>
+                        <p><i data-lucide="check-circle"></i> 任何要你「拉人入會」先賺到錢嘅計劃，九成九係拆東牆補西牆，等緊爆破。</p>
+                    </div>
+                </div>
+                <div class="feedback-section">
+                    <span class="feedback-label">呢個說明幫到你嗎？</span>
+                    <button class="feedback-btn good" data-chapter="chapter2" data-feedback="good"><i data-lucide="thumbs-up"></i> 我明啦</button>
+                    <button class="feedback-btn confused" data-chapter="chapter2" data-feedback="confused"><i data-lucide="help-circle"></i> 仲有疑問</button>
+                </div>
+                <div class="next-chapter-section">
+                    <button class="next-chapter-btn" data-next-chapter="2"><i data-lucide="arrow-right-circle"></i> 前往下一章：釣魚網站</button>
+                </div>
+            </div>
+
+            <!-- 第3章：釣魚網站 -->
+            <div class="learn-card" id="chapter3-card" data-chapter-id="chapter3" style="display: none;">
+                <div class="card-header-simple">
+                    <div class="topic-icon"><i data-lucide="fish"></i></div>
+                    <h2>呢個網站堅定流？——網址與安全標記（＋防騙視伏器）</h2>
+                    <div class="topic-desc">釣魚網站點樣扮銀行</div>
+                </div>
+                
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="window.toggleCollapseStatic('chapter3')">
+                        <h3><i data-lucide="list-check"></i> 呢章你會學到</h3>
+                        <i data-lucide="chevron-down" class="collapsible-icon" id="collapse-icon-chapter3"></i>
+                    </div>
+                    <div class="collapsible-content" id="collapse-content-chapter3">
+                        <p>✔️ 釣魚網站點樣扮銀行（2025年首四個月發現8個假銀行網站）</p>
+                        <p>✔️ 「防騙視伏器」一查就知堅定流</p>
+                        <p>✔️ 點解有鎖頭🔒都唔一定安全</p>
+                    </div>
+                </div>
+                
+                <div class="learn-section">
+                    <h3><i data-lucide="lightbulb"></i> 原來係咁樣嘅</h3>
+                    <p>2025年金管局報告：頭四個月已發現8個假冒銀行網站，涉及4間銀行。假網站嘅域名會同真嘅極度相似，例如「rnicrosoft.com」扮「microsoft.com」。有時假網站都有「https」同鎖頭🔒（因為鎖頭只代表「呢條線路加密」，唔代表個網站係真）。最可靠嘅方法：唔好㩒短訊入面嘅連結。自己打開瀏覽器，親手打入官方網址。仲有，記住用警方嘅「防騙視伏器」——輸入網址、電話、戶口號碼，即刻顯示係咪曾被舉報。綠燈安全，紅燈即刻走。</p>
+                </div>
+                <div class="learn-section">
+                    <h3><i data-lucide="bookmark"></i> 記住呢三句</h3>
+                    <div class="remember-box">
+                        <p><i data-lucide="check-circle"></i> 短訊連結唔好㩒，自己打網址。</p>
+                        <p><i data-lucide="check-circle"></i> 用「防騙視伏器」查咗先。</p>
+                        <p><i data-lucide="check-circle"></i> 網址多咗符號、串法怪怪哋，即刻走。</p>
+                    </div>
+                </div>
+                <div class="feedback-section">
+                    <span class="feedback-label">呢個說明幫到你嗎？</span>
+                    <button class="feedback-btn good" data-chapter="chapter3" data-feedback="good"><i data-lucide="thumbs-up"></i> 我明啦</button>
+                    <button class="feedback-btn confused" data-chapter="chapter3" data-feedback="confused"><i data-lucide="help-circle"></i> 仲有疑問</button>
+                </div>
+                <div class="next-chapter-section">
+                    <button class="next-chapter-btn" data-next-chapter="3"><i data-lucide="arrow-right-circle"></i> 前往下一章：來電偽造</button>
+                </div>
+            </div>
+
+            <!-- 第4章：來電偽造 -->
+            <div class="learn-card" id="chapter4-card" data-chapter-id="chapter4" style="display: none;">
+                <div class="card-header-simple">
+                    <div class="topic-icon"><i data-lucide="phone"></i></div>
+                    <h2>邊個打嚟？——電話通訊與來電偽造（＋2025數據）</h2>
+                    <div class="topic-desc">來電顯示可以造假，好似信封面寫假地址</div>
+                </div>
+                
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="window.toggleCollapseStatic('chapter4')">
+                        <h3><i data-lucide="list-check"></i> 呢章你會學到</h3>
+                        <i data-lucide="chevron-down" class="collapsible-icon" id="collapse-icon-chapter4"></i>
+                    </div>
+                    <div class="collapsible-content" id="collapse-content-chapter4">
+                        <p>✔️ 來電顯示可以造假，好似信封面寫假地址</p>
+                        <p>✔️ 2025年超過七成騙案電話由本地號碼打出（唔好以為「+852」就安全）</p>
+                        <p>✔️ 點解騙徒要用本地儲值卡？點樣一招KO</p>
+                    </div>
+                </div>
+                
+                <div class="learn-section">
+                    <h3><i data-lucide="lightbulb"></i> 原來係咁樣嘅</h3>
+                    <p>2025年警方數據：超過七成騙案電話係由**本地號碼**打出。騙徒用嘅係「儲值電話卡」，成本低、難追查。警方截至2025年10月已拒絕約520萬張儲值卡登記，但仍有大量活躍卡。來電顯示可以透過網路電話（VoIP）同「偽造來電顯示軟件」任意更改。就算你見到「18222」或者銀行熱線，都唔代表真係佢哋打嚟。**記住一條鐵律**：任何電話講到錢、講到密碼、講到轉帳，收線，然後用你手機通訊錄入面嘅官方號碼自己打過去。唔好按回撥。</p>
+                </div>
+                <div class="learn-section">
+                    <h3><i data-lucide="bookmark"></i> 記住呢三句</h3>
+                    <div class="remember-box">
+                        <p><i data-lucide="check-circle"></i> 來電顯示可以假，本地號碼都可以係騙徒。</p>
+                        <p><i data-lucide="check-circle"></i> 收線，自己親手打官方熱線，先係真。</p>
+                        <p><i data-lucide="check-circle"></i> 任何人電話叫你轉帳，即係騙徒。</p>
+                    </div>
+                </div>
+                <div class="feedback-section">
+                    <span class="feedback-label">呢個說明幫到你嗎？</span>
+                    <button class="feedback-btn good" data-chapter="chapter4" data-feedback="good"><i data-lucide="thumbs-up"></i> 我明啦</button>
+                    <button class="feedback-btn confused" data-chapter="chapter4" data-feedback="confused"><i data-lucide="help-circle"></i> 仲有疑問</button>
+                </div>
+                <div class="next-chapter-section">
+                    <button class="next-chapter-btn complete" data-next-chapter="complete"><i data-lucide="trophy"></i> 🎉 完成學習，前往防騙工具箱</button>
+                </div>
+            </div>
         </div>
+{%endcomment%}
 
         <!-- 網上自學資源 - 靜態 HTML -->
         <div class="online-resources-section">
@@ -1240,9 +1493,6 @@
         <i data-lucide="alert-triangle"></i>
     </div>
 
-
-
-{%comment%}
     <!-- 頁尾 -->
     <footer class="footer" id="footer">
         <span>版權所有 © 2026 Smarty Elderly. 保留所有權利</span>
@@ -1250,7 +1500,6 @@
             <i data-lucide="lock"></i> 隱私權政策
         </button>
     </footer>
-{%endcomment%}
 
     <!-- 底部導航欄 -->
     <div class="bottom-nav-bar" id="bottomNavBar">
@@ -1259,12 +1508,10 @@
             <button class="bottom-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>工具箱</span></button>
             <button class="bottom-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
             <button class="bottom-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>課程</span></button>
-            <button class="bottom-nav-item" data-page="/subscribes/subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="/accounts/subscribe"><i data-lucide="mail"></i><span>訂閱</span></button>
             <button class="bottom-nav-item" data-page="/index"><i data-lucide="home"></i><span>主頁</span></button>
         </div>
     </div>
-
-
 
 {% endblock %}
 
@@ -1277,7 +1524,7 @@
 // Start Dynamic
                 comics: [
                     {% for lifefilm in manual.lifefilm_set.all %}
-                    {label: "{{ lifefilm.name }}", story: "{{ lifefilm.description }}", icon:"message-circle"}
+                    { image: "{{ lifefilm.image.url }}" }
                     {% if not forloop.last %},{% endif %}
                     {% endfor %}
 // End Dynamic
@@ -1286,6 +1533,49 @@
             {% if not forloop.last %},{% endif %}
         {% endfor %}
 
+
+/*
+            {   // 第一章漫畫
+                comics: [
+                    { image: "images/learn/chapter1_1.png" },
+                    { image: "images/learn/chapter1_2.png" },
+                    { image: "images/learn/chapter1_3.png" },
+                    { image: "images/learn/chapter1_4.png" },
+                    { image: "images/learn/chapter1_5.png" },
+                    { image: "images/learn/chapter1_6.png" }
+                ]
+            },
+            {   // 第二章漫畫
+                comics: [
+                    { image: "images/learn/chapter2_1.png" },
+                    { image: "images/learn/chapter2_2.png" },
+                    { image: "images/learn/chapter2_3.png" },
+                    { image: "images/learn/chapter2_4.png" },
+                    { image: "images/learn/chapter2_5.png" },
+                    { image: "images/learn/chapter2_6.png" }
+                ]
+            },
+            {   // 第三章漫畫
+                comics: [
+                    { image: "images/learn/chapter3_1.jpg" },
+                    { image: "images/learn/chapter3_2.jpg" },
+                    { image: "images/learn/chapter3_3.jpg" },
+                    { image: "images/learn/chapter3_4.jpg" },
+                    { image: "images/learn/chapter3_5.jpg" },
+                    { image: "images/learn/chapter3_6.jpg" }
+                ]
+            },
+            {   // 第四章漫畫
+                comics: [
+                    { image: "images/learn/chapter4_1.jpg" },
+                    { image: "images/learn/chapter4_2.jpg" },
+                    { image: "images/learn/chapter4_3.jpg" },
+                    { image: "images/learn/chapter4_4.jpg" },
+                    { image: "images/learn/chapter4_5.jpg" },
+                    { image: "images/learn/chapter4_6.jpg" }
+                ]
+            }
+*/
         ];
 
         // ========== 全域變數 ==========
@@ -1387,16 +1677,53 @@
             bottomNavBar.classList.add('hide');
         }
 
+        /*
         // ========== 導航跳轉 ==========
         function bindNavs() {
             document.querySelectorAll('.top-nav-item, .bottom-nav-item').forEach(btn => {
                 btn.onclick = () => {
                     const page = btn.getAttribute('data-page');
-                    if (page === 'index') window.location.href = 'index.html';
+                    if (page === 'index') window.location.href = '/index.html';
                     else if (page) window.location.href = page + '.html';
                 };
             });
         }
+        */
+
+            // ========== 導航按鈕綁定 (頂部/底部/六大卡片/FAB) ==========
+            function bindNavigation() {
+                // 頂部導航
+                document.querySelectorAll('.top-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 底部導航
+                document.querySelectorAll('.bottom-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page === 'index') window.location.href = '/index.html';
+                        else if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 六大卡片入口 (靜態 .app-square)
+                document.querySelectorAll('.app-square').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const page = card.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 求助 FAB
+                const helpFab = document.getElementById('helpFabBtn');
+                if (helpFab) helpFab.addEventListener('click', () => window.location.href = '/helps.html');
+                // 隱私權按鈕
+                const privacyBtn = document.getElementById('privacyBtn');
+                if (privacyBtn) privacyBtn.addEventListener('click', () => alert('隱私權政策：我們嚴格保護您的個人資料，不會與第三方分享。'));
+                // 主頁 Logo
+                const homeLogo = document.getElementById('homeLogoBtn');
+                if (homeLogo) homeLogo.addEventListener('click', () => window.location.href = '/index.html');
+            }
 
         // ========== 控制中心 ==========
         let toolsHidden = false;
@@ -1531,17 +1858,25 @@
         function updateStoryDisplay() {
             const comics = chaptersComics[currentChapter].comics;
             const comic = comics[currentComicIndex];
-            
-            const iconContainer = document.getElementById('storyLargeIcon');
-            const labelEl = document.getElementById('storyLargeLabel');
-            const textEl = document.getElementById('storyLargeText');
-            
-            if (iconContainer) iconContainer.innerHTML = `<i data-lucide="${comic.icon}"></i>`;
-            if (labelEl) labelEl.innerText = comic.label;
-            if (textEl) textEl.innerText = comic.story;
-            
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+    
+            const imgEl = document.getElementById('storyImage');
+            if (imgEl && comic && comic.image) {
+                imgEl.src = comic.image;
+                imgEl.alt = '生活小劇場插圖';
+                // 確保容器顯示
+                const wrapper = imgEl.closest('.story-image-wrapper');
+                if (wrapper) wrapper.style.display = 'block';
+            } else {
+                // 如果冇圖片，隱藏容器
+                const wrapper = imgEl ? imgEl.closest('.story-image-wrapper') : null;
+                if (wrapper) wrapper.style.display = 'none';
+            }
+    
+            // 更新小圓點
             updateStoryDots();
+    
+            // 重新生成 Lucide 圖標（如果有用到）
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
         
         function updateStoryDots() {
@@ -1599,10 +1934,10 @@
         }
 
         // 前往下一章或完成
-        function goToNextChapter(currentIdx) {
-            if (currentIdx < 3) {
-                showChapter(currentIdx + 1);
-                showToast(`📖 前往 ${['第一章','第二章','第三章','第四章'][currentIdx + 1]}`);
+        function goToNextChapter(nextIdx) {
+            if (nextIdx < 4) {   // 因為索引 0-3 有效
+                showChapter(nextIdx);
+                showToast(`📖 前往 ${['第一章','第二章','第三章','第四章'][nextIdx]}`);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 showToast('🎉 恭喜完成所有章節！前往防騙工具箱');
@@ -1631,7 +1966,7 @@
                 btn.addEventListener('click', (e) => {
                     const nextVal = btn.getAttribute('data-next-chapter');
                     if (nextVal === 'complete') {
-                        goToNextChapter(3);
+                        goToNextChapter(4);
                     } else if (nextVal !== null) {
                         goToNextChapter(parseInt(nextVal));
                     }
@@ -1653,7 +1988,7 @@
         // ========== 其他按鈕綁定 ==========
         function setupButtons() {
             const helpBtn = document.getElementById('helpFabBtn');
-            if (helpBtn) helpBtn.addEventListener('click', () => window.location.href = 'helps.html');
+            if (helpBtn) helpBtn.addEventListener('click', () => window.location.href = '/helps.html');
             
             const privacyBtn = document.getElementById('privacyBtn');
             if (privacyBtn) privacyBtn.addEventListener('click', () => alert('🔒 私隱政策：我們嚴格保護您的個人資料，不會與第三方分享。'));
@@ -1668,7 +2003,7 @@
             if (loginBtn) loginBtn.addEventListener('click', () => alert('登入功能開發中，敬請期待'));
             
             const homeLogoBtn = document.getElementById('homeLogoBtn');
-            if (homeLogoBtn) homeLogoBtn.addEventListener('click', () => window.location.href = 'index.html');
+            if (homeLogoBtn) homeLogoBtn.addEventListener('click', () => window.location.href = '/index.html');
             
             // 生活小劇場按鈕
             const prevBtn = document.getElementById('storyPrevBtn');
@@ -1679,8 +2014,8 @@
             // 網上資源按鈕（靜態版本）
             const gameBtn = document.getElementById('gameResourceBtn');
             if (gameBtn) gameBtn.addEventListener('click', () => {
-                console.log('🎮 [遊戲] 前往長者防騙小遊戲 → games.html');
-                window.location.href = 'games.html';
+                console.log('🎮 [遊戲] 前往長者防騙小遊戲 → /games.html');
+                window.location.href = '/games.html';
             });
             
             const onlineBtn = document.getElementById('onlinePlatformBtn');
@@ -1726,7 +2061,8 @@
             initToolsVisibility();
             adjustTopNavPosition();
             initScrollHandler();
-            bindNavs();
+            //bindNavs();
+            bindNavigation();
             setupButtons();
             bindChapterEvents();
             initCollapseStates();

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %} 耆醒老友記 Smarty Elderly · 長者數位守護平台 {% endblock %}
 {% block stylesheet %}
     <style>
@@ -699,42 +700,42 @@
             <div class="col-right">
                 <div class="apps-grid">
                     <!-- 我想明 -->
-                    <div class="app-square" data-color="lightbulb" data-page="manuals/learns">
+                    <div class="app-square" data-color="lightbulb" data-page="/manuals/learns">
                         <div class="glass-icon-wrapper"><i data-lucide="lightbulb"></i></div>
                         <div class="app-name">我想明</div>
                         <div class="app-sub">網絡世界點樣運作？</div>
                         <div class="click-hint">點擊進入</div>
                     </div>
                     <!-- 即時拆招 -->
-                    <div class="app-square" data-color="sword" data-page="antiscamtools/tools">
+                    <div class="app-square" data-color="sword" data-page="/antiscamtools/tools">
                         <div class="glass-icon-wrapper"><i data-lucide="sword"></i></div>
                         <div class="app-name">即時拆招</div>
                         <div class="app-sub">最新騙局劇本，三步應對</div>
                         <div class="click-hint">點擊進入</div>
                     </div>
                     <!-- 唔使驚 -->
-                    <div class="app-square" data-color="shield-check" data-page="guides/emgs">
+                    <div class="app-square" data-color="shield-check" data-page="/guides/emgs">
                         <div class="glass-icon-wrapper"><i data-lucide="shield-check"></i></div>
                         <div class="app-name">唔使驚</div>
                         <div class="app-sub">發現中伏，即刻跟住做</div>
                         <div class="click-hint">點擊進入</div>
                     </div>
                     <!-- 我有故事 -->
-                    <div class="app-square" data-color="heart" data-page="stories/stories">
+                    <div class="app-square" data-color="heart" data-page="/stories/story">
                         <div class="glass-icon-wrapper"><i data-lucide="heart"></i></div>
                         <div class="app-name">我有故事</div>
                         <div class="app-sub">分享經歷，救到街坊</div>
                         <div class="click-hint">點擊進入</div>
                     </div>
                     <!-- 搵課程 -->
-                    <div class="app-square" data-color="graduation-cap" data-page="courses/courses">
+                    <div class="app-square" data-color="graduation-cap" data-page="/courses/courses">
                         <div class="glass-icon-wrapper"><i data-lucide="graduation-cap"></i></div>
                         <div class="app-name">搵課程</div>
                         <div class="app-sub">港九新界免費手機班</div>
                         <div class="click-hint">點擊進入</div>
                     </div>
                     <!-- 睇貼士 -->
-                    <div class="app-square" data-color="bell-ring" data-page="subscribe/subcribes">
+                    <div class="app-square" data-color="bell-ring" data-page="/accounts/subscribe">
                         <div class="glass-icon-wrapper"><i data-lucide="bell-ring"></i></div>
                         <div class="app-name">睇貼士</div>
                         <div class="app-sub">每週防騙小知識送到</div>
@@ -772,14 +773,15 @@
     <!-- 底部導航欄 -->
     <div class="bottom-nav-bar" id="bottomNavBar">
         <div class="bottom-nav-container">
-            <button class="bottom-nav-item" data-page="manuals/learns"><i data-lucide="book-open"></i><span>說明書</span></button>
-            <button class="bottom-nav-item" data-page="antiscamtools/tools"><i data-lucide="star"></i><span>工具箱</span></button>
-            <button class="bottom-nav-item" data-page="guides/emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
-            <button class="bottom-nav-item" data-page="courses/courses"><i data-lucide="compass"></i><span>課程</span></button>
-            <button class="bottom-nav-item" data-page="subscribes/subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
-            <button class="bottom-nav-item" data-page="index"><i data-lucide="home"></i><span>主頁</span></button>
+            <button class="bottom-nav-item" data-page="/manuals/learns"><i data-lucide="book-open"></i><span>說明書</span></button>
+            <button class="bottom-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>工具箱</span></button>
+            <button class="bottom-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
+            <button class="bottom-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>課程</span></button>
+            <button class="bottom-nav-item" data-page="/accounts/subscribe"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="/index"><i data-lucide="home"></i><span>主頁</span></button>
         </div>
     </div>
+
 {% endblock %}
 
 {% block script %}

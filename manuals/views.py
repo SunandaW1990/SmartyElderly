@@ -37,7 +37,7 @@ class ManualDetailListView(ListView):
                     'lifefilm_set', 
                     queryset=custom_lifefilm_queryset
                 )
-            ).filter(is_active=True).order_by('creation_date')
+            ).filter(is_active=True).order_by('creation_date', 'id')
 
 
 

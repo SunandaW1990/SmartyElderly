@@ -85,11 +85,11 @@ class ScamScriptAdminForm(forms.ModelForm):
         #}
 
 class ScamScriptAdmin(admin.ModelAdmin):
-    list_display = ('id', 'topic', 'description', 'realcase', 'img_url_s1', 'img_url_s2', 'img_url_s3', 'img_url_s4', 
+    list_display = ('id', 'topic', 'description', 'realcase', 'img_s1', 'img_s2', 'img_s3', 'img_s4', 
                     'is_active', 'creation_date')
     list_display_links = ('id', 'creation_date')
     #list_filter = ('doctor', 'services')
-    list_editable = ('topic', 'description', 'realcase', 'img_url_s1', 'img_url_s2', 'img_url_s3', 'img_url_s4', 'is_active',)
+    list_editable = ('topic', 'description', 'realcase', 'img_s1', 'img_s2', 'img_s3', 'img_s4', 'is_active',)
     search_fields = ('topic',)
     list_per_age = 25                
     #formfield_overrides = {

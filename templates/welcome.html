@@ -213,16 +213,18 @@
 
     <div class="help-fab" id="helpFabBtn"><i data-lucide="alert-triangle"></i></div>
 
+    <!-- 底部導航欄 -->
     <div class="bottom-nav-bar" id="bottomNavBar">
         <div class="bottom-nav-container">
-            <button class="bottom-nav-item" data-page="learns"><i data-lucide="book-open"></i><span>說明書</span></button>
-            <button class="bottom-nav-item" data-page="tools"><i data-lucide="star"></i><span>工具箱</span></button>
-            <button class="bottom-nav-item" data-page="emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
-            <button class="bottom-nav-item" data-page="courses"><i data-lucide="compass"></i><span>課程</span></button>
-            <button class="bottom-nav-item" data-page="subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
-            <button class="bottom-nav-item" data-page="index"><i data-lucide="home"></i><span>主頁</span></button>
+            <button class="bottom-nav-item" data-page="/manuals/learns"><i data-lucide="book-open"></i><span>說明書</span></button>
+            <button class="bottom-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>工具箱</span></button>
+            <button class="bottom-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
+            <button class="bottom-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>課程</span></button>
+            <button class="bottom-nav-item" data-page="/accounts/subscribe"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="/index"><i data-lucide="home"></i><span>主頁</span></button>
         </div>
     </div>
+
 
     {%comment%}
     <footer class="footer">
@@ -258,7 +260,8 @@
         function adjustTopNavPosition() { if (macTopbar && topNavBar && topNavPlaceholder) { topNavBar.style.top = macTopbar.offsetHeight + 'px'; topNavPlaceholder.style.height = (macTopbar.offsetHeight + topNavBar.offsetHeight) + 'px'; } }
         function handleScroll() { const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 150; topNavBar.classList.toggle('hide', nearBottom); bottomNavBar.classList.toggle('hide', !nearBottom); ticking = false; }
         function initScrollHandler() { window.addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(handleScroll); ticking = true; } }); bottomNavBar.classList.add('hide'); }
-        function bindNavs() {
+
+/*        function bindNavs() {
             document.querySelectorAll('.top-nav-item, .bottom-nav-item').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const page = btn.getAttribute('data-page');
@@ -267,6 +270,43 @@
                 });
             });
         }
+*/
+
+            // ========== 導航按鈕綁定 (頂部/底部/六大卡片/FAB) ==========
+            function bindNavigation() {
+                // 頂部導航
+                document.querySelectorAll('.top-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 底部導航
+                document.querySelectorAll('.bottom-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page === 'index') window.location.href = 'index.html';
+                        else if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 六大卡片入口 (靜態 .app-square)
+                document.querySelectorAll('.app-square').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const page = card.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 求助 FAB
+                const helpFab = document.getElementById('helpFabBtn');
+                if (helpFab) helpFab.addEventListener('click', () => window.location.href = 'helps.html');
+                // 隱私權按鈕
+                const privacyBtn = document.getElementById('privacyBtn');
+                if (privacyBtn) privacyBtn.addEventListener('click', () => alert('隱私權政策：我們嚴格保護您的個人資料，不會與第三方分享。'));
+                // 主頁 Logo
+                const homeLogo = document.getElementById('homeLogoBtn');
+                if (homeLogo) homeLogo.addEventListener('click', () => window.location.href = 'index.html');
+            }
+
 
         let panelVisible = false, toolsHidden = false;
         const panel = document.getElementById('controlCenterPanel'), fontGroup = document.querySelector('.font-switch-group'), themeWidget = document.querySelector('.theme-slider-widget'), hideToolsBtn = document.getElementById('hideToolsBtn');
@@ -288,7 +328,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            initTheme(); initFont(); initToolsVisibility(); adjustTopNavPosition(); bindNavs(); initScrollHandler();
+            //initTheme(); initFont(); initToolsVisibility(); adjustTopNavPosition(); bindNavs(); initScrollHandler();
+            initTheme(); initFont(); initToolsVisibility(); adjustTopNavPosition(); bindNavigation(); initScrollHandler();
             document.getElementById('controlCenterBtn').onclick = () => { panelVisible = !panelVisible; panel.style.display = panelVisible ? 'block' : 'none'; if (panelVisible && typeof lucide !== 'undefined') lucide.createIcons(); };
             document.getElementById('closeControlPanel').onclick = () => { panel.style.display = 'none'; panelVisible = false; };
             if (hideToolsBtn) hideToolsBtn.onclick = () => toggleToolsVisibility();

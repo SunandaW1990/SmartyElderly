@@ -32,7 +32,7 @@ class Course(models.Model):
 
     course_url = models.CharField(max_length=100)
     contact = models.CharField(max_length=50)
-    poster_url = models.CharField(max_length=100)
+    poster_img = models.ImageField(upload_to='courses/', verbose_name="圖片檔案")
     is_active = models.BooleanField(default=True)
     creation_date = models.DateTimeField(auto_now_add=True)
 

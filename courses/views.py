@@ -24,6 +24,7 @@ def enroll(request):
 
         enroll_exists = Enrollment.objects.filter(course_id=course_id, user_id=subscriber_id).exists()
 
+        print("enroll_exists: ", enroll_exists)
         if enroll_exists:
             result = 'Fail'
         else:

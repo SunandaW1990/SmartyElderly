@@ -17,11 +17,11 @@ class ManualAdminForm(forms.ModelForm):
         }
 
 class ManualAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'description', 'img_url', 'detail_desc', 'detail_title', 'detail_title2', 
+    list_display = ('id', 'name', 'description', 'image', 'detail_desc', 'detail_title', 'detail_title2', 
                     'explanation', 'important1', 'important2', 'important3', 'is_active', 'creation_date')
     list_display_links = ('id', 'name')
     #list_filter = ('name', 'is_course')
-    list_editable = ('description', 'img_url', 'detail_desc', 'detail_title', 'detail_title2', 
+    list_editable = ('description', 'image', 'detail_desc', 'detail_title', 'detail_title2', 
                     'explanation', 'important1', 'important2', 'important3', 'is_active',)
     search_fields = ('name',)
     list_per_age = 25                
@@ -52,10 +52,10 @@ class LifeFilmAdminForm(forms.ModelForm):
         }
 
 class LifeFilmAdmin(admin.ModelAdmin):
-    list_display = ('id', 'seq', 'img_url', 'name', 'description', 'is_active', 'creation_date', 'manual_id_id',)
+    list_display = ('id', 'seq', 'image', 'name', 'description', 'is_active', 'creation_date', 'manual_id_id',)
     list_display_links = ('id',)
     #list_filter = ('name', 'is_course')
-    list_editable = ('seq', 'img_url', 'name', 'description', 'is_active',)
+    list_editable = ('seq', 'image', 'name', 'description', 'is_active',)
     search_fields = ('name',)
     list_per_age = 25                
     #formfield_overrides = {

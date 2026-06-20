@@ -1034,12 +1034,12 @@
         <div class="learning-section">
             <div class="learning-title"><i data-lucide="book-open"></i><span>你可能也有興趣</span></div>
             <div class="learning-scroll" id="learningScroll">
-                <div class="learning-card" data-page="learns.html"><i data-lucide="phone-call"></i><h4>如何分辨假來電</h4><p>數位說明書 · 電話騙局篇</p></div>
-                <div class="learning-card" data-page="courses.html"><i data-lucide="graduation-cap"></i><h4>免費手機班查詢</h4><p>全港長者數位課程</p></div>
-                <div class="learning-card" data-page="learns.html"><i data-lucide="message-circle"></i><h4>WhatsApp安全設定</h4><p>雙重驗證教學</p></div>
-                <div class="learning-card" data-page="learns.html"><i data-lucide="credit-card"></i><h4>電子支付安全</h4><p>轉數快/支付寶/八達通</p></div>
-                <div class="learning-card" data-page="learns.html"><i data-lucide="eye"></i><h4>假網站辨識技巧</h4><p>釣魚網站特徵</p></div>
-                <div class="learning-card" data-page="learns.html"><i data-lucide="landmark"></i><h4>網上銀行安全</h4><p>防止戶口被盜</p></div>
+                <div class="learning-card" data-page="/manuals/learns"><i data-lucide="phone-call"></i><h4>如何分辨假來電</h4><p>數位說明書 · 電話騙局篇</p></div>
+                <div class="learning-card" data-page="/courses/courses"><i data-lucide="graduation-cap"></i><h4>免費手機班查詢</h4><p>全港長者數位課程</p></div>
+                <div class="learning-card" data-page="/manuals/learns"><i data-lucide="message-circle"></i><h4>WhatsApp安全設定</h4><p>雙重驗證教學</p></div>
+                <div class="learning-card" data-page="/manuals/learns"><i data-lucide="credit-card"></i><h4>電子支付安全</h4><p>轉數快/支付寶/八達通</p></div>
+                <div class="learning-card" data-page="/manuals/learns"><i data-lucide="eye"></i><h4>假網站辨識技巧</h4><p>釣魚網站特徵</p></div>
+                <div class="learning-card" data-page="/manuals/learns"><i data-lucide="landmark"></i><h4>網上銀行安全</h4><p>防止戶口被盜</p></div>
             </div>
         </div>
 
@@ -1060,12 +1060,12 @@
     <!-- 底部導航欄 -->
     <div class="bottom-nav-bar" id="bottomNavBar">
         <div class="bottom-nav-container">
-            <button class="bottom-nav-item" data-page="learns"><i data-lucide="book-open"></i><span>說明書</span></button>
-            <button class="bottom-nav-item" data-page="tools"><i data-lucide="star"></i><span>工具箱</span></button>
-            <button class="bottom-nav-item" data-page="emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
-            <button class="bottom-nav-item" data-page="courses"><i data-lucide="compass"></i><span>課程</span></button>
-            <button class="bottom-nav-item" data-page="subscribes"><i data-lucide="mail"></i><span>訂閱</span></button>
-            <button class="bottom-nav-item" data-page="index"><i data-lucide="home"></i><span>主頁</span></button>
+            <button class="bottom-nav-item" data-page="/manuals/learns"><i data-lucide="book-open"></i><span>說明書</span></button>
+            <button class="bottom-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>工具箱</span></button>
+            <button class="bottom-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
+            <button class="bottom-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>課程</span></button>
+            <button class="bottom-nav-item" data-page="/accounts/subscribe"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="/index"><i data-lucide="home"></i><span>主頁</span></button>
         </div>
     </div>
 
@@ -1305,6 +1305,8 @@
                 hideToolsBtn.textContent = '🔧 隱藏字體與主題工具';
             }
         }
+
+        /*
         function bindNavs() {
             document.querySelectorAll('.top-nav-item').forEach(btn => {
                 btn.onclick = () => { const page = btn.getAttribute('data-page'); if (page) window.location.href = page + '.html'; if (window.navigator?.vibrate) window.navigator.vibrate(30); };
@@ -1316,6 +1318,42 @@
                 card.onclick = () => { const page = card.getAttribute('data-page'); if (page) window.location.href = page; if (window.navigator?.vibrate) window.navigator.vibrate(30); };
             });
         }
+        */
+
+            function bindNavigation() {
+                // 頂部導航
+                document.querySelectorAll('.top-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 底部導航
+                document.querySelectorAll('.bottom-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page === 'index') window.location.href = 'index.html';
+                        else if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 六大卡片入口 (靜態 .app-square)
+                document.querySelectorAll('.app-square').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const page = card.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 求助 FAB
+                const helpFab = document.getElementById('helpFabBtn');
+                if (helpFab) helpFab.addEventListener('click', () => window.location.href = 'helps.html');
+                // 隱私權按鈕
+                const privacyBtn = document.getElementById('privacyBtn');
+                if (privacyBtn) privacyBtn.addEventListener('click', () => alert('隱私權政策：我們嚴格保護您的個人資料，不會與第三方分享。'));
+                // 主頁 Logo
+                const homeLogo = document.getElementById('homeLogoBtn');
+                if (homeLogo) homeLogo.addEventListener('click', () => window.location.href = 'index.html');
+            }
+
 
         // 頁面初始化
         window.addEventListener('DOMContentLoaded', () => {
@@ -1326,7 +1364,8 @@
             initToolsVisibility();
             adjustTopNavPosition();
             initScrollHandler();
-            bindNavs();
+            //bindNavs();
+            bindNavigation();
             updateBodyPaddingForFooter();
             
             document.getElementById('homeLogoBtn').onclick = () => window.location.href = 'index.html';

@@ -17,7 +17,7 @@ class CourseAdminForm(forms.ModelForm):
         }
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'description', 'comm_date', 'district', 'fee', 'course_url', 'contact', 'poster_url', 'is_active', 'creation_date')
+    list_display = ('id', 'title', 'description', 'comm_date', 'district', 'fee', 'course_url', 'contact', 'poster_img', 'is_active', 'creation_date')
     list_display_links = ('id', 'title', 'district')
     #list_filter = ('doctor', 'services')
     list_editable = ('is_active', )

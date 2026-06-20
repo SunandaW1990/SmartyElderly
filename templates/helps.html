@@ -980,7 +980,7 @@
             <button class="bottom-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>工具箱</span></button>
             <button class="bottom-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
             <button class="bottom-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>課程</span></button>
-            <button class="bottom-nav-item" data-page="/subscribes/subcribes"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="/accounts/subscribe"><i data-lucide="mail"></i><span>訂閱</span></button>
             <button class="bottom-nav-item" data-page="index"><i data-lucide="home"></i><span>主頁</span></button>
         </div>
     </div>
@@ -1054,6 +1054,8 @@
             window.addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(handleScroll); ticking = true; } });
             bottomNavBar.classList.add('hide');
         }
+
+        /*
         function bindNavs() {
             document.querySelectorAll('.top-nav-item, .bottom-nav-item').forEach(btn => {
                 btn.onclick = () => {
@@ -1063,6 +1065,41 @@
                 };
             });
         }
+        */
+
+            function bindNavigation() {
+                // 頂部導航
+                document.querySelectorAll('.top-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 底部導航
+                document.querySelectorAll('.bottom-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page === 'index') window.location.href = 'index.html';
+                        else if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 六大卡片入口 (靜態 .app-square)
+                document.querySelectorAll('.app-square').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const page = card.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 求助 FAB
+                const helpFab = document.getElementById('helpFabBtn');
+                if (helpFab) helpFab.addEventListener('click', () => window.location.href = 'helps.html');
+                // 隱私權按鈕
+                const privacyBtn = document.getElementById('privacyBtn');
+                if (privacyBtn) privacyBtn.addEventListener('click', () => alert('隱私權政策：我們嚴格保護您的個人資料，不會與第三方分享。'));
+                // 主頁 Logo
+                const homeLogo = document.getElementById('homeLogoBtn');
+                if (homeLogo) homeLogo.addEventListener('click', () => window.location.href = 'index.html');
+            }
 
         // 控制中心
         let toolsHidden = false;
@@ -1217,7 +1254,7 @@
             });
             document.getElementById('homeLogoBtn')?.addEventListener('click', () => window.location.href = 'index.html');
             document.getElementById('loginBtn')?.addEventListener('click', () => alert('登入功能開發中'));
-            document.getElementById('helpFabBtn')?.addEventListener('click', () => window.location.href = 'emgs.html');
+            document.getElementById('helpFabBtn')?.addEventListener('click', () => window.location.href = 'helps.html');
             document.getElementById('privacyBtn')?.addEventListener('click', () => alert('私隱政策：我們嚴格保護您的個人資料。'));
         }
 
@@ -1227,7 +1264,8 @@
             initFont();
             initToolsVisibility();
             adjustTopNavPosition();
-            bindNavs();
+            //bindNavs();
+            bindNavigation();
             initScrollHandler();
             initMap();
             setupEventListeners();
