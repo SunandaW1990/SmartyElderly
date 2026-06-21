@@ -1121,6 +1121,7 @@
         </div>
 
         <!-- 章節選擇器 -->
+         {%comment%}
         <div class="chapter-selector" id="chapterSelector">
             <div class="chapter-card" data-chapter="0">
                 <div class="chapter-icon-wrapper"><i data-lucide="landmark"></i></div>
@@ -1147,6 +1148,27 @@
                 <div class="click-hint">點擊進入</div>
             </div>
         </div>
+        {%endcomment%}
+
+        <div class="chapter-selector" id="chapterSelector">
+    	{% for manual in manuals %}
+            <div class="chapter-card" data-chapter="{{forloop.counter0}}">
+                {% if forloop.counter == 1 %}
+                    <div class="chapter-icon-wrapper"><i data-lucide="landmark"></i></div>
+                {% elif forloop.counter == 2 %}
+                    <div class="chapter-icon-wrapper"><i data-lucide="piggy-bank"></i></div>
+                {% elif forloop.counter == 3 %}
+                    <div class="chapter-icon-wrapper"><i data-lucide="fish"></i></div>
+                {% elif forloop.counter == 4 %}
+                    <div class="chapter-icon-wrapper"><i data-lucide="phone"></i></div>
+                {% endif %}
+                <h3>{{manual.name}}</h3>
+                <p>{{manual.description}}</p>
+                <div class="click-hint">點擊進入</div>
+            </div>
+        {% endfor %}
+        </div>
+
 
         <!-- ============================================ -->
         <!-- 章節內容區 - 改為靜態 HTML，用 display 切換    -->
@@ -1494,12 +1516,14 @@
     </div>
 
     <!-- 頁尾 -->
+     {%comment%}
     <footer class="footer" id="footer">
         <span>版權所有 © 2026 Smarty Elderly. 保留所有權利</span>
         <button class="glass-button" id="privacyBtn" aria-label="隱私權政策">
             <i data-lucide="lock"></i> 隱私權政策
         </button>
     </footer>
+    {%endcomment%}
 
     <!-- 底部導航欄 -->
     <div class="bottom-nav-bar" id="bottomNavBar">
