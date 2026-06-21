@@ -1,9 +1,13 @@
-{% extends "base.html" %}
 {% load static %}
-{% block title %} 我的儀表板 · 耆醒老友記 Smarty Elderly {% endblock %}
-{% block stylesheet %}
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>歡迎加入 · 耆醒老友記</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         /* ========== 完整複製 subscribe.html 中的所有樣式 ========== */
         @keyframes floatOrb1 {
@@ -185,8 +189,72 @@
             .icon-wrapper svg { width: 34px; height: 34px; }
         }
     </style>
-{%endblock%}
-{%block content%}
+</head>
+<body class="theme-forest-bath">
+
+    <div class="dynamic-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+    <div class="noise-bg"></div>
+
+    <header class="mac-topbar">
+        <div class="topbar-container">
+            <div class="topbar-left" id="homeLogoBtn">
+                <i data-lucide="home" class="home-icon"></i>
+                <div class="brand-text"><span class="brand-logo">耆醒老友記</span><span class="brand-en">Smarty Elderly</span></div>
+            </div>
+            <div class="topbar-right">
+                <div class="theme-slider-widget">
+                    <span class="slider-label">主題</span>
+                    <input type="range" id="themeSlider" class="theme-slider" min="0" max="7" step="1" value="3">
+                    <span class="slider-hint">護眼</span>
+                </div>
+                <div class="font-switch-group" id="fontSwitchGroup">
+                    <button data-font="small" class="font-switch-btn">小字</button>
+                    <button data-font="standard" class="font-switch-btn">標準</button>
+                    <button data-font="xlarge" class="font-switch-btn">特大</button>
+                </div>
+                <button class="icon-btn" id="controlCenterBtn"><i data-lucide="sliders"></i></button>
+                <div id="authButtonContainer">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:dashboard' %}" class="login-btn"><i data-lucide="user"></i> {{ user.username }}</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="login-btn"><i data-lucide="log-in"></i> 登入</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="top-nav-placeholder" id="topNavPlaceholder"></div>
+    <div class="top-nav-bar" id="topNavBar">
+        <div class="top-nav-container">
+            <button class="top-nav-item" data-page="/manuals/learns"><i data-lucide="book-open"></i><span>數位說明書</span></button>
+            <button class="top-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>防騙工具箱</span></button>
+            <button class="top-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急指南</span></button>
+            <button class="top-nav-item" data-page="/stories/story"><i data-lucide="heart"></i><span>故事角</span></button>
+            <button class="top-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>教育課程</span></button>
+            <button class="top-nav-item" data-page="/news"><i data-lucide="newspaper"></i><span>最新資訊</span></button>
+            <button class="top-nav-item" data-page="/accounts/subscribe"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="top-nav-item" data-page="/abouts"><i data-lucide="users"></i><span>關於我們</span></button>
+        </div>
+    </div>
+
+
+    <div id="controlCenterPanel">
+        <h4><i data-lucide="palette"></i> 完整主題切換 (8種)</h4>
+        <div class="theme-group-8">
+            <button data-theme-index="0" class="theme-option-btn">Piña Colada</button>
+            <button data-theme-index="1" class="theme-option-btn">Dark 'n' Stormy</button>
+            <button data-theme-index="2" class="theme-option-btn">Glass Window</button>
+            <button data-theme-index="3" class="theme-option-btn">Forest Bath</button>
+            <button data-theme-index="4" class="theme-option-btn">Mint Garden</button>
+            <button data-theme-index="5" class="theme-option-btn">Apple Cider</button>
+            <button data-theme-index="6" class="theme-option-btn">Nightcap</button>
+            <button data-theme-index="7" class="theme-option-btn">Sunrise</button>
+        </div>
+        <button id="hideToolsBtn" class="hide-tools-btn">🔧 隱藏字體與主題工具</button>
+        <button id="closeControlPanel" class="close-panel-btn">關閉</button>
+    </div>
+
     <div class="modal fade" id="privacyModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -226,15 +294,11 @@
     </div>
 
 
-    {%comment%}
     <footer class="footer">
         <span>版權所有 © 2026 Smarty Elderly. 保留所有權利</span>
         <button class="glass-button" id="privacyBtn"><i data-lucide="lock"></i> 隱私權政策</button>
     </footer>
-    {%endcomment%}
 
-{%endblock%}    
-{%block script%}
     <script>
         // ========== 完整保留所有互動功能 (複製自 subscribe.html) ==========
         const GLOBAL_THEMES = ['theme-pina-coloda','theme-dark-stormy','theme-glass-window','theme-forest-bath','theme-mint-garden','theme-apple-cider','theme-nightcap','theme-sunrise'];
@@ -343,4 +407,5 @@
             if (typeof lucide !== 'undefined') lucide.createIcons();
         });
     </script>
-{%endblock%}
+</body>
+</html>

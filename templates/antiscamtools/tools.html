@@ -1,8 +1,12 @@
-{% extends "base.html" %}
-{% block title %} 防騙工具箱 · 耆醒老友記 Smarty Elderly {% endblock %}
-{% block stylesheet %}
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>防騙工具箱 · 耆醒老友記 Smarty Elderly</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         /* ========== 全域動畫 ========== */
         @keyframes floatOrb1 {
@@ -209,13 +213,13 @@
         .tool-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; color: #2C2C2C; }
         .tool-desc { font-size: 0.75rem; color: #4A4A4A; line-height: 1.35; }
 
-        /* 工具面板容器 */
+        /* 工具面板容器 - 四個面板共用 */
         .tools-panels-container { position: relative; min-height: 550px; }
         .tool-panel { background: var(--card-bg); backdrop-filter: var(--blur-amount); border-radius: var(--radius-lg); border: 0.5px solid var(--card-border); padding: 1.8rem; margin-bottom: 2rem; transition: all 0.2s; display: none; }
         .tool-panel.active-panel { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ===== 騙局劇本庫專用樣式（最終正確版） ===== */
+        /* 騙局劇本庫共用樣式 */
         .scam-container { background: transparent; }
         .scam-header {
             background: rgba(255,255,255,0.3);
@@ -236,6 +240,7 @@
         .scam-title { font-size: 1.6rem; font-weight: 700; color: var(--text-main); }
         .scam-badge { background: rgba(255,94,77,0.2); display: inline-block; padding: 0.2rem 1rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 600; color: var(--primary); }
         .scam-real-case { font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.3rem; }
+        
         .instruction-guide {
             background: rgba(55,107,126,0.12);
             border-radius: 1rem;
@@ -246,8 +251,7 @@
             color: var(--primary);
             font-weight: 500;
         }
-
-        /* ===== 2x2 網格及卡片 ===== */
+        
         .scenes-grid-2x2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -255,44 +259,44 @@
             margin-bottom: 1.8rem;
         }
         .scene-card {
-            position: relative;
-            background: #FFFFFF;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(4px);
             border-radius: 1.5rem;
+            padding: 1.2rem;
+            text-align: center;
+            transition: all 0.3s ease;
             border: 1px solid var(--card-border);
             box-shadow: var(--shadow-sm);
-            cursor: pointer;
-            overflow: hidden;
-            aspect-ratio: 2 / 1;           /* 固定 2:1 長方形 */
+        }
+        .scene-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .scene-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 0.8rem;
+            background: rgba(55,107,126,0.1);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
-            transition: all 0.3s ease;
         }
-        .scene-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        .scene-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;             /* 因比例相同，完美填滿無灰邊 */
-            display: block;
-            background: #f0f0f0;
-        }
-        .scene-label {
-            position: absolute;
-            bottom: 12px;
-            left: 12px;
-            background: rgba(0,0,0,0.7);
-            color: #fff;
-            padding: 4px 16px;
+        .scene-icon svg { width: 40px; height: 40px; stroke: var(--primary); stroke-width: 1.7; }
+        .scene-label { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main); }
+        .scene-story { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; }
+        .zoom-btn {
+            background: rgba(55,107,126,0.15);
+            border: none;
             border-radius: 40px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            backdrop-filter: blur(4px);
-            z-index: 2;
-            pointer-events: none;
+            padding: 0.4rem 0.8rem;
+            margin-top: 0.6rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--primary);
+            font-weight: 500;
+            width: 100%;
         }
-
-        /* ===== 騙局切換按鈕 ===== */
+        .zoom-btn:hover { background: var(--primary); color: white; }
+        
         .scam-selector-row {
             display: flex;
             justify-content: center;
@@ -326,7 +330,7 @@
             transform: scale(1.02);
         }
 
-        /* ===== 圖片放大彈窗 ===== */
+        /* 圖片放大模态框 */
         .image-modal {
             display: none;
             position: fixed;
@@ -334,7 +338,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.92);
+            background: rgba(0,0,0,0.95);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -342,23 +346,25 @@
         }
         .image-modal.show { display: flex; }
         .modal-content {
-            background: transparent;
-            padding: 0;
-            max-width: 90vw;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            padding: 2rem;
+            min-width: 300px;
+            max-width: 90%;
         }
-        .modal-content img {
-            width: auto;
-            height: auto;
-            max-width: 90vw;
-            max-height: 80vh;
-            object-fit: contain;           /* 放大時完整顯示 2:1 漫畫 */
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        .modal-content svg {
+            width: 250px;
+            height: 250px;
+            stroke: white;
+            stroke-width: 1.5;
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+        }
+        .modal-content p {
+            color: white;
+            margin: 1rem 0;
+            font-size: 1.1rem;
         }
         .modal-close-btn {
             background: var(--primary);
@@ -369,7 +375,7 @@
             font-weight: 600;
             color: white;
             cursor: pointer;
-            margin-top: 1.5rem;
+            margin-top: 1rem;
             transition: 0.2s;
         }
         .modal-close-btn:hover { transform: scale(1.05); opacity: 0.9; }
@@ -380,16 +386,14 @@
             font-size: 40px;
             color: white;
             cursor: pointer;
-            font-weight: 300;
-            z-index: 1001;
         }
         .modal-instruction {
-            color: rgba(255,255,255,0.6);
+            color: rgba(255,255,255,0.7);
             font-size: 0.85rem;
             margin-top: 0.8rem;
         }
 
-        /* ===== 其他面板（不變） ===== */
+        /* 查證機構 */
         .verify-section { margin-bottom: 1.5rem; }
         .verify-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-main); }
         .hot-scam-list { list-style: none; padding: 0; }
@@ -401,6 +405,7 @@
         .scameter-link { background: linear-gradient(135deg, rgba(0,122,255,0.1), rgba(0,0,0,0.05)); border-radius: 1.5rem; padding: 1.2rem; text-align: center; margin-top: 1rem; }
         .big-link { display: inline-block; background: var(--primary); color: white; padding: 0.7rem 1.5rem; border-radius: 60px; text-decoration: none; font-weight: 600; margin-top: 0.5rem; }
 
+        /* 地圖 */
         .map-prep-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8rem; }
         .map-card, .prep-card { background: rgba(255,255,255,0.45); backdrop-filter: blur(24px) saturate(180%); border-radius: 1.8rem; border: 0.5px solid var(--card-border); padding: 1.2rem; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: var(--shadow-sm); }
         .map-card:hover, .prep-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
@@ -417,6 +422,7 @@
         .prep-list li svg { width: 20px; height: 20px; stroke: var(--primary); flex-shrink: 0; }
         .prep-note { background: rgba(255,94,77,0.1); border-left: 4px solid var(--primary); padding: 0.8rem; border-radius: 1rem; font-size: 0.8rem; display: flex; gap: 0.5rem; align-items: center; }
 
+        /* 下載 App */
         .app-simple-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); border-radius: 1.5rem; padding: 1.2rem; margin-bottom: 1.2rem; border: 0.5px solid var(--card-border); }
         .download-row { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin: 0.8rem 0; }
         .download-link { display: inline-block; background: var(--primary); color: white; padding: 0.5rem 1rem; border-radius: 40px; text-decoration: none; font-size: 0.8rem; font-weight: 500; transition: 0.2s; }
@@ -436,6 +442,7 @@
         }
         .permission-glass i { margin-right: 0.3rem; color: var(--primary); }
 
+        /* 紅色求助按鈕 */
         .urgent-help-section {
             text-align: center;
             margin: 2rem 0 3rem;
@@ -471,6 +478,7 @@
             animation: none;
         }
 
+        /* 底部 */
         .bottom-nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,245,0.94); backdrop-filter: blur(20px); border-top: 1px solid var(--card-border); display: flex; justify-content: center; z-index: 100; padding: 0.4rem 0; transition: transform 0.3s ease; transform: translateY(0); }
         .bottom-nav-bar.hide { transform: translateY(100%); pointer-events: none; }
         .bottom-nav-container { width: 100%; max-width: 1300px; display: flex; justify-content: space-around; align-items: center; padding: 0.2rem 1rem 0.4rem; }
@@ -487,17 +495,14 @@
         .footer { max-width: 1300px; margin: 2rem auto 1rem; padding: 1rem 1.5rem; border-top: 0.5px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-secondary); background: transparent; }
         .glass-button { backdrop-filter: blur(12px); background: rgba(55, 107, 126, 0.1); border: 0.5px solid var(--card-border); border-radius: 980px; padding: 0.4rem 1rem; font-size: 0.8rem; font-weight: 500; color: var(--primary); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
 
-        /* ========== 📱 手機響應式：改為 4 行 1 張 ========== */
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .tools-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
             .map-prep-row { grid-template-columns: 1fr; gap: 1.2rem; }
-            .scenes-grid-2x2 {
-                grid-template-columns: 1fr;   /* 改為單欄，變成垂直 4 行 */
-                gap: 1rem;
-            }
-            .scene-card {
-                aspect-ratio: 2 / 1;          /* 依然保持 2:1，但寬度變滿版，圖片自然變大 */
-            }
+            .scenes-grid-2x2 { gap: 0.8rem; }
+            .scene-icon { width: 55px; height: 55px; }
+            .scene-icon svg { width: 32px; height: 32px; }
+            .scene-label { font-size: 1rem; }
+            .scene-story { font-size: 0.75rem; }
             .scam-selector-btn { padding: 0.5rem 1rem; font-size: 0.85rem; }
             .topbar-container { flex-direction: column; align-items: stretch; gap: 0.5rem; }
             .brand-logo { font-size: 1.3rem; }
@@ -507,7 +512,7 @@
             .top-nav-item svg { width: 1.2rem; height: 1.2rem; }
             .footer { flex-direction: column; gap: 0.8rem; text-align: center; margin-top: 1rem; }
             .help-fab { width: 3rem; height: 3rem; bottom: 100px; }
-            .modal-content img { max-width: 95vw; max-height: 70vh; }
+            .modal-content svg { width: 180px; height: 180px; }
             .qr-large { width: 100px; height: 100px; }
             .urgent-help-btn {
                 padding: 14px 24px;
@@ -521,8 +526,61 @@
             }
         }
     </style>
-{% endblock %}
-{% block content %}
+</head>
+<body class="theme-forest-bath">
+    <div class="dynamic-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+    <div class="noise-bg"></div>
+
+    <header class="mac-topbar">
+        <div class="topbar-container">
+            <div class="topbar-left" id="homeLogoBtn"><i data-lucide="home" class="home-icon"></i><div class="brand-text"><span class="brand-logo">耆醒老友記</span><span class="brand-en">Smarty Elderly</span></div></div>
+            <div class="topbar-right">
+                <div class="theme-slider-widget"><span class="slider-label">主題</span><input type="range" id="themeSlider" class="theme-slider" min="0" max="7" step="1" value="3"><span class="slider-hint">護眼</span></div>
+                <div class="font-switch-group" id="fontSwitchGroup"><button data-font="small" class="font-switch-btn">小字</button><button data-font="standard" class="font-switch-btn">標準</button><button data-font="xlarge" class="font-switch-btn">特大</button></div>
+                <button class="icon-btn" id="controlCenterBtn" aria-label="控制中心">
+                    <i data-lucide="sliders"></i>
+                </button>
+                <div id="authButtonContainer">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:dashboard' %}" class="login-btn"><i data-lucide="user"></i> {{ user.username }}</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="login-btn"><i data-lucide="log-in"></i> 登入</a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- 頂部導航欄 - 靜態 HTML -->
+    <div class="top-nav-bar" id="topNavBar">
+        <div class="top-nav-container">
+            <button class="top-nav-item" data-page="/manuals/learns"><i data-lucide="book-open"></i><span>數位說明書</span></button>
+            <button class="top-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>防騙工具箱</span></button>
+            <button class="top-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急指南</span></button>
+            <button class="top-nav-item" data-page="/stories/story"><i data-lucide="heart"></i><span>故事角</span></button>
+            <button class="top-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>教育課程</span></button>
+            <button class="top-nav-item" data-page="/news"><i data-lucide="newspaper"></i><span>最新資訊</span></button>
+            <button class="top-nav-item" data-page="/accounts/subscribe"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="top-nav-item" data-page="/abouts"><i data-lucide="users"></i><span>關於我們</span></button>
+        </div>
+    </div>
+
+    <div id="controlCenterPanel">
+        <h4><i data-lucide="palette"></i> 完整主題切換 (8種)</h4>
+        <div class="theme-group-8" id="themeGroup8">
+            <button data-theme-index="0" class="theme-option-btn">Piña Colada</button>
+            <button data-theme-index="1" class="theme-option-btn">Dark Stormy</button>
+            <button data-theme-index="2" class="theme-option-btn">Glass Window</button>
+            <button data-theme-index="3" class="theme-option-btn">Forest Bath</button>
+            <button data-theme-index="4" class="theme-option-btn">Mint Garden</button>
+            <button data-theme-index="5" class="theme-option-btn">Apple Cider</button>
+            <button data-theme-index="6" class="theme-option-btn">Nightcap</button>
+            <button data-theme-index="7" class="theme-option-btn">Sunrise</button>
+        </div>
+        <button id="hideToolsBtn" class="hide-tools-btn">🔧 隱藏字體與主題工具</button>
+        <button id="closeControlPanel" class="close-panel-btn">關閉</button>
+    </div>
     <div class="main-container">
         <!-- 四大工具入口卡片 - 靜態 HTML -->
         <div class="tools-grid" id="toolsGrid">
@@ -555,38 +613,19 @@
                 <div class="verify-section">
                     <div class="verify-title"><i data-lucide="trending-up"></i> 最近常見詐騙電話</div>
                     <ul class="hot-scam-list">
-<!--Start Dynamic Tool01-->
     	            {% for antiscamtool in antiscamtools %}
                         <li><span><i data-lucide="phone"></i> <strong>{{antiscamtool.top1_contact}}</strong> — {{antiscamtool.top1_description}}</span><button class="quick-btn scam-alert-btn" data-number="22333000">我收到類似來電</button></li>
                         <li><span><i data-lucide="phone"></i> <strong>{{antiscamtool.top2_contact}}</strong> — {{antiscamtool.top2_description}}</span><button class="quick-btn scam-alert-btn" data-number="29458888">我收到類似來電</button></li>
                         <li><span><i data-lucide="phone"></i> <strong>{{antiscamtool.top3_contact}}</strong> — {{antiscamtool.top3_description}}</span><button class="quick-btn scam-alert-btn" data-number="18222">我收到類似來電</button></li>
                     {% endfor %}
-
-                    {%comment%}
-                        <li><span><i data-lucide="phone"></i> <strong>+852 2233 3000</strong> — 假冒滙豐銀行 / 信用卡自動扣款</span><button class="quick-btn scam-alert-btn" data-number="22333000">我收到類似來電</button></li>
-                        <li><span><i data-lucide="phone"></i> <strong>+852 2945 8888</strong> — 假冒中國移動 / 一卡兩號扣費</span><button class="quick-btn scam-alert-btn" data-number="29458888">我收到類似來電</button></li>
-                        <li><span><i data-lucide="phone"></i> <strong>+852 18222</strong> — 偽造反詐騙中心來電</span><button class="quick-btn scam-alert-btn" data-number="18222">我收到類似來電</button></li>
-                    {%endcomment%}
-<!--End Dynamic Tool01-->
                     </ul>
                 </div>
                 <div class="verify-section">
                     <div class="verify-title"><i data-lucide="building-2"></i> 常用官方電話</div>
                     <div class="agency-grid">
-<!--Start Dynamic Tool01-->
                         {% for usefulcontact in usefulcontacts %}
                         <div class="agency-card"><span><strong>{{usefulcontact.institute}}</strong><br>📞 {{usefulcontact.contact}}</span><button class="quick-btn call-btn" data-phone="18222">模擬撥號</button></div>
                         {%endfor%}
-
-                        {%comment%}
-                        <div class="agency-card"><span><strong>反詐騙協調中心</strong><br>📞 18222</span><button class="quick-btn call-btn" data-phone="18222">模擬撥號</button></div>
-                        <div class="agency-card"><span><strong>香港警務處</strong><br>📞 3660 1200</span><button class="quick-btn call-btn" data-phone="36601200">模擬撥號</button></div>
-                        <div class="agency-card"><span><strong>滙豐銀行</strong><br>📞 2233 3000</span><button class="quick-btn call-btn" data-phone="22333000">模擬撥號</button></div>
-                        <div class="agency-card"><span><strong>中銀香港</strong><br>📞 3988 2388</span><button class="quick-btn call-btn" data-phone="39882388">模擬撥號</button></div>
-                        <div class="agency-card"><span><strong>恒生銀行</strong><br>📞 2822 0228</span><button class="quick-btn call-btn" data-phone="28220228">模擬撥號</button></div>
-                        <div class="agency-card"><span><strong>中國移動香港</strong><br>📞 2945 8888</span><button class="quick-btn call-btn" data-phone="29458888">模擬撥號</button></div>
-                        {%endcomment%}
-<!--End Dynamic Tool01-->
                     </div>
                 </div>
                 <div class="scameter-link">
@@ -691,13 +730,18 @@
 
     <div class="help-fab" id="helpFabBtn" aria-label="求助"><i data-lucide="alert-triangle"></i></div>
 
+    <footer class="footer">
+        <span>版權所有 © 2026 Smarty Elderly. 保留所有權利</span>
+        <button class="glass-button" id="privacyBtn" aria-label="隱私權政策"><i data-lucide="lock"></i> 隱私權政策</button>
+    </footer>
+
     <div class="bottom-nav-bar" id="bottomNavBar">
         <div class="bottom-nav-container">
             <button class="bottom-nav-item" data-page="/manuals/learns"><i data-lucide="book-open"></i><span>說明書</span></button>
             <button class="bottom-nav-item" data-page="/antiscamtools/tools"><i data-lucide="star"></i><span>工具箱</span></button>
             <button class="bottom-nav-item" data-page="/guides/emgs"><i data-lucide="life-buoy"></i><span>應急</span></button>
             <button class="bottom-nav-item" data-page="/courses/courses"><i data-lucide="compass"></i><span>課程</span></button>
-            <button class="bottom-nav-item" data-page="/subscribes/subscribes"><i data-lucide="mail"></i><span>訂閱</span></button>
+            <button class="bottom-nav-item" data-page="/accounts/subscribe"><i data-lucide="mail"></i><span>訂閱</span></button>
             <button class="bottom-nav-item" data-page="/index"><i data-lucide="home"></i><span>主頁</span></button>
         </div>
     </div>
@@ -712,48 +756,10 @@
             <div class="modal-instruction">點擊按鈕可返回正常大小</div>
         </div>
     </div>
-{% endblock %}
 
-
-{% block script %}
     <script>
         // ========== 騙局資料庫（僅用於面板2動態渲染）==========
-//Start Dynamic Tool02        
-//Image Version
-/*
-        const scamLibrary = [
-            { id: 0, title: "假冒客服騙局", badge: "你嘅帳戶會被自動扣費", realCase: "真實案例：82歲退休女教師被呃420萬元",
-              scenes: [
-                  { label: "情景一", image: "images/1-01.jpg" },
-                  { label: "情景二", image: "images/1-02.jpg" },
-                  { label: "情景三", image: "images/1-03.jpg" },
-                  { label: "情景四", image: "images/1-04.jpg" }
-              ] },
-            { id: 1, title: "假冒官員騙局", badge: "你涉及內地刑事案件", realCase: "真實案例：75歲長者被呃20萬元現金",
-              scenes: [
-                  { label: "情景一", image: "images/2-01.jpg" },
-                  { label: "情景二", image: "images/2-02.jpg" },
-                  { label: "情景三", image: "images/2-03.jpg" },
-                  { label: "情景四", image: "images/2-04.jpg" }
-              ] },
-            { id: 2, title: "網上投資騙局", badge: "專家帶你賺大錢", realCase: "真實案例：75歲婆婆被呃1,472萬元",
-              scenes: [
-                  { label: "情景一", image: "images/3-01.jpg" },
-                  { label: "情景二", image: "images/3-02.jpg" },
-                  { label: "情景三", image: "images/3-03.jpg" },
-                  { label: "情景四", image: "images/3-04.jpg" }
-              ] },
-            { id: 3, title: "猜猜我是誰", badge: "阿媽，我出事啦！", realCase: "真實案例：10名長者共被呃219萬元",
-              scenes: [
-                  { label: "情景一", image: "images/4-01.jpg" },
-                  { label: "情景二", image: "images/4-02.jpg" },
-                  { label: "情景三", image: "images/4-03.jpg" },
-                  { label: "情景四", image: "images/4-04.jpg" }
-              ] }
-        ];
-*/
-
-//Text Version
+        //Text Version
         const scamLibrary = [
        	{% for scamscript in scamscripts %}
             { id: "{{forloop.counter0}}", title: "{{scamscript.topic}}", badge: "{{scamscript.description}}", realCase: "真實案例：{{scamscript.realcase}}",
@@ -766,38 +772,6 @@
             {% if not forloop.last %},{% endif %}
         {% endfor %}
         ]
-/*        const scamLibrary = [
-            { id: 0, title: "假冒客服騙局", badge: "你嘅帳戶會被自動扣費", realCase: "真實案例：82歲退休女教師被呃420萬元",
-              scenes: [
-                  { label: "情景一", story: "騙徒假冒網購平台客服，謊稱帳戶被設為VIP會自動扣費。", icon: "message-circle" },
-                  { label: "情景二", story: "要求長者提供信用卡資料「取消設定」，否則每年扣$6000。", icon: "credit-card" },
-                  { label: "情景三", story: "假扮銀行職員來電，稱需「驗證戶口」指引轉賬到「安全戶口」。", icon: "building-2" },
-                  { label: "情景四", story: "最後長者發現戶口存款被轉走，騙徒失聯。", icon: "alert-triangle" }
-              ] },
-            { id: 1, title: "假冒官員騙局", badge: "你涉及內地刑事案件", realCase: "真實案例：75歲長者被呃20萬元現金",
-              scenes: [
-                  { label: "情景一", story: "自稱「內地公安」來電，稱長者身份被盜用洗黑錢。", icon: "badge" },
-                  { label: "情景二", story: "要求長者交出銀行帳戶密碼及保證金證明清白。", icon: "lock" },
-                  { label: "情景三", story: "警告「唔准話俾家人知」，否則即時拘捕。", icon: "eye-off" },
-                  { label: "情景四", story: "長者按指示轉賬後，騙徒消失。", icon: "user-x" }
-              ] },
-            { id: 2, title: "網上投資騙局", badge: "專家帶你賺大錢", realCase: "真實案例：75歲婆婆被呃1,472萬元",
-              scenes: [
-                  { label: "情景一", story: "社交媒體認識「投資專家」，群組內多人分享賺錢截圖。", icon: "trending-up" },
-                  { label: "情景二", story: "要求下載虛假投資App，初期小額獲利可提現。", icon: "smartphone" },
-                  { label: "情景三", story: "加碼後App顯示巨額盈利，但要「繳稅」先能提款。", icon: "receipt" },
-                  { label: "情景四", story: "最終平台關閉，專家失聯。", icon: "power-off" }
-              ] },
-            { id: 3, title: "猜猜我是誰", badge: "阿媽，我出事啦！", realCase: "真實案例：10名長者共被呃219萬元",
-              scenes: [
-                  { label: "情景一", story: "來電自稱「仔女」換咗電話號碼，語氣急切。", icon: "phone-call" },
-                  { label: "情景二", story: "稱因打架/欠債被捕，急需保釋金。", icon: "handcuffs" },
-                  { label: "情景三", story: "要求唔好通知其他家人，速去銀行轉賬。", icon: "alert-octagon" },
-                  { label: "情景四", story: "長者轉賬後真仔女打來才知受騙。", icon: "heart-crack" }
-              ] }
-        ];
-*/        
-//End Dynamic Tool02
 
         let currentScamIdx = 0;
         let leafletMap = null;
@@ -840,7 +814,6 @@
         function renderScamPanel() {
             const scam = scamLibrary[currentScamIdx];
             let scenesHtml = '';
-<!-- Start Change icon & Text to img-->
             scam.scenes.forEach((scene, idx) => {
                 scenesHtml += `
                     <div class="scene-card" data-image="${scene.image}">
@@ -849,7 +822,6 @@
                     </div>
                 `;
             });
-<!-- End Change icon & Text to img-->
             let scamSelectorHtml = '';
             scamLibrary.forEach((s, idx) => {
                 scamSelectorHtml += `<button class="scam-selector-btn ${idx === currentScamIdx ? 'active' : ''}" data-scam-idx="${idx}">${s.title}</button>`;
@@ -958,6 +930,7 @@
             if(window.lucide) lucide.createIcons(); 
         }
 
+        /*
         const navMap = { learns:'learns.html', tools:'tools.html', emgs:'emgs.html', stories:'stories.html', courses:'courses.html', news:'news.html', subscribes:'subcribes.html', abouts:'abouts.html' };
         function bindNavEvents() {
             document.querySelectorAll('.top-nav-item').forEach(btn => {
@@ -967,6 +940,43 @@
                 btn.onclick = () => { const pg = btn.dataset.page; if(pg === 'index') location.href = '/index.html'; else if(navMap[pg]) location.href = navMap[pg]; };
             });
         }
+        */
+
+            // ========== 導航按鈕綁定 (頂部/底部/六大卡片/FAB) ==========
+            function bindNavigation() {
+                // 頂部導航
+                document.querySelectorAll('.top-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 底部導航
+                document.querySelectorAll('.bottom-nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const page = btn.getAttribute('data-page');
+                        if (page === 'index') window.location.href = '/index.html';
+                        else if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 六大卡片入口 (靜態 .app-square)
+                document.querySelectorAll('.app-square').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const page = card.getAttribute('data-page');
+                        if (page) window.location.href = page + '.html';
+                    });
+                });
+                // 求助 FAB
+                const helpFab = document.getElementById('helpFabBtn');
+                if (helpFab) helpFab.addEventListener('click', () => window.location.href = '/helps.html');
+                // 隱私權按鈕
+                const privacyBtn = document.getElementById('privacyBtn');
+                if (privacyBtn) privacyBtn.addEventListener('click', () => alert('隱私權政策：我們嚴格保護您的個人資料，不會與第三方分享。'));
+                // 主頁 Logo
+                const homeLogo = document.getElementById('homeLogoBtn');
+                if (homeLogo) homeLogo.addEventListener('click', () => window.location.href = '/index.html');
+            }
+
 
         // 滾動控制頂部/底部導航欄
         let ticking = false;
@@ -1025,7 +1035,8 @@
             setFontSize(savedFont || 'standard');
             
             // 導航事件
-            bindNavEvents();
+            //bindNavEvents();
+            bindNavigation();
             initToolsVisibility();
             initScroll();
             
@@ -1094,4 +1105,5 @@
             if(window.lucide) lucide.createIcons();
         });
     </script>
-{% endblock %}
+</body>
+</html>
