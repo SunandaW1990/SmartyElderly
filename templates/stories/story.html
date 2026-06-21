@@ -1029,7 +1029,7 @@
             <form name="storyform" action={% url "stories:story" %} method="post">
             {% csrf_token %}
             <input type="hidden" name="recType" value="text">
-            <input type="hidden" name="subscriber_id" value="{{ user.id }}"">   
+            <input type="hidden" name="subscriber_id" value="{{ user.id }}">   
 
                 <div id="textSection" class="text-form-section" style="display: none;">
                     <!-- Django 改造時，form 內加入 {% csrf_token %} -->
@@ -1081,9 +1081,11 @@
                             <div class="story-header">
                                 <div class="story-author">
                                     <i data-lucide="user"></i>
-                                    <span class="author-name">{{ story.get_display_name }}</span>
+                                    
                                     {% if story.is_anonymous %}
                                         <span class="anonymous-badge">匿名</span>
+                                    {% else %}
+                                        <span class="author-name">熱心街坊</span>
                                     {% endif %}
                                 </div>
                                 <div class="story-date">
@@ -1258,14 +1260,20 @@
             {% endif %}
         }
 
-        function handleLoginClick() {
-            showConfirm(
-                '此為測試版本，點擊「確定」將模擬登入（無需真實帳號）。\n\n登入後即可體驗完整功能。',
-                '模擬登入',
-                performMockLogin,
-                'log-in'
-            );
-        }
+function handleLoginClick() {
+/*    showConfirm(
+        '此為測試版本，點擊「確定」將模擬登入（無需真實帳號）。\n\n登入後即可體驗完整功能。',
+        '模擬登入',
+        performMockLogin,
+        'log-in'
+    );
+*/
+
+    {% if not user.is_authenticated %}
+        window.location.href = '{% url "login" %}'
+    {% endif %}
+    
+}
 
         // ========== 全域 UI 控制 ==========
         const GLOBAL_THEMES = [

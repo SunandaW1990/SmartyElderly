@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.http import JsonResponse
+from django.conf import settings
 
 ## from .forms import ContactForm
 
@@ -24,11 +25,15 @@ def story(request):
                 title = request.POST['title']
                 content = request.POST['content']
                 category = request.POST['category']
-                if request.POST['is_anonymous'] == 'on' :
-                    is_anonymous = True 
-                else :
-                    is_anonymous = False
+                is_anonymous_raw = request.POST.get('is_anonymous')
+                is_anonymous = is_anonymous_raw == 'on'
                 file_path = ''
+
+                print(subscriber_id)
+                print(title)
+                print(content)
+                print(category)
+                print(is_anonymous)
 
                 print("Before Insert Text Story")
                 story = Story(user_id=subscriber_id, title=title, 

@@ -373,21 +373,21 @@
             if (isLoggedIn()) {
                 if (registerBtn) {
                     registerBtn.innerHTML = `<i data-lucide="user-check"></i> 我的帳戶`;
-                    registerBtn.onclick = () => window.location.href = 'dashboard.html';
+                    registerBtn.onclick = () => window.location.href = '/accounts/dashboard/';
                 }
                 if (loginBtn) {
                     loginBtn.innerHTML = `<i data-lucide="user"></i> 我的帳戶`;
-                    loginBtn.onclick = () => window.location.href = 'dashboard.html';
+                    loginBtn.onclick = () => window.location.href = '/accounts/dashboard/';
                 }
                 if (hintBanner) hintBanner.style.display = 'none';
             } else {
                 if (registerBtn) {
                     registerBtn.innerHTML = `<i data-lucide="user-plus"></i> 訂閱 / 登入`;
-                    registerBtn.onclick = () => window.location.href = 'login.html';
+                    registerBtn.onclick = () => window.location.href = '/login.html';
                 }
                 if (loginBtn) {
                     loginBtn.innerHTML = `<i data-lucide="log-in"></i> 登入`;
-                    loginBtn.onclick = () => window.location.href = 'login.html';
+                    loginBtn.onclick = () => window.location.href = '/login.html';
                 }
                 if (hintBanner) hintBanner.style.display = 'flex';
             }
@@ -696,7 +696,7 @@
                 document.querySelectorAll('.bottom-nav-item').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const page = btn.getAttribute('data-page');
-                        if (page === 'index') window.location.href = 'index.html';
+                        if (page === 'index') window.location.href = '/index.html';
                         else if (page) window.location.href = page + '.html';
                     });
                 });
@@ -709,21 +709,21 @@
                 });
                 // 求助 FAB
                 const helpFab = document.getElementById('helpFabBtn');
-                if (helpFab) helpFab.addEventListener('click', () => window.location.href = 'helps.html');
+                if (helpFab) helpFab.addEventListener('click', () => window.location.href = '/helps.html');
                 // 隱私權按鈕
                 const privacyBtn = document.getElementById('privacyBtn');
                 if (privacyBtn) privacyBtn.addEventListener('click', () => alert('隱私權政策：我們嚴格保護您的個人資料，不會與第三方分享。'));
                 // 主頁 Logo
                 const homeLogo = document.getElementById('homeLogoBtn');
-                if (homeLogo) homeLogo.addEventListener('click', () => window.location.href = 'index.html');
+                if (homeLogo) homeLogo.addEventListener('click', () => window.location.href = '/index.html');
             }
 
 
         // 綁定其他按鈕
-        document.getElementById('homeLogoBtn')?.addEventListener('click', () => window.location.href = 'index.html');
-        document.getElementById('helpFabBtn')?.addEventListener('click', () => window.location.href = 'helps.html');
+        document.getElementById('homeLogoBtn')?.addEventListener('click', () => window.location.href = '/index.html');
+        document.getElementById('helpFabBtn')?.addEventListener('click', () => window.location.href = '/helps.html');
         document.getElementById('privacyBtn')?.addEventListener('click', () => showToast("隱私權政策：我們嚴格保護您的個人資料，不會與第三方分享。", "info"));
-        document.getElementById('gotoLearnBtn')?.addEventListener('click', () => window.location.href = 'learns.html');
+        document.getElementById('gotoLearnBtn')?.addEventListener('click', () => window.location.href = '/manuals/learns.html');
         document.getElementById('carouselPrev')?.addEventListener('click', prevPage);
         document.getElementById('carouselNext')?.addEventListener('click', nextPage);
         document.getElementById('districtFilter')?.addEventListener('change', updateFilters);
