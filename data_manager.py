@@ -131,13 +131,13 @@ def get_model_fields(model_name, include_id=False):
 def prompt_model_selection(prompt_text="請選擇模型"):
     models = get_all_models()
     if not models:
-        print("目前項目中沒有可用的非內建模組。")
+        print("目前專案中沒有可用的非內建模組。")
         return None
 
     print(f"\n{prompt_text}：")
     for idx, model in enumerate(models, 1):
         print(f"  {idx}. {model.__name__} (app: {model._meta.app_label})")
-    print("  您也可以直接輸入模型名稱（大小寫敏感），或輸入 back/q 返回主選單")
+    print("  您也可以直接輸入模型名稱（大小寫有別），或輸入 back/q 返回主選單")
 
     while True:
         user_input = input("請輸入編號或模型名稱: ").strip()
@@ -155,7 +155,7 @@ def prompt_model_selection(prompt_text="請選擇模型"):
 
 def prompt_input(prompt, default=None, allow_back=True):
     if default is not None:
-        prompt = f"{prompt}（直接回車使用預設: {default}）"
+        prompt = f"{prompt}（直接按 Enter 使用預設值: {default}）"
     if allow_back:
         prompt += "（輸入 back 或 q 返回主選單）"
     prompt += " "
@@ -197,11 +197,11 @@ def clean_row(row_dict, model_name):
     return cleaned
 
 def ask_user_for_action(row_num, errors):
-    print(f"\n第 {row_num} 行數據驗證失敗，錯誤詳情：")
+    print(f"\n第 {row_num} 列資料驗證失敗，錯誤詳情：")
     for field, msgs in errors.items():
         print(f"  {field}: {', '.join(msgs)}")
     while True:
-        choice = input("請選擇操作: (s)跳過該行  (a)終止匯入  (i)忽略所有後續錯誤: ").strip().lower()
+        choice = input("請選擇操作: (s)跳過該列  (a)終止匯入  (i)忽略所有後續錯誤: ").strip().lower()
         if choice in ('s', 'a', 'i'):
             return choice
         print("無效輸入，請輸入 s, a 或 i")
@@ -234,10 +234,10 @@ def import_data(file_path, model_name, file_type='csv', batch_size=500, interact
         return
 
     if not rows:
-        print("檔案為空，沒有數據可匯入。")
+        print("檔案為空，沒有資料可匯入。")
         return
 
-    print(f"共讀取 {len(rows)} 行數據，開始匯入...")
+    print(f"共讀取 {len(rows)} 列資料，開始匯入...")
     objs = []
     total_imported = 0
     skip_all = False
@@ -248,7 +248,7 @@ def import_data(file_path, model_name, file_type='csv', batch_size=500, interact
             break
         cleaned = clean_row(row, model_name)
         if cleaned is None:
-            print(f"第 {idx} 行缺少必需欄位或格式不正確，跳過。")
+            print(f"第 {idx} 列缺少必需欄位或格式不正確，跳過。")
             continue
 
         try:
@@ -257,14 +257,14 @@ def import_data(file_path, model_name, file_type='csv', batch_size=500, interact
             objs.append(obj)
         except ValidationError as e:
             if not interactive or skip_all:
-                print(f"第 {idx} 行驗證失敗，自動跳過（已忽略所有錯誤）")
+                print(f"第 {idx} 列驗證失敗，自動跳過（已忽略所有錯誤）")
                 continue
             action = ask_user_for_action(idx, e.message_dict)
             if action == 's':
                 continue
             elif action == 'a':
                 abort = True
-                print("終止匯入，已回滾所有更改。")
+                print("終止匯入，已復原所有變更。")
                 break
             elif action == 'i':
                 skip_all = True
@@ -274,16 +274,16 @@ def import_data(file_path, model_name, file_type='csv', batch_size=500, interact
             model.objects.bulk_create(objs)
             total_imported += len(objs)
             objs = []
-            print(f"已匯入 {total_imported} 條記錄...")
+            print(f"已匯入 {total_imported} 筆記錄...")
 
     if objs and not abort:
         model.objects.bulk_create(objs)
         total_imported += len(objs)
 
     if not abort:
-        print(f"匯入完成！成功匯入 {total_imported} 條記錄到 {model_name}。")
+        print(f"匯入完成！成功匯入 {total_imported} 筆記錄到 {model_name}。")
     else:
-        print("匯入已終止，未提交任何更改。")
+        print("匯入已終止，未提交任何變更。")
 
 def export_data(file_path, model_name, file_type='csv', queryset=None):
     try:
@@ -316,11 +316,11 @@ def export_data(file_path, model_name, file_type='csv', queryset=None):
                     writer = csv.DictWriter(f, fieldnames=fields)
                     writer.writeheader()
                     writer.writerows(data)
-            print(f"CSV 檔案已匯出: {file_path}，共 {len(data)} 條記錄。")
+            print(f"CSV 檔案已匯出: {file_path}，共 {len(data)} 筆記錄。")
         elif file_type == 'json':
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
-            print(f"JSON 檔案已匯出: {file_path}，共 {len(data)} 條記錄。")
+            print(f"JSON 檔案已匯出: {file_path}，共 {len(data)} 筆記錄。")
         else:
             print(f"不支援的匯出格式: {file_type}")
     except Exception as e:
@@ -357,12 +357,12 @@ def clean_data_file(input_path, output_path, model_name, file_type='csv'):
     for idx, row in enumerate(rows, 1):
         cleaned = clean_row(row, model_name)
         if cleaned is None:
-            print(f"第 {idx} 行缺少必需欄位或格式不正確，已丟棄。")
+            print(f"第 {idx} 列缺少必需欄位或格式不正確，已丟棄。")
             continue
         cleaned_rows.append(cleaned)
 
     if not cleaned_rows:
-        print("清洗後沒有有效數據，不產生檔案。")
+        print("清洗後沒有有效資料，不產生檔案。")
         return
 
     try:
@@ -372,11 +372,11 @@ def clean_data_file(input_path, output_path, model_name, file_type='csv'):
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
                 writer.writeheader()
                 writer.writerows(cleaned_rows)
-            print(f"清洗後的 CSV 檔案已產生: {output_path}，共 {len(cleaned_rows)} 條記錄。")
+            print(f"清洗後的 CSV 檔案已產生: {output_path}，共 {len(cleaned_rows)} 筆記錄。")
         elif file_type == 'json':
             with open(output_path, 'w', encoding='utf-8') as f:
                 json.dump(cleaned_rows, f, ensure_ascii=False, indent=2)
-            print(f"清洗後的 JSON 檔案已產生: {output_path}，共 {len(cleaned_rows)} 條記錄。")
+            print(f"清洗後的 JSON 檔案已產生: {output_path}，共 {len(cleaned_rows)} 筆記錄。")
         else:
             print(f"不支援的輸出格式: {file_type}")
     except Exception as e:
@@ -418,7 +418,7 @@ def view_data(model_name, limit=20):
                     val = ''
                 row.append(str(val))
             print(" | ".join(row))
-        print(f"共 {total} 條記錄，目前顯示第 {page.start_index()}-{page.end_index()} 條")
+        print(f"共 {total} 筆記錄，目前顯示第 {page.start_index()}-{page.end_index()} 筆")
         if page_num >= paginator.num_pages:
             break
         next_action = input("輸入 'n' 查看下一頁，'q' 返回主選單: ").strip().lower()
@@ -430,10 +430,10 @@ def view_data(model_name, limit=20):
             print("無效輸入，請輸入 n 或 q")
             continue
 
-# ========== 手動錄入數據（修正版） ==========
+# ========== 手動錄入資料（修正版） ==========
 def interactive_add_records():
-    print("\n--- 手動錄入數據 ---")
-    model_name = prompt_model_selection("請選擇要錄入數據的模型")
+    print("\n--- 手動錄入資料 ---")
+    model_name = prompt_model_selection("請選擇要錄入資料的模型")
     if model_name == '##BACK##': return
     if not model_name:
         print("模型名稱不能為空。")
@@ -464,7 +464,7 @@ def interactive_add_records():
 
         records = []
         while True:
-            print("\n--- 新增記錄（輸入欄位值，可直接回車跳過非必需欄位）---")
+            print("\n--- 新增記錄（輸入欄位值，可直接按 Enter 跳過非必需欄位）---")
             row = {}
             for field in fields:
                 val = input(f"  請輸入 {field}: ").strip()
@@ -484,10 +484,10 @@ def interactive_add_records():
                 break
 
         if not records:
-            print("沒有錄入任何數據。")
+            print("沒有錄入任何資料。")
             return
 
-        print(f"\n共錄入 {len(records)} 筆數據，即將儲存...")
+        print(f"\n共錄入 {len(records)} 筆資料，即將儲存...")
         for i, row in enumerate(records, 1):
             print(f"  {i}. {row}")
 
@@ -502,7 +502,7 @@ def interactive_add_records():
                 # 清洗
                 cleaned = clean_row(row, model_name)
                 if cleaned is None:
-                    print(f"數據 {row} 缺少必需欄位或格式錯誤，跳過。")
+                    print(f"資料 {row} 缺少必需欄位或格式錯誤，跳過。")
                     continue
                 # 若包含 ID，檢查是否存在
                 if include_id and 'id' in cleaned and cleaned['id']:
@@ -525,7 +525,7 @@ def interactive_add_records():
                     obj.save()
                     saved_count += 1
             except ValidationError as e:
-                print(f"驗證失敗，數據 {row} 未儲存：{e.message_dict}")
+                print(f"驗證失敗，資料 {row} 未儲存：{e.message_dict}")
             except Exception as e:
                 print(f"儲存失敗：{e}")
 
@@ -546,10 +546,10 @@ def interactive_import():
     found = find_data_file(model_name, 'csv')
     if found:
         file_path = found
-        print(f"找到數據檔案: {file_path}")
+        print(f"找到資料檔案: {file_path}")
     else:
-        print(f"未找到預設數據檔案（嘗試了多種變體）")
-        file_path = prompt_input("請手動輸入數據檔案路徑", default=None, allow_back=True)
+        print(f"未找到預設資料檔案（嘗試了多種變體）")
+        file_path = prompt_input("請手動輸入資料檔案路徑", default=None, allow_back=True)
         if file_path == '##BACK##': return
         if not file_path:
             print("檔案路徑不能為空。")
@@ -570,14 +570,14 @@ def interactive_import():
         model = get_model_by_name(model_name)
         count = model.objects.count()
         if count > 0:
-            print(f"注意：模型 {model_name} 中已有 {count} 條記錄。")
+            print(f"注意：模型 {model_name} 中已有 {count} 筆記錄。")
             while True:
-                choice = input("選擇操作: (a)追加數據  (o)覆蓋（清空全部再匯入） (c)取消: ").strip().lower()
+                choice = input("選擇操作: (a)追加資料  (o)覆蓋（清空全部再匯入） (c)取消: ").strip().lower()
                 if choice == 'c':
                     print("操作已取消。")
                     return
                 elif choice == 'o':
-                    backup_choice = input("是否先備份現有數據？(y/n，預設 y): ").strip().lower()
+                    backup_choice = input("是否先備份現有資料？(y/n，預設 y): ").strip().lower()
                     if backup_choice != 'n':
                         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                         backup_file = f"backup_{model_name}_{timestamp}.csv"
@@ -591,24 +591,24 @@ def interactive_import():
                             if cont != 'y':
                                 print("操作已取消。")
                                 return
-                    print(f"正在清空 {model_name} 表（原有 {count} 條記錄）...")
+                    print(f"正在清空 {model_name} 資料表（原有 {count} 筆記錄）...")
                     try:
                         model.objects.all().delete()
                         print("清空成功。")
                     except Exception as e:
                         print(f"清空失敗：{e}")
-                        print("可能因為其他表關聯到此表，請先處理關聯數據。")
+                        print("可能因為其他資料表關聯到此表，請先處理關聯資料。")
                         return
                     break
                 elif choice == 'a':
-                    print("將保留現有數據，直接追加新數據。")
+                    print("將保留現有資料，直接追加新資料。")
                     break
                 else:
                     print("無效輸入，請輸入 a, o 或 c")
         else:
             print("目標表為空，將直接匯入。")
     except Exception as e:
-        print(f"檢查數據時出錯: {e}")
+        print(f"檢查資料時出錯: {e}")
         return
 
     confirm = input("確認執行匯入？(y/n): ").strip().lower()
@@ -618,7 +618,7 @@ def interactive_import():
 
     file_type = 'csv' if file_path.lower().endswith('.csv') else 'json'
     batch = 500
-    print(f"\n開始匯入：檔案={file_path}, 模型={model_name}, 批量={batch}")
+    print(f"\n開始匯入：檔案={file_path}, 模型={model_name}, 批次={batch}")
     import_data(file_path, model_name, file_type, batch, interactive=True)
 
 # ========== 匯出（互動版） ==========
@@ -639,7 +639,7 @@ def interactive_export():
 # ========== 清理檔案（互動版） ==========
 def interactive_clean_file():
     print("\n--- 清理並格式化資料檔案（不入庫） ---")
-    model_name = prompt_model_selection("請選擇對應的模型（用於應用清洗規則）")
+    model_name = prompt_model_selection("請選擇對應的模型（用於套用清洗規則）")
     if model_name == '##BACK##': return
     if not model_name:
         print("模型名稱不能為空。")
@@ -650,8 +650,8 @@ def interactive_clean_file():
         input_path = found
         print(f"找到輸入檔案: {input_path}")
     else:
-        print(f"未找到預設數據檔案（嘗試了多種變體）")
-        input_path = prompt_input("請手動輸入原始數據檔案路徑", default=None, allow_back=True)
+        print(f"未找到預設資料檔案（嘗試了多種變體）")
+        input_path = prompt_input("請手動輸入原始資料檔案路徑", default=None, allow_back=True)
         if input_path == '##BACK##': return
         if not input_path:
             print("檔案路徑不能為空。")
@@ -664,7 +664,7 @@ def interactive_clean_file():
     print(f"\n開始清理：輸入={input_path}, 輸出={output_path}, 模型={model_name}")
     clean_data_file(input_path, output_path, model_name, file_type)
 
-# ========== 查看數據（互動版） ==========
+# ========== 查看資料（互動版） ==========
 def interactive_view_data():
     print("\n--- 查看資料庫中的資料 ---")
     model_name = prompt_model_selection("請選擇要查看的模型")
@@ -675,9 +675,9 @@ def interactive_view_data():
     limit = 20
     view_data(model_name, limit)
 
-# ========== 刪除數據（互動版，含自動備份） ==========
+# ========== 刪除資料（互動版，含自動備份） ==========
 def interactive_delete_data():
-    print("\n--- 刪除指定模型的所有數據 ---")
+    print("\n--- 刪除指定模型的所有資料 ---")
     model_name = prompt_model_selection("請選擇要刪除的模型")
     if model_name == '##BACK##': return
     if not model_name:
@@ -690,10 +690,10 @@ def interactive_delete_data():
         if count == 0:
             print(f"模型 {model_name} 中沒有任何記錄，無需刪除。")
             return
-        print(f"⚠️ 模型 {model_name} 中目前有 {count} 條記錄。")
+        print(f"⚠️ 模型 {model_name} 中目前有 {count} 筆記錄。")
         print("此操作將刪除全部記錄，且無法復原！")
 
-        backup_choice = input("是否先備份現有數據？(y/n，預設 y): ").strip().lower()
+        backup_choice = input("是否先備份現有資料？(y/n，預設 y): ").strip().lower()
         if backup_choice != 'n':
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             backup_file = f"backup_{model_name}_{timestamp}.csv"
@@ -721,10 +721,10 @@ def interactive_delete_data():
         try:
             with transaction.atomic():
                 deleted, _ = model.objects.all().delete()
-            print(f"成功刪除 {deleted} 條記錄。")
+            print(f"成功刪除 {deleted} 筆記錄。")
         except Exception as e:
             print(f"刪除失敗：{e}")
-            print("可能因為其他表關聯到此表，請先處理關聯數據。")
+            print("可能因為其他資料表關聯到此表，請先處理關聯資料。")
     except Exception as e:
         print(f"發生錯誤：{e}")
 
@@ -735,12 +735,12 @@ def main_menu():
         print("      Django 資料管理工具 v5.8")
         print("="*50)
         print("\n請選擇操作：")
-        print("  1. 匯入資料（清洗 + 格式化 + 入庫）")
+        print("  1. 匯入資料")
         print("  2. 匯出資料")
-        print("  3. 清理並格式化資料檔案（不入庫）")
+        print("  3. 清理並格式化資料檔案")
         print("  4. 查看資料庫中的資料")
-        print("  5. 手動錄入資料（逐筆輸入，可選包含ID）")
-        print("  6. 刪除指定模型的所有資料（含自動備份）")
+        print("  5. 手動錄入資料")
+        print("  6. 刪除指定模型的所有資料（自動備份）")
         print("  7. 離開")
         choice = input("\n請輸入數字 (1-7): ").strip()
 
