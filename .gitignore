@@ -164,6 +164,9 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# macOS
+.DS_Store
+
 media/
 
 # PyCharm
@@ -174,3 +177,6 @@ media/
 #.idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/django
+db_backup*.json
+models_from_db.txt
+project_structure.txt
